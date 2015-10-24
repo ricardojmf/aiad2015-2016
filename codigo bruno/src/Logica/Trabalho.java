@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
 public class Trabalho
 {
@@ -13,8 +14,8 @@ public class Trabalho
 	public boolean realizado;
 	public Date tempoLimite;
 	
-	//public Vector<Ranhura> pedido; // a entregar, obter
-	//public Ponto destino; // lugar a entregar, devolver obtido
+	public Vector<Ranhura> pedido; // a entregar, obter
+	public Ponto destino; // lugar a entregar, devolver obtido
 	
 	private static DateFormat df = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 	
@@ -30,28 +31,34 @@ public class Trabalho
 		tempoLimite = (Date) sl.getTime();
 	}
 	
-	public Trabalho(int rec, Date tl)
+	public Trabalho(int rec, Vector<Ranhura> request, Ponto dst, Date tl)
 	{
 		recompensa = rec;
 		tempoLimite = tl;
 		inicializar();
+		pedido = request;
+		destino = dst;
 	}
 	
-	public Trabalho(int rec, String det, int h, int m, int s, int dia, int mes, int ano)
+	public Trabalho(int rec, String det, Vector<Ranhura> request, Ponto dst, int h, int m, int s, int dia, int mes, int ano)
 	{
 		recompensa = rec;
 		initTempoRealizacao(h,m,s,dia,mes,ano);
 		
 		detalhes = det;
 		realizado = false;
+		pedido = request;
+		destino = dst;
 	}
 	
-	public Trabalho(int rec, int h, int m, int s, int dia, int mes, int ano)
+	public Trabalho(int rec, Vector<Ranhura> request, Ponto dst, int h, int m, int s, int dia, int mes, int ano)
 	{
 		recompensa = rec;
 		initTempoRealizacao(h,m,s,dia,mes,ano);
 		
 		inicializar();
+		pedido = request;
+		destino = dst;
 	}
 	
 	public void terminar()

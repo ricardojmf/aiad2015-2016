@@ -2,7 +2,7 @@ package Logica;
 
 import java.util.Vector;
 
-public class Agente extends Identidade
+public class Trabalhador extends Identidade
 {
 	String nome;
 	int riqueza;
@@ -62,7 +62,7 @@ public class Agente extends Identidade
 		carga = 0;
 	}
 	
-	public Agente(String no, int tipoAgente, char let)
+	public Trabalhador(String no, int tipoAgente, char let)
 	{
 		super(0, 0, let);
 		
@@ -77,7 +77,7 @@ public class Agente extends Identidade
 		contentor = new Vector<Ranhura>();
 	}
 	
-	public Agente(String no, int tipoAgente, int li, int col, char let)
+	public Trabalhador(String no, int tipoAgente, int li, int col, char let)
 	{
 		super(li, col, let);
 		
@@ -92,7 +92,7 @@ public class Agente extends Identidade
 		contentor = new Vector<Ranhura>();
 	}
 	
-	public int compareTo(Agente obj)
+	public int compareTo(Trabalhador obj)
 	{
 		return (nome.compareTo(obj.nome));
 	}

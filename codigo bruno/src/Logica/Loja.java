@@ -2,7 +2,7 @@ package Logica;
 
 import java.util.Vector;
 
-public class Loja extends Edificio
+public class Loja extends Local
 {
 	Vector<ProductoLoja> productos;
 	

@@ -1,22 +1,22 @@
 package Logica;
 
-public class Edificio extends Identidade
+public class Local extends Identidade
 {
 	public String nome;
 	
-	public Edificio(int li, int col, char let)
+	public Local(int li, int col, char let)
 	{
 		super(li, col, let);
 		nome = "";
 	}
 	
-	public Edificio(int li, int col, char let, String no)
+	public Local(int li, int col, char let, String no)
 	{
 		super(li, col, let);
 		nome = no;
 	}
 	
-	public int compareTo(Edificio obj)
+	public int compareTo(Local obj)
 	{
 		if (this.nome == obj.nome)
 		{

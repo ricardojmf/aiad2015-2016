@@ -1,21 +1,19 @@
 package Logica;
 
-import java.util.Vector;
-
-public class Recarga extends Edificio
+public class Recarga extends Local
 {
-	Vector<ProductoLoja> productos;
+	public int preco;
 	
-	public Recarga(int li, int col)
+	public Recarga(int li, int col, int p)
 	{
 		super(li, col, 'R');
-		productos = new Vector<ProductoLoja>();
+		preco = p;
 	}
 	
-	public Recarga(int li, int col, String nome)
+	public Recarga(int li, int col, String nome, int p)
 	{
 		super(li, col, 'S', nome);
-		productos = new Vector<ProductoLoja>();
+		preco = p;
 	}
 	
 }

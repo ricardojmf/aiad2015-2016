@@ -3,16 +3,16 @@ package Logica;
 public class ProductoArmazenado
 {
 	public Producto producto;
-	public Agente agente;
+	public Trabalhador trabalhador;
 	
-	public ProductoArmazenado(Producto arg1, Agente arg2)
+	public ProductoArmazenado(Producto arg1, Trabalhador arg2)
 	{
 		producto = arg1;
-		agente = arg2;
+		trabalhador = arg2;
 	}
 	
 	public int compareTo(ProductoArmazenado obj)
 	{
-		return( agente.nome.compareTo(obj.agente.nome) );
+		return( trabalhador.nome.compareTo(obj.trabalhador.nome) );
 	}
 }

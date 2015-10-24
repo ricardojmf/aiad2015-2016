@@ -8,9 +8,10 @@ import java.util.Vector;
 public class Mapa
 {
 	public Vector<String> matriz;
-	private static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/";
+	//private static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/";
+	private static String folder = "C:\\Users\\Miguel Moreira\\Documents\\Eclipse Mars x64\\projects\\ProjectoAIAD\\";
 	
-	public static char letraParede = 'W';
+	public static char letraParede = 'O';
 	public static char letraEstrada = ' ';
 	
 	private void iniciarMapa()

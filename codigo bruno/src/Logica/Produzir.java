@@ -17,7 +17,7 @@ public class Produzir // accao
 		quantidade = q;
 	}
 	
-	public boolean pronto(Agente agente)
+	public boolean pronto(Trabalhador trabalhador)
 	{
 		return false;
 	}

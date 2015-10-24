@@ -56,7 +56,7 @@ public class Main
 	
 	public void executar()
 	{	
-		limpar();
+		//limpar();
 		
 		//executarLinhaRecta();
 		Producto p1 = new Producto("Agua", 25);
