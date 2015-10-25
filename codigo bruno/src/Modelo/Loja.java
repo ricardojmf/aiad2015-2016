@@ -1,4 +1,4 @@
-package Logica;
+package Modelo;
 
 import java.util.Vector;
 

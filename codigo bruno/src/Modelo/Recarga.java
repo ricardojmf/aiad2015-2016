@@ -1,4 +1,4 @@
-package Logica;
+package Modelo;
 
 public class Recarga extends Local
 {

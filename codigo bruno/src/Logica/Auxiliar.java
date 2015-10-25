@@ -1,8 +1,11 @@
 package Logica;
 
+import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
+
+import Modelo.Ponto;
 
 public class Auxiliar
 {
@@ -201,116 +204,309 @@ public class Auxiliar
 	    return randomNum;
 	}
 	
+	private static int SIGN(double x)
+	{
+		return (x < 0 ? -1 : (x > 0 ? 1 : 0));
+	}
+	
+	private static int SIGN(int x)
+	{
+		return (x < 0 ? -1 : (x > 0 ? 1 : 0));
+	}
+	
 	public static Vector<Ponto> linhaRecta(int x1, int y1, int x2, int y2)
 	{
 		Vector<Ponto> r = new Vector<Ponto>();
 		
-		int xi = x1;
-		int yi = y1;
-		int xf = x2;
-		int yf = y2;
-		
-		int a, b, d, inc1, inc2, y, yIncrease;
-		boolean slope = false;
-		a = Math.abs(xf - xi);
-		b = Math.abs(yf - yi);
-		yIncrease = 1;
-		
-		if(b > a) // first point is on the right.
+		int	dx,dy,sx,sy;
+		int	accum;
+	 
+		dx = x2 - x1;
+		dy = y2 - y1;
+	 
+		sx = SIGN(dx);
+		sy = SIGN(dy);
+	 
+		dx = Math.abs(dx);
+		dy = Math.abs(dy);
+	 
+		x2 += sx;
+		y2 += sy;
+	 
+		if(dx > dy)
 		{
-			int tmp = xi;
-			xi = yi;
-			yi = tmp;
-			
-			tmp = yf;
-			yf = xf;
-			xf = tmp;
-			
-			tmp = a;
-			a = b;
-			b = tmp;			
-			
-			slope = true;
-		}
-		if(xi > xf)
-		{
-			int tmp = xi;
-			xi = xf;
-			xf = tmp;
-			
-			tmp = yi;
-			yi = yf;
-			yf = tmp;
-		}
-		if(yi > yf) // first point is higher than the second
-		{
-			yIncrease = -1;
-		}
-		
-		inc2 = 2*b;
-		d = inc2 - a;
-		inc1 = d - a;
-		y = yi;
-		
-		for(int x = xi; x <= xf; x++)
-		{
-			if(d <= 0)
-			{
-				d += inc2;
-			}
-			else
-			{
-				d += inc1;
-				y += yIncrease;
-			}
-			
-			if(slope)
-			{
-				r.addElement(new Ponto(y, x));
-			}
-			else
-			{
-				r.addElement(new Ponto(x, y));
-			}
-		}
-		
-		if (r.size() > 1)
-		{
-			//r.removeElementAt(0);
-			//r.removeElementAt(r.size() - 1);
+			accum = dx >> 1;
+			do{
+				r.addElement(new Ponto(x1, y1));
+	 
+				accum -= dy;
+				if(accum < 0)
+				{
+					accum += dx;
+					y1 += sy;
+				}
+	 
+				x1 += sx;
+			}while(x1 != x2);
+		}else{
+			accum = dy >> 1;
+			do{
+				r.addElement(new Ponto(x1, y1));
+	 
+				accum -= dx;
+				if(accum < 0)
+				{
+					accum += dy;
+					x1 += sx;
+				}
+	 
+				y1 += sy;
+			}while(y1 != y2);
 		}
 		return r;
 	}
 	
-	// mapa: vazio ( )
-	public static Vector<Ponto> caminho(int x1, int y1, int x2, int y2)
+	private static class NodoPesquisa implements Comparable
+	{
+		public int valor;
+		public int linha;
+		public int coluna;
+		
+		public NodoPesquisa(int v, int l, int c)
+		{
+			valor = v;
+			linha = l;
+			coluna = c;
+		}
+		
+		public NodoPesquisa(int l, int c)
+		{
+			valor = 0;
+			linha = l;
+			coluna = c;
+		}
+		
+		public void ver()
+		{
+			writeln(linha + " , " + coluna + " (" + valor + ")");
+		}
+
+		@Override
+		public int compareTo(Object o)
+		{
+			NodoPesquisa np = (NodoPesquisa) o;
+			if (valor == np.valor)
+			{
+				if (linha == np.linha)
+				{
+					if (coluna == np.coluna)
+					{
+						return 0;
+					}
+					else
+					{
+						return ( (coluna < np.coluna) ? -1 : 1 );
+					}
+				}
+				else
+				{
+					return ( (coluna < np.coluna) ? -1 : 1 );
+				}
+			}
+			else
+			{
+				return ( (valor < np.valor) ? -1 : 1 );
+			}
+		}
+	}
+	
+	public static Vector<Ponto> caminhoCurto(Vector<String> mapa, int x1, int y1, int x2, int y2)
 	{
 		Vector<Ponto> r = new Vector<Ponto>();
 		
-		int dx = x2 - x1;
-		int dy = y2 - y1;
+		char obstaculo = 'O';
+		char estrada = ' ';
 		
-		double m = dy / dx;
+		int maxLinha = mapa.size();
+		int maxColuna = mapa.elementAt(0).length();
 		
-		if (dx > 0)
+		Vector<Vector<NodoPesquisa> > nodos = new Vector<Vector<NodoPesquisa> >();
+		
+		for (int linha = 0; linha < mapa.size(); linha ++)
 		{
-			for(int x = x1, y = y1; x <= x2; x++, y+=m)
+			String s = mapa.elementAt(linha);
+			
+			Vector<NodoPesquisa> nd = new Vector<NodoPesquisa>();
+			for(int coluna = 0; coluna < s.length(); coluna++)
 			{
-				writeln(x + " " + y);
-				r.addElement(new Ponto(x, y));
+				NodoPesquisa np = new NodoPesquisa(linha, coluna);
+				
+				char c = s.charAt(coluna);
+				if (c == obstaculo)
+				{
+					np.valor = -2;
+				}
+				else
+				{
+					np.valor = -1;
+				}
+				
+				nd.addElement(np);
+			}
+			nodos.addElement(nd);
+		}
+		
+		PriorityQueue<NodoPesquisa> queue = new PriorityQueue<NodoPesquisa>();
+		NodoPesquisa inicial = nodos.elementAt(x1).elementAt(y1);
+		inicial.valor = 0;
+		
+		queue.add(inicial);		
+		NodoPesquisa agora = inicial;
+		
+		boolean condicaoParagem = true;
+		while(!queue.isEmpty() && condicaoParagem)
+		{
+			agora = queue.poll();
+			
+			int linha = agora.linha;
+			int coluna = agora.coluna;
+			
+			Vector<NodoPesquisa> nxt = new Vector<NodoPesquisa>();
+			
+			// cima
+			if ( (linha + 1) < maxLinha)
+			{
+				NodoPesquisa tmp = nodos.elementAt(linha + 1).elementAt(coluna);
+				if (tmp.valor == -1 || tmp.valor > agora.valor)
+				{
+					nxt.addElement(tmp);
+				}
+			}
+			
+			//baixo
+			if ( (linha - 1) >= 0)
+			{
+				NodoPesquisa tmp = nodos.elementAt(linha - 1).elementAt(coluna);
+				if (tmp.valor == -1 || tmp.valor > agora.valor)
+				{
+					nxt.addElement(tmp);
+				}
+			}
+			
+			// direita
+			if ( (coluna + 1)  < maxColuna)
+			{
+				NodoPesquisa tmp = nodos.elementAt(linha).elementAt(coluna + 1);
+				if (tmp.valor == -1 || tmp.valor > agora.valor)
+				{
+					nxt.addElement(tmp);
+				}
+			}
+			
+			// esquerda
+			if ( (coluna - 1) >= 0)
+			{
+				NodoPesquisa tmp = nodos.elementAt(linha).elementAt(coluna - 1);
+				if (tmp.valor == -1 || tmp.valor > agora.valor)
+				{
+					nxt.addElement(tmp);
+				}
+			}
+			
+			for(NodoPesquisa np: nxt)
+			{
+				np.valor = agora.valor + 1;
+				if(np.coluna == y2 && np.linha == x2)
+				{
+					condicaoParagem = false;
+					agora = np;
+				}
+				else
+				{
+					queue.add(np);
+				}
 			}
 		}
-		else
+		
+		//writeln("--------------------------------------------");
+		
+//		for (Vector<NodoPesquisa> np: nodos)
+//		{
+//			for(NodoPesquisa nd: np)
+//			{
+//				if (nd.valor == -2)
+//				{
+//					Auxiliar.write('O');
+//				}
+//				else if (nd.valor == -1)
+//				{
+//					Auxiliar.write(' ');
+//				}
+//				else
+//				{
+//					Auxiliar.write(nd.valor);
+//				}
+//				
+//			} Auxiliar.writeln("");
+//		}
+		
+		r.addElement(new Ponto(agora.linha, agora.coluna));
+		while(!(agora.linha == x1 && agora.coluna == y1))
 		{
-			for(int x = x2, y = y1; x <= x1; x--, y+=m)
+			Vector<NodoPesquisa> nxt = new Vector<NodoPesquisa>();
+			int linha = agora.linha;
+			int coluna = agora.coluna;
+			
+			// cima
+			if ( (linha + 1) < maxLinha)
 			{
-				writeln(x + " " + y);
-				r.addElement(new Ponto(x, y));
+				NodoPesquisa tmp = nodos.elementAt(linha + 1).elementAt(coluna);
+				if (tmp.valor == (agora.valor - 1))
+				{
+					nxt.addElement(tmp);
+				}
 			}
+			
+			//baixo
+			if ( (linha - 1) >= 0)
+			{
+				NodoPesquisa tmp = nodos.elementAt(linha - 1).elementAt(coluna);
+				if (tmp.valor == (agora.valor - 1))
+				{
+					nxt.addElement(tmp);
+				}
+			}
+			
+			// direita
+			if ( (coluna + 1)  < maxColuna)
+			{
+				NodoPesquisa tmp = nodos.elementAt(linha).elementAt(coluna + 1);
+				if (tmp.valor == (agora.valor - 1))
+				{
+					nxt.addElement(tmp);
+				}
+			}
+			
+			// esquerda
+			if ( (coluna - 1) >= 0)
+			{
+				NodoPesquisa tmp = nodos.elementAt(linha).elementAt(coluna - 1);
+				if (tmp.valor == (agora.valor - 1))
+				{
+					nxt.addElement(tmp);
+				}
+			}
+			
+			agora = nxt.elementAt(0);
+			r.addElement(new Ponto(agora.linha, agora.coluna));
 		}
 		
+		Vector<Ponto> rr = new Vector<Ponto>();
+		for(int i = r.size() - 1; i >= 0; i--)
+		{
+			rr.addElement(r.elementAt(i));
+		}
 		
-		
-		return r;
+		return rr;
 	}
 }

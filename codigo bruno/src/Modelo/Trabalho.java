@@ -1,4 +1,4 @@
-package Logica;
+package Modelo;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,8 +21,14 @@ public class Trabalho
 	
 	private void inicializar()
 	{
-		detalhes = "";
+		
 		realizado = false;
+	}
+	
+	public void definirObjectivo(Vector<Ranhura> request, Ponto dst)
+	{
+		pedido = request;
+		destino = dst;
 	}
 	
 	public void initTempoRealizacao(int h, int m, int s, int dia, int mes, int ano)
@@ -31,34 +37,31 @@ public class Trabalho
 		tempoLimite = (Date) sl.getTime();
 	}
 	
-	public Trabalho(int rec, Vector<Ranhura> request, Ponto dst, Date tl)
+	public Trabalho(int rec,  Date tl)
 	{
 		recompensa = rec;
+		detalhes = "";
 		tempoLimite = tl;
+		
 		inicializar();
-		pedido = request;
-		destino = dst;
 	}
 	
-	public Trabalho(int rec, String det, Vector<Ranhura> request, Ponto dst, int h, int m, int s, int dia, int mes, int ano)
+	public Trabalho(int rec, String det, int h, int m, int s, int dia, int mes, int ano)
 	{
 		recompensa = rec;
 		initTempoRealizacao(h,m,s,dia,mes,ano);
 		
 		detalhes = det;
 		realizado = false;
-		pedido = request;
-		destino = dst;
 	}
 	
-	public Trabalho(int rec, Vector<Ranhura> request, Ponto dst, int h, int m, int s, int dia, int mes, int ano)
+	public Trabalho(int rec, int h, int m, int s, int dia, int mes, int ano)
 	{
 		recompensa = rec;
+		detalhes = "";
 		initTempoRealizacao(h,m,s,dia,mes,ano);
 		
 		inicializar();
-		pedido = request;
-		destino = dst;
 	}
 	
 	public void terminar()

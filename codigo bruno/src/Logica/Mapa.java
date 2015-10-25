@@ -31,14 +31,14 @@ public class Mapa
 			data = inputstream.read();
 			while (data != -1)
 			{
-				if (data == '\n')
+				if (data == 10 || data == 13)
 				{
 					matriz.addElement(linha);
 					linha = "";
 				}
 				else
-				{
-					if (!(data == letraParede || data == letraEstrada))
+				{					
+					if (!(data == letraParede || data == letraEstrada ))
 					{
 						System.exit(0);
 					}
@@ -49,7 +49,18 @@ public class Mapa
 				}
 				data = inputstream.read();
 			}
+			matriz.addElement(linha);
+			
 			inputstream.close();
+			
+			int i = 0;
+			while(i < matriz.size())
+			{
+				if (matriz.elementAt(i).length() == 0)
+					matriz.removeElementAt(i);
+				else
+					i++;
+			}
 		}
 		catch (IOException e) 
 		{

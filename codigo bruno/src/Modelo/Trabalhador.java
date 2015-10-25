@@ -1,23 +1,23 @@
-package Logica;
+package Modelo;
 
 import java.util.Vector;
 
 public class Trabalhador extends Identidade
 {
-	String nome;
-	int riqueza;
+	public String nome;
+	public int riqueza;
 	
-	int velocidade;
-	int bateriaMax;
-	int bateria;
-	int cargaMax;
-	int carga;
+	public int velocidade;
+	public int bateriaMax;
+	public int bateria;
+	public int cargaMax;
+	public int carga;
 	
-	int transporte; // 0 ate 4
-	boolean meioTransporte; // false: estradas ; true: ar
-	Vector<String> ferramentas;
-	Vector<Tarefa> tarefas;
-	Vector<Ranhura> contentor;
+	public int transporte; // 0 ate 4
+	public boolean meioTransporte; // false: estradas ; true: ar
+	public Vector<String> ferramentas;
+	public Vector<Tarefa> tarefas;
+	public Vector<Ranhura> contentor;
 	
 	private static int riquezaInicio = 1500;
 	
@@ -26,6 +26,7 @@ public class Trabalhador extends Identidade
 		switch(transporte)
 		{
 		case (1):
+			letra = 'C';
 			velocidade = 3;
 			bateriaMax = 500;
 			cargaMax = 550;
@@ -34,6 +35,7 @@ public class Trabalhador extends Identidade
 			ferramentas.addElement("f2");
 			break;
 		case (2):
+			letra = 'H';
 			velocidade = 5;
 			bateriaMax = 250;
 			cargaMax = 100;
@@ -41,6 +43,7 @@ public class Trabalhador extends Identidade
 			ferramentas.addElement("f1");
 			break;
 		case (3):
+			letra = 'M';
 			velocidade = 4;
 			bateriaMax = 350;
 			cargaMax = 300;
@@ -49,6 +52,7 @@ public class Trabalhador extends Identidade
 			ferramentas.addElement("tool1");
 			break;
 		case (4):
+			letra = 'T';
 			velocidade = 1;
 			bateriaMax = 3000;
 			cargaMax = 1000;
@@ -62,9 +66,9 @@ public class Trabalhador extends Identidade
 		carga = 0;
 	}
 	
-	public Trabalhador(String no, int tipoAgente, char let)
+	public Trabalhador(String no, int tipoAgente)
 	{
-		super(0, 0, let);
+		super(0, 0);
 		
 		nome = no;
 		riqueza = riquezaInicio;
@@ -77,9 +81,9 @@ public class Trabalhador extends Identidade
 		contentor = new Vector<Ranhura>();
 	}
 	
-	public Trabalhador(String no, int tipoAgente, int li, int col, char let)
+	public Trabalhador(String no, int tipoAgente, int li, int col)
 	{
-		super(li, col, let);
+		super(li, col);
 		
 		nome = no;
 		riqueza = riquezaInicio;
@@ -96,4 +100,6 @@ public class Trabalhador extends Identidade
 	{
 		return (nome.compareTo(obj.nome));
 	}
+
+	
 }
