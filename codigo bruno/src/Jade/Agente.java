@@ -3,7 +3,9 @@ package Jade;
 import java.util.Vector;
 
 import Logica.Auxiliar;
-import Modelo.*;
+import Logica.Ponto;
+import Logica.Tarefa;
+import Logica.Trabalhador;
 
 public class Agente
 {

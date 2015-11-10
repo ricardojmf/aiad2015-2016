@@ -1,10 +1,10 @@
-package Modelo;
+package Logica;
 
 import java.util.Vector;
 
 public class Loja extends Local
 {
-	Vector<ProductoLoja> productos;
+	public Vector<ProductoLoja> productos;
 	
 	public Loja(int li, int col)
 	{

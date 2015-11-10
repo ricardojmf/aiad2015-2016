@@ -5,10 +5,12 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
 
-import Modelo.Ponto;
-
 public class Auxiliar
 {
+	//private static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/";
+	public static String folder = "C:\\Users\\Miguel Moreira\\Documents\\Eclipse Mars x64\\projects\\ProjectoAIAD\\";
+		
+	
 	/*	MELHORAMENTO AO INPUT/OUTPUT	*/
 	
 	// INPUT

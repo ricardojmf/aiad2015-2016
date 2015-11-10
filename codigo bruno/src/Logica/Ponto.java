@@ -1,4 +1,4 @@
-package Modelo;
+package Logica;
 
 public class Ponto
 {
@@ -9,6 +9,11 @@ public class Ponto
 	{
 		linha = li;
 		coluna = col;
+	}
+	
+	public Ponto obterLocalizacao()
+	{
+		return( new Ponto(this.linha, this.coluna) );
 	}
 	
 	public int compareTo(Ponto obj) // posicao

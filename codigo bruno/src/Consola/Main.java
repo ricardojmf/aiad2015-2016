@@ -3,8 +3,6 @@ package Consola;
 import java.util.Vector;
 
 import Logica.*;
-import Modelo.Ponto;
-import Modelo.Producto;
 
 public class Main
 {
@@ -73,30 +71,20 @@ public class Main
 		mostrarMatriz(r);
 	}
 	
-	private void limpar()
-	{
-		for(int i = 0; i < 6; i++)
-		{
-			Auxiliar.writeln("");
-		}
-	}
-	
-	public void executar()
-	{	
-		//limpar();
-		
-		
-//		Producto p1 = new Producto("Agua", 25);
-//		Producto p2 = new Producto("Vinho Tinto", 25);
-//		Producto p3 = new Producto("Fanta Laranja", 25);
-		
-		Mapa mp = new Mapa("mapa.txt");
-		mp.ver();
-	}
-	
 	static public void main(String[] args)
 	{
-		Main x = new Main();
-		x.executar();
+		Mundo x = new Mundo("mapa.txt", "objectos.txt");
+		x.verLojas();
+		x.verArmazens();
+		
+		
+		Trabalhador tr = new Trabalhador("Bruno", 1);
+		//tr.ver();
+		
+		x.comprar(tr, x.lojas.elementAt(0), 0, 2);
+		x.comprar(tr, x.lojas.elementAt(0), 1, 3);
+		
+		//tr.ver();
+		x.comprar(tr, x.lojas.elementAt(0), 1, 3);
 	}
 }

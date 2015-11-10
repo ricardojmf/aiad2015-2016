@@ -1,4 +1,4 @@
-package Modelo;
+package Logica;
 
 import java.util.Vector;
 
@@ -21,7 +21,7 @@ public class Trabalhador extends Identidade
 	
 	private static int riquezaInicio = 1500;
 	
-	private void iniciarTransporte()
+	private void inicializarTransporte()
 	{
 		switch(transporte)
 		{
@@ -66,34 +66,32 @@ public class Trabalhador extends Identidade
 		carga = 0;
 	}
 	
-	public Trabalhador(String no, int tipoAgente)
+	private void inicializar(String no, int tipoAgente)
 	{
-		super(0, 0);
-		
 		nome = no;
 		riqueza = riquezaInicio;
 		
 		transporte = tipoAgente;
+		
 		ferramentas = new Vector<String>();
-		iniciarTransporte();
+		inicializarTransporte();
 		
 		tarefas = new Vector<Tarefa>();
 		contentor = new Vector<Ranhura>();
+	}
+	
+	public Trabalhador(String no, int tipoAgente)
+	{
+		super(0, 0);
+		
+		inicializar(no, tipoAgente);
 	}
 	
 	public Trabalhador(String no, int tipoAgente, int li, int col)
 	{
 		super(li, col);
 		
-		nome = no;
-		riqueza = riquezaInicio;
-		
-		transporte = tipoAgente;
-		ferramentas = new Vector<String>();
-		iniciarTransporte();
-		
-		tarefas = new Vector<Tarefa>();
-		contentor = new Vector<Ranhura>();
+		inicializar(no, tipoAgente);
 	}
 	
 	public int compareTo(Trabalhador obj)
@@ -101,5 +99,47 @@ public class Trabalhador extends Identidade
 		return (nome.compareTo(obj.nome));
 	}
 
+	public void verDetalhesTransporte()
+	{
+		Auxiliar.writeln("Detalhes Transporte");
+		Auxiliar.writeln("--------------------------------------");
+		Auxiliar.writeln("Velocidade: " + velocidade);
+		Auxiliar.writeln("Bateria Max: " + bateriaMax);
+		Auxiliar.writeln("Carga Max: " + cargaMax);
+		Auxiliar.writeln("Tipo de Transporte: " + transporte);
+		Auxiliar.writeln("Meio de Transporte: " + meioTransporte);
+		
+		for(String s: ferramentas)
+		{
+			Auxiliar.writeln("Ferramenta: " + s);
+		}
+		
+	}
 	
+	public void verContentor()
+	{
+		Auxiliar.writeln("Contentor");
+		Auxiliar.writeln("--------------------------------------");
+		for(Ranhura ra: contentor)
+		{
+			Auxiliar.writeln(ra.producto.nome + " x" + ra.quantidade );
+		}
+	}
+	
+	public void verActual()
+	{
+		Auxiliar.writeln("Actual");
+		Auxiliar.writeln("--------------------------------------");
+		Auxiliar.writeln("Coordenadas: (" + this.linha + " , " + this.coluna + ")");
+		Auxiliar.writeln("Riqueza: " + riqueza);
+		Auxiliar.writeln("Carga: " + carga);
+		Auxiliar.writeln("Bateria: " + bateria);
+	}
+	
+	public void ver()
+	{
+		verDetalhesTransporte();
+		verActual();
+		verContentor();
+	}
 }

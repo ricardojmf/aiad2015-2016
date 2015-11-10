@@ -1,0 +1,72 @@
+PRODUCTOS
+Pedra 2
+Madeira 2
+Granito 2
+Terra 1
+Areia 1
+Gravilha 1
+Cobre 2
+Prata 2
+Ouro 2
+Ferro 2
+Carvão 2
+Quartzo 2
+Vidro 1
+Papel 1
+Lã 1
+Pau 2
+Escada de Madeira 3
+Escada de Pedra 3
+Porta de Madeira 4
+Porta de Ferro 4
+Cama 4
+Linha de Comboio 3
+Tijolo 3
+Livro 1
+Estante de Livros 5
+Torcha 1
+Báu 4
+Forno 5
+Escritório de Trabalho 4
+Botão de Madeira 1
+Botão de Pedra 1
+Manivela 1
+Fença de Madeira 3
+Fença de Pedra 5
+Muro de Madeira 4
+Muro de Pedra 6
+Bussula 1
+Mapa 1
+Balde 1
+Cana de Pesca 1
+Esqueiro 1
+Enxada 2
+Picareta 2
+Pá 2
+Lápis 1
+Caneta 1
+Borracha 1
+END PRODUCTOS
+LOJAS
+LOJA
+AKIKEA Materiais 0 0
+0 50
+1 50
+2 50
+3 50
+4 50
+5 50
+6 50
+7 50
+8 50
+9 50
+10 50
+11 50
+12 50
+13 50
+14 50
+END LOJA
+END LOJAS
+ARMAZENS
+AKIKEA Armazens 0 5
+END ARMAZENS
