@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import Logica.Auxiliar;
 import Logica.Ponto;
-import Logica.Tarefa;
+import Logica.TarefaPreco;
 import Logica.Trabalhador;
 
 public class Agente
@@ -13,7 +13,7 @@ public class Agente
 	
 	Vector<Ponto> percurso;
 	int pontosMover;
-	Tarefa tarefaActual;
+	TarefaPreco tarefaActual;
 	
 	public Agente(String no, int tipoAgente)
 	{
@@ -24,7 +24,7 @@ public class Agente
 		tarefaActual = null;
 	}
 	
-	public void comportamentoCalculoPercurso(Tarefa ta)
+	public void comportamentoCalculoPercurso(TarefaPreco ta)
 	{
 		tarefaActual = ta;
 		Ponto src = new Ponto(trabalhador.linha, trabalhador.coluna);

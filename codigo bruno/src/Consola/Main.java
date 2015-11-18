@@ -73,18 +73,32 @@ public class Main
 	
 	static public void main(String[] args)
 	{
-		Mundo x = new Mundo("mapa.txt", "objectos.txt");
-		x.verLojas();
-		x.verArmazens();
+		Mundo mundo = new Mundo("mapa.txt", "objectos.txt");
+				
+		Trabalhador tr = new Trabalhador("Bruno's Car", 1);
+		mundo.adicionarContentor(tr, mundo.productos.elementAt(2), 5);
+		mundo.adicionarContentor(tr, mundo.productos.elementAt(3), 4);
 		
+		Vector<String> ferra = new Vector<String>();
+		ferra.addElement("f1");
+		ferra.addElement("f2");
 		
-		Trabalhador tr = new Trabalhador("Bruno", 1);
-		//tr.ver();
+		Ranhura ra1 = new Ranhura(mundo.productos.elementAt(2), 4);
+		Ranhura ra2 = new Ranhura(mundo.productos.elementAt(3), 4);
 		
-		x.comprar(tr, x.lojas.elementAt(0), 0, 2);
-		x.comprar(tr, x.lojas.elementAt(0), 1, 3);
+		Vector<Ranhura> request = new Vector<Ranhura>();
+		request.addElement(ra1);
+		request.addElement(ra2);
 		
-		//tr.ver();
-		x.comprar(tr, x.lojas.elementAt(0), 1, 3);
+		Produzir pd = new Produzir(request, ferra, mundo.productos.elementAt(4), 3);
+		
+		tr.ver();
+		pd.ver();
+		
+		boolean estado = mundo.produzir(tr, pd);
+		
+		System.out.println(estado);
+		
+		tr.verContentor();
 	}
 }

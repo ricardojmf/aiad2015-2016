@@ -9,11 +9,11 @@ Cobre 2
 Prata 2
 Ouro 2
 Ferro 2
-Carvão 2
+Carvï¿½o 2
 Quartzo 2
 Vidro 1
 Papel 1
-Lã 1
+Lï¿½ 1
 Pau 2
 Escada de Madeira 3
 Escada de Pedra 3
@@ -25,14 +25,14 @@ Tijolo 3
 Livro 1
 Estante de Livros 5
 Torcha 1
-Báu 4
+Bï¿½u 4
 Forno 5
-Escritório de Trabalho 4
-Botão de Madeira 1
-Botão de Pedra 1
+Escritï¿½rio de Trabalho 4
+Botï¿½o de Madeira 1
+Botï¿½o de Pedra 1
 Manivela 1
-Fença de Madeira 3
-Fença de Pedra 5
+Fenï¿½a de Madeira 3
+Fenï¿½a de Pedra 5
 Muro de Madeira 4
 Muro de Pedra 6
 Bussula 1
@@ -42,14 +42,14 @@ Cana de Pesca 1
 Esqueiro 1
 Enxada 2
 Picareta 2
-Pá 2
-Lápis 1
+Pï¿½ 2
+Lï¿½pis 1
 Caneta 1
 Borracha 1
 END PRODUCTOS
 LOJAS
 LOJA
-AKIKEA Materiais 0 0
+AKIKEA Materiais 2 4
 0 50
 1 50
 2 50
@@ -68,5 +68,5 @@ AKIKEA Materiais 0 0
 END LOJA
 END LOJAS
 ARMAZENS
-AKIKEA Armazens 0 5
+AKIKEA Armazens 2 6
 END ARMAZENS

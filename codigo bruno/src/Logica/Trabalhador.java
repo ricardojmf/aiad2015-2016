@@ -16,8 +16,11 @@ public class Trabalhador extends Identidade
 	public int transporte; // 0 ate 4
 	public boolean meioTransporte; // false: estradas ; true: ar
 	public Vector<String> ferramentas;
-	public Vector<Tarefa> tarefas;
+	
 	public Vector<Ranhura> contentor;
+	
+	public Vector<TarefaPreco> tarefasPrecos;
+	public Vector<TarefaLeiloada> tarefasLeiloadas;
 	
 	private static int riquezaInicio = 1500;
 	
@@ -76,7 +79,8 @@ public class Trabalhador extends Identidade
 		ferramentas = new Vector<String>();
 		inicializarTransporte();
 		
-		tarefas = new Vector<Tarefa>();
+		tarefasPrecos = new Vector<TarefaPreco>();
+		tarefasLeiloadas = new Vector<TarefaLeiloada>();
 		contentor = new Vector<Ranhura>();
 	}
 	

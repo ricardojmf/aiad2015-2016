@@ -7,23 +7,21 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-public class Trabalho
+public class TrabalhoLeiloado
 {
 	public int recompensa;
 	public String detalhes;
 	public boolean realizado;
 	public Date tempoLimite;
 	
+	public Date tempoLeilao; // data para terminar leilao
+	
 	public Vector<Ranhura> pedido; // a entregar, obter
 	public Ponto destino; // lugar a entregar, devolver obtido
 	
-	private static DateFormat df = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+	public Trabalhador pretendente;
 	
-	private void inicializar()
-	{
-		
-		realizado = false;
-	}
+	private static DateFormat df = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 	
 	public void definirObjectivo(Vector<Ranhura> request, Ponto dst)
 	{
@@ -37,16 +35,37 @@ public class Trabalho
 		tempoLimite = (Date) sl.getTime();
 	}
 	
-	public Trabalho(int rec,  Date tl)
+	public void initTempoLeilao(int h, int m, int s, int dia, int mes, int ano)
+	{
+		Calendar sl = new GregorianCalendar(ano, mes - 1, dia, h, m, s);
+		tempoLeilao = (Date) sl.getTime();
+	}
+	
+	public void comecarTrabalho(int h, int m, int s, int dia, int mes, int ano)
+	{
+		initTempoRealizacao(h,m,s,dia,mes,ano);
+		tempoLeilao = null;
+		realizado = false;
+	}
+	
+	public TrabalhoLeiloado(int rec,  Date tl)
 	{
 		recompensa = rec;
 		detalhes = "";
 		tempoLimite = tl;
 		
-		inicializar();
+		realizado = false;
 	}
 	
-	public Trabalho(int rec, String det, int h, int m, int s, int dia, int mes, int ano)
+	public TrabalhoLeiloado(int rec, String det)
+	{
+		recompensa = rec;
+		
+		detalhes = det;
+		realizado = false;
+	}
+	
+	public TrabalhoLeiloado(int rec, String det, int h, int m, int s, int dia, int mes, int ano)
 	{
 		recompensa = rec;
 		initTempoRealizacao(h,m,s,dia,mes,ano);
@@ -55,13 +74,22 @@ public class Trabalho
 		realizado = false;
 	}
 	
-	public Trabalho(int rec, int h, int m, int s, int dia, int mes, int ano)
+	public TrabalhoLeiloado(int rec, int h, int m, int s, int dia, int mes, int ano)
 	{
 		recompensa = rec;
 		detalhes = "";
 		initTempoRealizacao(h,m,s,dia,mes,ano);
 		
-		inicializar();
+		realizado = false;
+	}
+	
+	public void novoTrabalhador(Trabalhador tr, int proposta)
+	{
+		if(proposta < recompensa)
+		{
+			recompensa = proposta;
+			pretendente = tr;
+		}
 	}
 	
 	public void terminar()
@@ -69,7 +97,7 @@ public class Trabalho
 		realizado = true;
 	}
 	
-	public int compareTo(Trabalho obj)
+	public int compareTo(TrabalhoLeiloado obj)
 	{
 		if (recompensa == obj.recompensa)
 		{

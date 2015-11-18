@@ -19,13 +19,26 @@ public class Ranhura
 	
 	public int compareTo(Ranhura obj)
 	{
-		int auxiliar = producto.compareTo(obj.producto);
-		
-		if (auxiliar == 0)
+		if (producto.nome.compareTo(obj.producto.nome) == 0)
 		{
-			return ( (quantidade < obj.quantidade) ? -1 : 1);
+			if (quantidade == obj.quantidade)
+			{
+				return 0;
+			}
+			else
+			{
+				return( (quantidade < obj.quantidade) ? -1 : 1 );
+			}
 		}
-		
-		return auxiliar;
+		else
+		{
+			return( producto.nome.compareTo(obj.producto.nome) );
+		}
+	}
+	
+	public String toString()
+	{
+		String s = producto.nome + " x" + quantidade;
+		return s;
 	}
 }

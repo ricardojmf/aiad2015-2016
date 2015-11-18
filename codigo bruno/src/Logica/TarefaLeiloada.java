@@ -2,18 +2,14 @@ package Logica;
 
 import java.util.Date;
 
-public class Tarefa 
+public class TarefaLeiloada
 {
-	public Trabalho tb;
+	public TrabalhoLeiloado tb;
 	public Date tempoAceite;
 	
-	public Tarefa(Trabalho t)
+	public TarefaLeiloada(TrabalhoLeiloado t)
 	{
 		tb = t;
-	}
-	
-	public void initTempoAceitacao2()
-	{
 		tempoAceite = new Date(System.currentTimeMillis());
 	}
 	
@@ -24,6 +20,4 @@ public class Tarefa
 		int x = data.compareTo(tb.tempoLimite);
 		return x;
 	}
-	
-	
 }

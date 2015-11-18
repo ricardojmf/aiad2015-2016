@@ -4,21 +4,33 @@ import java.util.Vector;
 
 public class Produzir // accao
 {
-	public Vector<Producto> pedido;
+	public Vector<Ranhura> pedido;
 	public Producto recompensa;
 	public int quantidade;
 	public Vector<String> ferramentas;
 	
-	public Produzir(Vector<Producto> request, Vector<String> fer, Producto rec, int q)
+	public Produzir(Vector<Ranhura> request, Vector<String> fer, Producto rec, int q)
 	{
 		pedido = request;
-		fer = ferramentas;
+		ferramentas = fer;
 		recompensa = rec;
 		quantidade = q;
 	}
 	
-	public boolean pronto(Trabalhador trabalhador)
+	public void ver()
 	{
-		return false;
+		System.out.println("Produzir");
+		System.out.println("---------------------------------");
+		for(Ranhura ra: pedido)
+		{
+			Auxiliar.writeln(ra.producto.nome + " x" + ra.quantidade );
+		}
+		
+		for(String s: ferramentas)
+		{
+			Auxiliar.writeln("Ferramenta: " + s);
+		}
+		
+		Auxiliar.writeln("Recompensa: " + recompensa.nome + " x" + quantidade );
 	}
 }

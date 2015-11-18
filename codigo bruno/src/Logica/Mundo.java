@@ -20,6 +20,13 @@ public class Mundo
 	public Vector<Produzir> producoes;
 	public Vector<Trabalhador> trabalhadores;
 	
+	private char letraAgente = 'T';
+	private char letraLoja = 'S';
+	private char letraArmazem = 'W';
+	private char letraRecarga = 'R';
+	private char letraLixeira = 'G';
+	private char letraAgencia = 'A';
+	
 	private void inicializar()
 	{
 		productos = new Vector<Producto>();
@@ -226,6 +233,14 @@ public class Mundo
 		lerFicheiro("objectos.txt");
 	}
 	
+	public void verProductos()
+	{
+		for(Producto p: productos)
+		{
+			System.out.println(p.nome);
+		}
+	}
+	
 	public void verLojas()
 	{
 		Auxiliar.writeln("Lojas");
@@ -235,7 +250,7 @@ public class Mundo
 			Auxiliar.writeln(lj.nome + " em (" + lj.linha + " , " + lj.coluna + ")");
 			for(ProductoLoja pj: lj.productos)
 			{
-				Auxiliar.writeln("+ " + pj.p.nome + " " + pj.preco + "€");
+				Auxiliar.writeln("+ " + pj.p.nome + " " + pj.preco + "ï¿½");
 			}
 		}
 	}
@@ -250,8 +265,72 @@ public class Mundo
 		}
 	}
 	
+	public void mostrarMundo()
+	{
+		for(Loja edificio: lojas)
+		{
+			String linha = cidade.matriz.elementAt(edificio.linha);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, letraLoja);
+			cidade.matriz.set(edificio.linha, novo);
+		}
+		
+		for(Armazem edificio: armazens)
+		{
+			String linha = cidade.matriz.elementAt(edificio.linha);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, letraArmazem);
+			cidade.matriz.set(edificio.linha, novo);
+		}
+		
+		for(Lixeira edificio: lixeiras)
+		{
+			String linha = cidade.matriz.elementAt(edificio.linha);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, letraLixeira);
+			cidade.matriz.set(edificio.linha, novo);
+		}
+		
+		for(Recarga edificio: estacoes)
+		{
+			String linha = cidade.matriz.elementAt(edificio.linha);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, letraRecarga);
+			cidade.matriz.set(edificio.linha, novo);
+		}
+		
+		for(Agencia edificio: agencias)
+		{
+			String linha = cidade.matriz.elementAt(edificio.linha);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, letraAgencia);
+			cidade.matriz.set(edificio.linha, novo);
+		}
+		
+		for(Trabalhador tr: trabalhadores)
+		{
+			String linha = cidade.matriz.elementAt(tr.linha);
+			String novo = Auxiliar.substituir(linha, tr.coluna, letraAgente);
+			cidade.matriz.set(tr.linha, novo);
+		}
+	}
+	
+	public void ocultarMundo()
+	{
+		for(int linha = 0; linha < cidade.matriz.size(); linha++)
+		{
+			String s = cidade.matriz.elementAt(linha);
+			for(int index = 0; index < s.length(); index++)
+			{
+				char cha = s.charAt(index);
+				if(cha != ' ' && cha != 'O')
+				{
+					String novo = Auxiliar.substituir(s, index, ' ');
+					
+					cidade.matriz.set(linha, novo);
+					s = novo;
+				}
+			}
+		}
+	}
+	
 	/*
-	 * DEFINICAO DE FUNCOES GENERALIZADAS
+	 * DEFINICAO DE FUNCOES OBJECTIVO
 	 */
 	
 	public boolean adicionarContentor(Trabalhador tr, Producto p, int quantidade)
@@ -394,4 +473,123 @@ public class Mundo
 		
 		return true;
 	}
+
+	public boolean aceitarTrabalhoPreco(Trabalhador tr, Agencia ag, int index)
+	{
+		Vector<TrabalhoPreco> lista = ag.trabalhosPrecos;
+		if (index < 0 || index >= lista.size())
+		{
+			return false;
+		}
+		
+		TrabalhoPreco tra = lista.elementAt(index);
+		
+		TarefaPreco nova = new TarefaPreco(tra);
+		
+		tr.tarefasPrecos.addElement(nova);
+		
+		return true;
+	}
+	
+	public boolean removerTarefaPreco(Trabalhador tr, int index)
+	{
+		Vector<TarefaPreco> lista = tr.tarefasPrecos;
+		
+		if (index < 0 || index >= lista.size())
+		{
+			return false;
+		}
+		
+		tr.tarefasPrecos.removeElementAt(index);
+		
+		return true;
+	}
+	
+	public boolean aceitarTrabalhoLeiloado(Trabalhador tr, Agencia ag, int index, int proposta)
+	{
+		Vector<TrabalhoLeiloado> lista = ag.trabalhosLeiloados;
+		if (index < 0 || index >= lista.size())
+		{
+			return false;
+		}
+		
+		TrabalhoLeiloado tra = lista.elementAt(index);
+		
+		tra.novoTrabalhador(tr, proposta);
+		
+		return true;
+	}
+	
+	public boolean removerTarefaLeiloado(Trabalhador tr, int index)
+	{
+		Vector<TarefaLeiloada> lista = tr.tarefasLeiloadas;
+		
+		if (index < 0 || index >= lista.size())
+		{
+			return false;
+		}
+		
+		TrabalhoLeiloado tl = tr.tarefasLeiloadas.elementAt(index).tb;		
+		tr.tarefasLeiloadas.removeElementAt(index);
+		
+		// TODO mudar o trabalho na agencia, recomecar o leilao
+		
+		return true;
+	}
+
+	public boolean produzir(Trabalhador tr, Produzir pd)
+	{
+		// verificar se trabalhador tem as ferramentas necessarias
+		for(String fe: pd.ferramentas)
+		{
+			int index = 0;
+			for (; index < tr.ferramentas.size() && tr.ferramentas.elementAt(index).compareTo(fe) != 0; index++) { }
+			
+			if (index >= tr.ferramentas.size())
+				return false;
+		}
+		
+		Auxiliar.writeln("1");
+		
+		// verificar se trabalhador tem todos os productos
+		for (Ranhura ra : pd.pedido)
+		{
+			int index = 0;
+			
+			while(index < tr.contentor.size())
+			{
+				Ranhura ra2 = tr.contentor.elementAt(index);
+				
+				if (ra.compareTo(ra2) == 0)
+				{
+					if (ra.quantidade < ra2.quantidade)
+					{
+						Auxiliar.writeln("Morreu aqui: " + ra.toString());
+						return false;
+					}
+					
+					break;
+				}
+				index++;
+			}
+		}
+		
+		Auxiliar.writeln("2");
+		
+		// remover do contentor do trabalhador todos os productos
+		for (Ranhura ra : pd.pedido)
+		{
+			if (!removerContentor(tr, ra.producto, ra.quantidade))
+			{
+				return false;
+			}
+		}
+		
+		Auxiliar.writeln("3");
+		
+		// colocar no contentor do trabalhor o novo producto
+		return adicionarContentor(tr, pd.recompensa, pd.quantidade);
+	}
+
+	
 }

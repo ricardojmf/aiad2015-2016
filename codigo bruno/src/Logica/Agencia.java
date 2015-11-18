@@ -4,17 +4,20 @@ import java.util.Vector;
 
 public class Agencia extends Local
 {
-	Vector<Trabalho> trabalhos;
+	Vector<TrabalhoPreco> trabalhosPrecos;
+	Vector<TrabalhoLeiloado> trabalhosLeiloados;
 	
 	public Agencia(int li, int col)
 	{
 		super(li, col, 'A');
-		trabalhos = new Vector<Trabalho>();
+		trabalhosPrecos = new Vector<TrabalhoPreco>();
+		trabalhosLeiloados = new Vector<TrabalhoLeiloado>();
 	}
 	
 	public Agencia(int li, int col, String nome)
 	{
 		super(li, col, 'A', nome);
-		trabalhos = new Vector<Trabalho>();
+		trabalhosPrecos = new Vector<TrabalhoPreco>();
+		trabalhosLeiloados = new Vector<TrabalhoLeiloado>();
 	}
 }
