@@ -20,11 +20,16 @@ public class Producto
 		peso = arg3;
 	}
 	
+	public String toString()
+	{
+		return( nome + " " + peso + "kg" );
+	}
+	
 	public int compareTo(Producto obj)
 	{
-		if (obj.nome == this.nome)
+		if (obj.nome.compareTo(this.nome) != 0)
 		{
-			return 0;
+			return obj.nome.compareTo(this.nome);
 		}
 		else
 		{

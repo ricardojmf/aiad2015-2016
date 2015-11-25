@@ -105,7 +105,8 @@ public class Trabalhador extends Identidade
 
 	public void verDetalhesTransporte()
 	{
-		Auxiliar.writeln("Detalhes Transporte");
+		Auxiliar.writeln("--------------------------------------");
+		Auxiliar.writeln("Detalhes Transporte " + nome);
 		Auxiliar.writeln("--------------------------------------");
 		Auxiliar.writeln("Velocidade: " + velocidade);
 		Auxiliar.writeln("Bateria Max: " + bateriaMax);
@@ -117,27 +118,31 @@ public class Trabalhador extends Identidade
 		{
 			Auxiliar.writeln("Ferramenta: " + s);
 		}
-		
+		Auxiliar.writeln("--------------------------------------");
 	}
 	
 	public void verContentor()
 	{
-		Auxiliar.writeln("Contentor");
+		Auxiliar.writeln("--------------------------------------");
+		Auxiliar.writeln("Contentor " + nome);
 		Auxiliar.writeln("--------------------------------------");
 		for(Ranhura ra: contentor)
 		{
 			Auxiliar.writeln(ra.producto.nome + " x" + ra.quantidade );
 		}
+		Auxiliar.writeln("--------------------------------------");
 	}
 	
 	public void verActual()
 	{
-		Auxiliar.writeln("Actual");
+		Auxiliar.writeln("--------------------------------------");
+		Auxiliar.writeln("Actualmente " + nome);
 		Auxiliar.writeln("--------------------------------------");
 		Auxiliar.writeln("Coordenadas: (" + this.linha + " , " + this.coluna + ")");
 		Auxiliar.writeln("Riqueza: " + riqueza);
 		Auxiliar.writeln("Carga: " + carga);
 		Auxiliar.writeln("Bateria: " + bateria);
+		Auxiliar.writeln("--------------------------------------");
 	}
 	
 	public void ver()

@@ -71,10 +71,10 @@ public class Main
 		mostrarMatriz(r);
 	}
 	
-	static public void main(String[] args)
+	public static void testeProduzir()
 	{
 		Mundo mundo = new Mundo("mapa.txt", "objectos.txt");
-				
+		
 		Trabalhador tr = new Trabalhador("Bruno's Car", 1);
 		mundo.adicionarContentor(tr, mundo.productos.elementAt(2), 5);
 		mundo.adicionarContentor(tr, mundo.productos.elementAt(3), 4);
@@ -100,5 +100,48 @@ public class Main
 		System.out.println(estado);
 		
 		tr.verContentor();
+	}
+	
+	public static void testeTrocarProductos()
+	{
+		Mundo mundo = new Mundo("mapa.txt", "objectos.txt");
+		
+		Trabalhador tr1 = new Trabalhador("Bruno's Car", 1);
+		mundo.adicionarContentor(tr1, mundo.productos.elementAt(2), 5);
+		mundo.adicionarContentor(tr1, mundo.productos.elementAt(3), 4);
+		
+		Trabalhador tr2 = new Trabalhador("Moreira's Car", 1);
+		mundo.adicionarContentor(tr2, mundo.productos.elementAt(5), 2);
+		mundo.adicionarContentor(tr2, mundo.productos.elementAt(6), 3);
+		
+		mundo.trocarProductos(tr1, tr1.contentor.elementAt(0).producto, 4, tr2, tr2.contentor.elementAt(1).producto, 1);
+		
+		tr1.verContentor();
+		tr2.verContentor();
+	}
+	
+	public static void testeTrocarProductoDinheiro()
+	{
+		Mundo mundo = new Mundo("mapa.txt", "objectos.txt");
+		
+		Trabalhador tr1 = new Trabalhador("Bruno's Car", 1);
+		mundo.adicionarContentor(tr1, mundo.productos.elementAt(2), 5);
+		mundo.adicionarContentor(tr1, mundo.productos.elementAt(3), 4);
+		
+		Trabalhador tr2 = new Trabalhador("Moreira's Car", 1);
+		tr2.riqueza = 30000;
+		
+		mundo.trocarProductoDinheiro(tr1, tr1.contentor.elementAt(0).producto, 4, tr2, 11700);
+		
+		tr1.verActual();
+		tr1.verContentor();
+		tr2.verActual();
+		tr2.verContentor();
+	}
+	
+	static public void main(String[] args)
+	{
+		//testeProduzir();
+		testeTrocarProductoDinheiro();
 	}
 }

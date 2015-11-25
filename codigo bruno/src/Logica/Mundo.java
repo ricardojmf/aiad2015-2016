@@ -333,6 +333,45 @@ public class Mundo
 	 * DEFINICAO DE FUNCOES OBJECTIVO
 	 */
 	
+	public boolean trabalhadorTemProducto(Trabalhador tr, Producto p)
+	{
+		int index = 0;
+		while(index < tr.contentor.size())
+		{
+			Ranhura ra = tr.contentor.elementAt(index);
+			
+			if (ra.producto.compareTo(p) == 0)
+			{
+				return true;
+			}
+			index++;
+		}
+		return false;
+	}
+	
+	public boolean trabalhadorTemProductoQuantidade(Trabalhador tr, Producto p, int quantidade)
+	{
+		int index = 0;
+		while(index < tr.contentor.size())
+		{
+			Ranhura ra = tr.contentor.elementAt(index);
+			
+			if (ra.producto.compareTo(p) == 0)
+			{
+				if (ra.quantidade >= quantidade)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			index++;
+		}
+		return false;
+	}
+	
 	public boolean adicionarContentor(Trabalhador tr, Producto p, int quantidade)
 	{
 		// se existir no contentor, acrescentar mais unidades
@@ -348,6 +387,7 @@ public class Mundo
 			}
 			index++;
 		}
+		
 		// senao criar uma nova ranhura
 		tr.contentor.addElement(new Ranhura(p, quantidade));
 		
@@ -425,7 +465,7 @@ public class Mundo
 		
 		return false;
 	}
-
+	
 	public boolean armazenar(Trabalhador tr, Armazem ar, int indexRanhura, int quantidade)
 	{
 		Ranhura ra = tr.contentor.elementAt(indexRanhura);
@@ -589,6 +629,52 @@ public class Mundo
 		
 		// colocar no contentor do trabalhor o novo producto
 		return adicionarContentor(tr, pd.recompensa, pd.quantidade);
+	}
+
+	public boolean trocarProductos(Trabalhador tr1, Producto p1, int quantidade1, Trabalhador tr2, Producto p2, int quantidade2)
+	{
+		if ( !trabalhadorTemProductoQuantidade(tr1, p1, quantidade1) || !trabalhadorTemProductoQuantidade(tr2, p2, quantidade2) )
+		{
+			return false;
+		}
+		
+		int peso1 = p1.peso*quantidade1;
+		int peso2 = p2.peso*quantidade2;
+		
+		if ( ( (tr1.carga + peso2) < tr1.cargaMax ) && ( (tr2.carga + peso1) < tr2.cargaMax ) )
+		{
+			boolean estadoAdicionar1 = adicionarContentor(tr1, p2, quantidade2);
+			boolean estadoAdicionar2 = adicionarContentor(tr2, p1, quantidade1);
+			boolean estadoRemover1 = removerContentor(tr1, p1, quantidade1);
+			boolean estadoRemover2 = removerContentor(tr2, p2, quantidade2);
+			
+			return (estadoAdicionar1 && estadoAdicionar2 && estadoRemover1 && estadoRemover2);
+		}
+		
+		return false;
+	}
+	
+	public boolean trocarProductoDinheiro(Trabalhador tr1, Producto p1, int quantidade1, Trabalhador tr2, int dinheiro)
+	{
+		if ( !trabalhadorTemProductoQuantidade(tr1, p1, quantidade1))
+		{
+			return false;
+		}
+		
+		int peso1 = p1.peso*quantidade1;
+		
+		if ( (tr2.carga + peso1) < tr2.cargaMax )
+		{
+			boolean estadoAdicionar = adicionarContentor(tr2, p1, quantidade1);
+			boolean estadoRemover = removerContentor(tr1, p1, quantidade1);
+			
+			tr2.riqueza -= dinheiro;
+			tr1.riqueza += dinheiro;
+			
+			return (estadoAdicionar && estadoRemover);
+		}
+		
+		return false;
 	}
 
 	
