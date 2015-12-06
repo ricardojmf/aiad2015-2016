@@ -41,4 +41,10 @@ public class Ranhura
 		String s = producto.nome + " x" + quantidade;
 		return s;
 	}
+	
+	public String ranhuraToString()
+	{
+		String s = producto.nome + " " + quantidade;
+		return s;
+	}
 }

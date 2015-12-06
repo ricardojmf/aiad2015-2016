@@ -16,6 +16,12 @@ public class Local extends Identidade
 		nome = no;
 	}
 	
+	public String localToString()
+	{
+		String r = nome + "|" + pontoToString();
+		return r;
+	}
+	
 	public int compareTo(Local obj)
 	{
 		if (this.nome == obj.nome)

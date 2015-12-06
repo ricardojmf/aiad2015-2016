@@ -17,6 +17,13 @@ public class Mapa
 		matriz = new Vector<String>();
 	}
 	
+	public void substituir(int linha, int coluna, char letra)
+	{
+		String linhaa = matriz.elementAt(linha);
+		String novo = Auxiliar.substituir(linhaa, coluna, letra);
+		matriz.set(linha, novo);
+	}
+	
 	private void lerFicheiro(String ficheiro)
 	{
 		try

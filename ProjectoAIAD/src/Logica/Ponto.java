@@ -16,6 +16,11 @@ public class Ponto
 		return( new Ponto(this.linha, this.coluna) );
 	}
 	
+	public String pontoToString()
+	{
+		return( linha + " " + coluna );
+	}
+	
 	public int compareTo(Ponto obj) // posicao
 	{
 		if (this.linha == obj.linha)

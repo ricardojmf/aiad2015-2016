@@ -10,4 +10,10 @@ public class ProductoArmazenado
 		producto = arg1;
 		quantidade = arg2;
 	}
+	
+	public String productoArmazeadoToString()
+	{
+		String s = producto.nome + " " + quantidade;
+		return s;
+	}
 }

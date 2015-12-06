@@ -7,8 +7,8 @@ import java.util.Vector;
 
 public class Auxiliar
 {
-	public static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/";
-	//public static String folder = "C:\\Users\\Miguel Moreira\\Documents\\Eclipse Mars x64\\projects\\ProjectoAIAD\\";
+	//public static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/";
+	public static String folder = "C:\\Users\\Miguel Moreira\\Documents\\Eclipse Mars x64\\projects\\ProjectoAIAD\\";
 		
 	
 	/*	MELHORAMENTO AO INPUT/OUTPUT	*/
@@ -332,8 +332,8 @@ public class Auxiliar
 		int maxLinha = mapa.size();
 		int maxColuna = mapa.elementAt(0).length();
 		
+		// preencher o mapa de estradas(-1) e obstaculos(-2)
 		Vector<Vector<NodoPesquisa> > nodos = new Vector<Vector<NodoPesquisa> >();
-		
 		for (int linha = 0; linha < mapa.size(); linha ++)
 		{
 			String s = mapa.elementAt(linha);
@@ -417,6 +417,7 @@ public class Auxiliar
 			
 			for(NodoPesquisa np: nxt)
 			{
+				
 				np.valor = agora.valor + 1;
 				if(np.coluna == y2 && np.linha == x2)
 				{
@@ -430,27 +431,9 @@ public class Auxiliar
 			}
 		}
 		
-		//writeln("--------------------------------------------");
+		// posFinal.valor = (posFinal - 1).valor + 1 = (posFinal - 2).valor + 2 = ...
 		
-//		for (Vector<NodoPesquisa> np: nodos)
-//		{
-//			for(NodoPesquisa nd: np)
-//			{
-//				if (nd.valor == -2)
-//				{
-//					Auxiliar.write('O');
-//				}
-//				else if (nd.valor == -1)
-//				{
-//					Auxiliar.write(' ');
-//				}
-//				else
-//				{
-//					Auxiliar.write(nd.valor);
-//				}
-//				
-//			} Auxiliar.writeln("");
-//		}
+		agora = nodos.elementAt(x2).elementAt(y2);
 		
 		r.addElement(new Ponto(agora.linha, agora.coluna));
 		while(!(agora.linha == x1 && agora.coluna == y1))

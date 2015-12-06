@@ -18,7 +18,7 @@ public class Mundo
 	public Vector<Agencia> agencias;
 	
 	public Vector<Produzir> producoes;
-	public Vector<Trabalhador> trabalhadores;
+	//public Vector<Trabalhador> trabalhadores;
 	
 	private char letraAgente = 'T';
 	private char letraLoja = 'S';
@@ -38,7 +38,7 @@ public class Mundo
 		agencias = new Vector<Agencia>();
 		
 		producoes = new Vector<Produzir>();
-		trabalhadores = new Vector<Trabalhador>();
+		//trabalhadores = new Vector<Trabalhador>();
 	}
 	
 	private void gestorFicheiro(Vector<String> linhas)
@@ -302,12 +302,12 @@ public class Mundo
 			cidade.matriz.set(edificio.linha, novo);
 		}
 		
-		for(Trabalhador tr: trabalhadores)
-		{
-			String linha = cidade.matriz.elementAt(tr.linha);
-			String novo = Auxiliar.substituir(linha, tr.coluna, letraAgente);
-			cidade.matriz.set(tr.linha, novo);
-		}
+//		for(Trabalhador tr: trabalhadores)
+//		{
+//			String linha = cidade.matriz.elementAt(tr.linha);
+//			String novo = Auxiliar.substituir(linha, tr.coluna, letraAgente);
+//			cidade.matriz.set(tr.linha, novo);
+//		}
 	}
 	
 	public void ocultarMundo()
@@ -332,187 +332,6 @@ public class Mundo
 	/*
 	 * DEFINICAO DE FUNCOES OBJECTIVO
 	 */
-	
-	public boolean trabalhadorTemProducto(Trabalhador tr, Producto p)
-	{
-		int index = 0;
-		while(index < tr.contentor.size())
-		{
-			Ranhura ra = tr.contentor.elementAt(index);
-			
-			if (ra.producto.compareTo(p) == 0)
-			{
-				return true;
-			}
-			index++;
-		}
-		return false;
-	}
-	
-	public boolean trabalhadorTemProductoQuantidade(Trabalhador tr, Producto p, int quantidade)
-	{
-		int index = 0;
-		while(index < tr.contentor.size())
-		{
-			Ranhura ra = tr.contentor.elementAt(index);
-			
-			if (ra.producto.compareTo(p) == 0)
-			{
-				if (ra.quantidade >= quantidade)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			index++;
-		}
-		return false;
-	}
-	
-	public boolean adicionarContentor(Trabalhador tr, Producto p, int quantidade)
-	{
-		// se existir no contentor, acrescentar mais unidades
-		int index = 0;
-		while(index < tr.contentor.size())
-		{
-			Ranhura ra = tr.contentor.elementAt(index);
-			
-			if (ra.producto.compareTo(p) == 0)
-			{
-				ra.quantidade += quantidade;
-				return true;
-			}
-			index++;
-		}
-		
-		// senao criar uma nova ranhura
-		tr.contentor.addElement(new Ranhura(p, quantidade));
-		
-		return true;
-	}
-	
-	public boolean removerContentor(Trabalhador tr, Producto p, int quantidade)
-	{
-		// se existir no contentor, remove-lo
-		int index = 0;
-		while(index < tr.contentor.size())
-		{
-			Ranhura ra = tr.contentor.elementAt(index);
-			
-			if (ra.producto.compareTo(p) == 0)
-			{
-				if (ra.quantidade <= quantidade)
-				{
-					tr.contentor.remove(index);
-				}
-				else
-				{
-					ra.quantidade -= quantidade;
-				}
-				
-				return true;
-			}
-			index++;
-		}
-		// senao existir, tanto faz
-		
-		return true;
-	}
-	
-	public boolean removerContentor(Trabalhador tr, Producto p)
-	{
-		// se existir no contentor, remove-lo
-		int index = 0;
-		while(index < tr.contentor.size())
-		{
-			Ranhura ra = tr.contentor.elementAt(index);
-			
-			if (ra.producto.compareTo(p) == 0)
-			{
-				tr.contentor.remove(index);
-				
-				return true;
-			}
-			index++;
-		}
-		// senao existir, tanto faz
-		
-		return true;
-	}
-
-	public boolean comprar(Trabalhador tr, Loja lj, int indexProductoLoja, int quantidade)
-	{
-		ProductoLoja pl = lj.productos.elementAt(indexProductoLoja);
-		
-		if (tr.riqueza > (pl.preco*quantidade))
-		{
-			if ( (tr.carga + (pl.p.peso*quantidade)) < tr.cargaMax)
-			{
-				boolean estado = adicionarContentor(tr, pl.p, quantidade);
-				
-				if (estado)
-				{
-					tr.riqueza = tr.riqueza - (pl.preco*quantidade);
-					tr.carga = tr.carga + (pl.p.peso*quantidade);
-				}
-				
-				return estado;
-			}
-		}
-		
-		return false;
-	}
-	
-	public boolean armazenar(Trabalhador tr, Armazem ar, int indexRanhura, int quantidade)
-	{
-		Ranhura ra = tr.contentor.elementAt(indexRanhura);
-		
-		if (ra.quantidade < quantidade)
-		{
-			return false;
-		}
-		
-		removerContentor(tr, ra.producto, quantidade);
-		
-		int i = 0;
-		while (i < ar.clientes.size())
-		{
-			// procurar o deposito do trabalhador no armazem
-			ContentorArmazem ca = ar.clientes.elementAt(i);
-			if(ca.trabalhador.nome.equals(tr.nome))
-			{
-				int j = 0;
-				while(j < ca.contentor.size())
-				{
-					// procurar a ranhura do producto a acrescentar em quantidade
-					ProductoArmazenado pr = ca.contentor.elementAt(j);
-					if (pr.producto.nome.equals(ra.producto.nome))
-					{
-						pr.quantidade += quantidade;
-						return true;
-					}
-					
-					j++;
-				}
-				
-				ca.contentor.addElement(new ProductoArmazenado(ra.producto, quantidade));
-				
-				return true;
-			}
-			
-			i++;
-		}
-		
-		// adicionar novo cliente a lista
-		ContentorArmazem ca = new ContentorArmazem(tr);
-		ca.contentor.addElement(new ProductoArmazenado(ra.producto, quantidade));
-		ar.clientes.addElement(ca);
-		
-		return true;
-	}
 
 	public boolean aceitarTrabalhoPreco(Trabalhador tr, Agencia ag, int index)
 	{
@@ -577,63 +396,9 @@ public class Mundo
 		return true;
 	}
 
-	public boolean produzir(Trabalhador tr, Produzir pd)
-	{
-		// verificar se trabalhador tem as ferramentas necessarias
-		for(String fe: pd.ferramentas)
-		{
-			int index = 0;
-			for (; index < tr.ferramentas.size() && tr.ferramentas.elementAt(index).compareTo(fe) != 0; index++) { }
-			
-			if (index >= tr.ferramentas.size())
-				return false;
-		}
-		
-		Auxiliar.writeln("1");
-		
-		// verificar se trabalhador tem todos os productos
-		for (Ranhura ra : pd.pedido)
-		{
-			int index = 0;
-			
-			while(index < tr.contentor.size())
-			{
-				Ranhura ra2 = tr.contentor.elementAt(index);
-				
-				if (ra.compareTo(ra2) == 0)
-				{
-					if (ra.quantidade < ra2.quantidade)
-					{
-						Auxiliar.writeln("Morreu aqui: " + ra.toString());
-						return false;
-					}
-					
-					break;
-				}
-				index++;
-			}
-		}
-		
-		Auxiliar.writeln("2");
-		
-		// remover do contentor do trabalhador todos os productos
-		for (Ranhura ra : pd.pedido)
-		{
-			if (!removerContentor(tr, ra.producto, ra.quantidade))
-			{
-				return false;
-			}
-		}
-		
-		Auxiliar.writeln("3");
-		
-		// colocar no contentor do trabalhor o novo producto
-		return adicionarContentor(tr, pd.recompensa, pd.quantidade);
-	}
-
 	public boolean trocarProductos(Trabalhador tr1, Producto p1, int quantidade1, Trabalhador tr2, Producto p2, int quantidade2)
 	{
-		if ( !trabalhadorTemProductoQuantidade(tr1, p1, quantidade1) || !trabalhadorTemProductoQuantidade(tr2, p2, quantidade2) )
+		if ( !tr1.trabalhadorTemProductoQuantidade(p1, quantidade1) || !tr2.trabalhadorTemProductoQuantidade(p2, quantidade2) )
 		{
 			return false;
 		}
@@ -643,10 +408,10 @@ public class Mundo
 		
 		if ( ( (tr1.carga + peso2) < tr1.cargaMax ) && ( (tr2.carga + peso1) < tr2.cargaMax ) )
 		{
-			boolean estadoAdicionar1 = adicionarContentor(tr1, p2, quantidade2);
-			boolean estadoAdicionar2 = adicionarContentor(tr2, p1, quantidade1);
-			boolean estadoRemover1 = removerContentor(tr1, p1, quantidade1);
-			boolean estadoRemover2 = removerContentor(tr2, p2, quantidade2);
+			boolean estadoAdicionar1 = tr1.adicionarContentor(p2, quantidade2);
+			boolean estadoAdicionar2 = tr2.adicionarContentor(p1, quantidade1);
+			boolean estadoRemover1 = tr1.removerContentor(p1, quantidade1);
+			boolean estadoRemover2 = tr2.removerContentor(p2, quantidade2);
 			
 			return (estadoAdicionar1 && estadoAdicionar2 && estadoRemover1 && estadoRemover2);
 		}
@@ -656,7 +421,7 @@ public class Mundo
 	
 	public boolean trocarProductoDinheiro(Trabalhador tr1, Producto p1, int quantidade1, Trabalhador tr2, int dinheiro)
 	{
-		if ( !trabalhadorTemProductoQuantidade(tr1, p1, quantidade1))
+		if ( !tr1.trabalhadorTemProductoQuantidade(p1, quantidade1))
 		{
 			return false;
 		}
@@ -665,8 +430,8 @@ public class Mundo
 		
 		if ( (tr2.carga + peso1) < tr2.cargaMax )
 		{
-			boolean estadoAdicionar = adicionarContentor(tr2, p1, quantidade1);
-			boolean estadoRemover = removerContentor(tr1, p1, quantidade1);
+			boolean estadoAdicionar = tr2.adicionarContentor(p1, quantidade1);
+			boolean estadoRemover = tr1.removerContentor(p1, quantidade1);
 			
 			tr2.riqueza -= dinheiro;
 			tr1.riqueza += dinheiro;
@@ -677,5 +442,4 @@ public class Mundo
 		return false;
 	}
 
-	
 }
