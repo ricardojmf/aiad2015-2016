@@ -1,29 +1,25 @@
 package Jade;
 
-import java.util.ArrayList;
-
 import jade.core.Agent;
 
 public class Worker extends Agent
 {
-	public enum WorkingSate{
-		WAITING_FOR_JOB, PREPARE_TO_WORK, WORKING, CHARGING_BATTERY
+	private static final long serialVersionUID = 1L;
+
+	public enum WorkingState{
+		WAITING_FOR_JOB, PREPARE_TO_WORK, WORKING, CHARGING_BATTERY, MOVING
 	}
 
-	protected WorkingSate wstate;
-	protected String workerType, job, workerName;
+	protected WorkingState state;
+	protected String workerType;
 	protected ServiceManager serviceManager;
-	
-	protected ArrayList<Service> oferedServices;
 
 	@Override
 	protected void setup() {
 
-		this.oferedServices = new ArrayList<Service>();
 		this.serviceManager = new ServiceManager(this);
 
 		Object[] args = getArguments();
-		workerName = this.getLocalName();
 
 		if(args != null && args.length > 0)
 		{
@@ -31,29 +27,31 @@ public class Worker extends Agent
 			String[] parts = arguments.split("-");
 
 			this.workerType = (String) parts[0];
-			this.job = (String) parts[1];
+			String job = (String) parts[1];
 			
 			Service service = new Service(job, "");
-
+			
 			switch (workerType)
 			{
 			case "w":
-				wstate = WorkingSate.WAITING_FOR_JOB;
-				serviceManager.addService(service);
-				addBehaviour(new WorkingBehaviour(this, wstate, job));
+				serviceManager.offerService(service);
+				state = WorkingState.WAITING_FOR_JOB;
+				//addBehaviour(new WorkingBehaviour(this, state, job));
 				break;
 
 			case "b":
-				addBehaviour(new RequestingBehaviour(this, wstate, job));
+				serviceManager.requestService(service);
+				state = WorkingState.WAITING_FOR_JOB;
+				//addBehaviour(new RequestingBehaviour(this, state, job));
 				break;
 
 			default:
 				break;
 			}
+
+			addBehaviour(new BasicWorkerBehaviour(this));
 		}
 		else
 			System.exit(0);
 	}
-
-	
 }

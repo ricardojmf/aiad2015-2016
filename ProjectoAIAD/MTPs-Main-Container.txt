@@ -1,1 +1,1 @@
-http://B03AV1203.fe.up.pt:7778/acc
+http://User-PC:7778/acc

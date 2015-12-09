@@ -1,49 +1,58 @@
 package Jade;
 
-import java.util.ArrayList;
-
-import Jade.Worker.WorkingSate;
-import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 
-public class RequestingBehaviour extends OneShotBehaviour
+public class RequestingBehaviour extends Behaviour
 {
-	
-	protected WorkingSate wstate;
+	private static final long serialVersionUID = 1L;
 
-	private ArrayList<Service> oferedServices;
-	private Service actualService;
-
-	ACLMessage msg;
-
-	private Worker requester;
+	private Worker worker;
 	private String workerName;
-	
-	public RequestingBehaviour(Worker agent, WorkingSate wstate, String job) {
-		super(agent);
-		this.wstate = wstate;
-		this.requester = agent;
-		this.workerName = agent.getLocalName();
-		this.actualService = new Service(job, "");
+	private ACLMessage msg;
+	private DFAgentDescription[] possibleWorkers;
+	private DFAgentDescription selectedWorker;
+	private Service requestedService;
+	private boolean requestedServiceDone;
+
+
+	public RequestingBehaviour(Worker worker, Service requestedService) {
+		super(worker);
+		this.worker = worker;
+		this.workerName = worker.getLocalName();
+		this.requestedService = requestedService;
+		this.requestedServiceDone = false;
 	}
-	
+
 	@Override
 	public void action() {
 
-		DFAgentDescription[] workers = requester.serviceManager.procuraServico(actualService);
-		
-		if(workers != null) {
-			DFAgentDescription worker = workers[0];
-			
-			System.out.println("[" + workerName + "] Encontrou " + worker.getName().getLocalName());
-			
+		possibleWorkers = worker.serviceManager.procuraServico(requestedService);
+
+		if(possibleWorkers != null) {
+			selectedWorker = possibleWorkers[0];
+
+			System.out.println("[" + workerName + "] Encontrou " + selectedWorker.getName().getLocalName() + " para servico " + requestedService.getName());
+
 			msg = new ACLMessage(ACLMessage.INFORM);
-			msg.addReceiver(worker.getName());
-			msg.setContent(actualService.getName());
+			msg.addReceiver(selectedWorker.getName());
+			msg.setContent("DO JOB-" + requestedService.getName().toUpperCase());
 			myAgent.send(msg);
-			
-			System.out.println("[" + workerName + "] Enviou ordem de trabalho a " + worker.getName().getLocalName());
+
+			System.out.println("[" + workerName + "] Enviou ordem de trabalho a " + selectedWorker.getName().getLocalName());
+
+			requestedServiceDone = true;
 		}
+		block(1500);
+	}
+	
+	@Override
+	public boolean done() {
+		if(requestedServiceDone)
+		{
+			System.out.println("[" + workerName + "] ordem de trabalho enviada");
+			return true;
+		} else return false;
 	}
 }
