@@ -1,7 +1,10 @@
 package Agentes;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.util.Vector;
+
+import javax.swing.ImageIcon;
 
 import Logica.Auxiliar;
 import Logica.Ponto;
@@ -20,9 +23,21 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
+
+
 public class AgenteTrabalhador extends Agent implements Drawable
 {
 	public Trabalhador tr;
+	
+	static ImageIcon iconCarro = new ImageIcon(Auxiliar.folder + "carro.png");
+	static ImageIcon iconMota = new ImageIcon(Auxiliar.folder + "mota.png");
+	static ImageIcon iconDrone = new ImageIcon(Auxiliar.folder + "drone_estrada.png");
+	static ImageIcon iconCamiao = new ImageIcon(Auxiliar.folder + "camiao.png");
+	
+	static Image carro = iconCarro.getImage();
+	static Image mota = iconMota.getImage();
+	static Image drone = iconDrone.getImage();
+	static Image camiao = iconCamiao.getImage();
 	
 	public AgenteTrabalhador(String nome, int tipoTransporte, Object2DGrid space)
 	{
@@ -69,7 +84,22 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	@Override
 	public void draw(SimGraphics arg0) {
 		arg0.setDrawingCoordinates(getX() * arg0.getCurWidth(), getY() * arg0.getCurHeight(), 0);
-		arg0.drawFastRect(Color.red);
+		
+		switch(tr.transporte)
+		{
+		case 1:
+			arg0.drawImage(carro);
+			break;
+		case 2:
+			arg0.drawImage(mota);	
+			break;
+		case 3:
+			arg0.drawImage(drone);
+			break;
+		case 4:
+			arg0.drawImage(camiao);
+			break;
+		}
 	}
 
 	@Override
@@ -103,7 +133,9 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		@Override
 		public void action()
 		{
-			if(contador == tr.velocidade && tr.bateria > 0)
+			int frequencia = 5;
+			
+			if(contador == frequencia*(6 - tr.velocidade) && tr.bateria > 0)
 			{
 				tr.bateria--;
 				contador = 0;

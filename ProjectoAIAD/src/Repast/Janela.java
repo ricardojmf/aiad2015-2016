@@ -5,6 +5,8 @@ import Logica.Auxiliar;
 import Logica.Mundo;
 
 import java.util.ArrayList;
+import java.util.Vector;
+
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 
@@ -21,24 +23,26 @@ public class Janela extends Repast3Launcher
 {
 	// CLASSES PROPRIAS
 	Quadro quadro;
-	private int comprimento = 100;
-	private int largura = 100;
-	public static final int NUM_AGENTS = 2;
 	
-	Mundo cidade;
+	private Mundo mundo;
 	
 	// CLASSES REPAST
 	private ContainerController contentorPrincipal;
 	private ContainerController contentorAgente;
 
-	DisplaySurface dsurf;
-	Object2DGrid espaco;
-	ArrayList<Object> listaDesenhar;
+	private DisplaySurface dsurf;
+	private Object2DGrid espaco;
+	private ArrayList<Object> listaDesenhar;
 	
-	AgenteTrabalhador ag1;
-	AgenteTrabalhador ag2;
+	private AgenteTrabalhador ag1;
+	private AgenteTrabalhador ag2;
+	private AgenteTrabalhador ag3;
+	private AgenteTrabalhador ag4;
+	
+	Vector<AgenteTrabalhador> agentes;
 	
 	public static final boolean SEPARADOS = false;
+	public static final int NUM_AGENTS = 3;
 	
 	/*********************
 			FUNCOES 
@@ -46,6 +50,7 @@ public class Janela extends Repast3Launcher
 	@Override
 	public String[] getInitParam()
 	{
+		
 		String[] params = { "comprimento", "largura" };
 		return params;
 	}
@@ -70,31 +75,53 @@ public class Janela extends Repast3Launcher
 			contentorAgente = contentorPrincipal;
 		}
 		
-		cidade = new Mundo();
-		
+		mundo = new Mundo();
+		agentes = new Vector<AgenteTrabalhador>();
 		// CORRER OS AGENTES
 		try
 		{
-			quadro = new Quadro(cidade.cidade.matriz);
+			quadro = new Quadro(mundo.cidade.matriz);
+			mundo.mostrarMundo();
 			
-			comprimento = quadro.COMPRIMENTO;
-			largura = quadro.LARGURA;
+			espaco = new Object2DGrid(mundo.cidade.colunas, mundo.cidade.linhas);
 			
-			espaco = new Object2DGrid(largura, comprimento);
+			ag1 = new AgenteTrabalhador("Agente1", 1, espaco);
+			ag2 = new AgenteTrabalhador("Agente2", 4, espaco);
+			ag3 = new AgenteTrabalhador("Agente3", 3, espaco);
+			ag4 = new AgenteTrabalhador("Agente4", 2, espaco);
 			
-			ag1 = new AgenteTrabalhador("Bruno", 1, espaco);
-			ag1.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 11, 35, 22, 27));
+			System.out.println("1");
+			
 			ag1.setArguments(new String[] { "ping" });
-			
-			ag2 = new AgenteTrabalhador("Moreira", 2, espaco);
-			ag2.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 1, 1, 22, 24));
 			ag2.setArguments(new String[] { "pong" });
+			ag3.setArguments(new String[] { "pong" });
+			ag4.setArguments(new String[] { "pung" });
 			
-			contentorAgente.acceptNewAgent(ag1.tr.nome, ag1);
-			contentorAgente.acceptNewAgent(ag2.tr.nome, ag2);
+			System.out.println("2");
 			
-			scheduleAgent(ag1);
-			scheduleAgent(ag2);
+			ag1.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 11, 35, 22, 27));
+			ag2.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 1, 1, 22, 24));
+			ag3.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 1, 9, 22, 24));
+			ag4.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 22, 27, 2, 4));
+			
+			System.out.println("3");
+			
+			agentes.addElement(ag1);
+			agentes.addElement(ag2);
+			agentes.addElement(ag3);
+			agentes.addElement(ag4);
+			
+			for(AgenteTrabalhador at: agentes)
+			{
+				contentorAgente.acceptNewAgent(at.tr.nome, at);
+			}
+			
+			System.out.println("4");
+			
+			for(AgenteTrabalhador at: agentes)
+			{
+				scheduleAgent(at);
+			}
 		}
 		catch (Exception e)
 		{
@@ -124,11 +151,15 @@ public class Janela extends Repast3Launcher
 		getSchedule().scheduleActionBeginning(1, this, "step");
 		
 		// contruir o modelo
+		for(AgenteTrabalhador at: agentes)
+		{
+			espaco.putObjectAt(at.tr.coluna, at.tr.linha, at);
+		}
 		
-		espaco.putObjectAt(ag1.tr.coluna, ag1.tr.linha, ag1);
-		listaDesenhar.add(ag1);
-		espaco.putObjectAt(ag2.tr.coluna, ag2.tr.linha, ag2);
-		listaDesenhar.add(ag2);
+		for(AgenteTrabalhador at: agentes)
+		{
+			listaDesenhar.add(at);
+		}
 	}
 
 	public void step() {

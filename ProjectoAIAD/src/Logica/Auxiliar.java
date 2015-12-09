@@ -7,9 +7,17 @@ import java.util.Vector;
 
 public class Auxiliar
 {
-	//public static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/ficheiros/";
-	public static String folder = "C:\\Users\\Miguel Moreira\\Documents\\Eclipse Mars x64\\projects\\ProjectoAIAD\\ficheiros\\";
-		
+	public static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/ficheiros/";
+	//public static String folder = "C:\\Users\\Miguel Moreira\\Documents\\Eclipse Mars x64\\projects\\ProjectoAIAD\\ficheiros\\";
+	
+	public static final char letraParede = 'O';
+	public static final char letraEstrada = ' ';
+	
+	public static final char letraAgente = 'T';
+	public static final char letraLoja = 'S';
+	public static final char letraArmazem = 'W';
+	public static final char letraRecarga = 'R';
+	public static final char letraLixeira = 'G';
 	
 	/*	MELHORAMENTO AO INPUT/OUTPUT	*/
 	

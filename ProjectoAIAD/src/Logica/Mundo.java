@@ -19,13 +19,6 @@ public class Mundo
 	public Vector<Produzir> producoes;
 	//public Vector<Trabalhador> trabalhadores;
 	
-	private static char letraAgente = 'T';
-	private static char letraLoja = 'S';
-	private static char letraArmazem = 'W';
-	private static char letraRecarga = 'R';
-	private static char letraLixeira = 'G';
-	private static char letraAgencia = 'A';
-	
 	private void inicializar()
 	{
 		productos = new Vector<Producto>();
@@ -268,28 +261,28 @@ public class Mundo
 		for(Loja edificio: lojas)
 		{
 			String linha = cidade.matriz.elementAt(edificio.linha);
-			String novo = Auxiliar.substituir(linha, edificio.coluna, letraLoja);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, Auxiliar.letraLoja);
 			cidade.matriz.set(edificio.linha, novo);
 		}
 		
 		for(Armazem edificio: armazens)
 		{
 			String linha = cidade.matriz.elementAt(edificio.linha);
-			String novo = Auxiliar.substituir(linha, edificio.coluna, letraArmazem);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, Auxiliar.letraArmazem);
 			cidade.matriz.set(edificio.linha, novo);
 		}
 		
 		for(Lixeira edificio: lixeiras)
 		{
 			String linha = cidade.matriz.elementAt(edificio.linha);
-			String novo = Auxiliar.substituir(linha, edificio.coluna, letraLixeira);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, Auxiliar.letraLixeira);
 			cidade.matriz.set(edificio.linha, novo);
 		}
 		
 		for(Recarga edificio: estacoes)
 		{
 			String linha = cidade.matriz.elementAt(edificio.linha);
-			String novo = Auxiliar.substituir(linha, edificio.coluna, letraRecarga);
+			String novo = Auxiliar.substituir(linha, edificio.coluna, Auxiliar.letraRecarga);
 			cidade.matriz.set(edificio.linha, novo);
 		}
 		

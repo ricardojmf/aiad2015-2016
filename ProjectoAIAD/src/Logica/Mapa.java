@@ -8,9 +8,8 @@ import java.util.Vector;
 public class Mapa
 {
 	public Vector<String> matriz;
-	
-	private static char letraParede = 'O';
-	private static char letraEstrada = ' ';
+	public int linhas;
+	public int colunas;
 	
 	private void iniciarMapa()
 	{
@@ -43,7 +42,7 @@ public class Mapa
 				}
 				else
 				{					
-					if (!(data == letraParede || data == letraEstrada ))
+					if (!(data == Auxiliar.letraParede || data == Auxiliar.letraEstrada ))
 					{
 						System.exit(0);
 					}
@@ -84,6 +83,9 @@ public class Mapa
 	public Mapa(String ficheiro)
 	{
 		iniciarMapa();
-		lerFicheiro(ficheiro);		
+		lerFicheiro(ficheiro);
+		
+		linhas = matriz.size();
+		colunas = matriz.elementAt(0).length();
 	}
 }
