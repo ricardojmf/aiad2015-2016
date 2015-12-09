@@ -1,6 +1,5 @@
 package Agentes;
 
-import java.awt.Color;
 import java.awt.Image;
 import java.util.Vector;
 
@@ -9,25 +8,24 @@ import javax.swing.ImageIcon;
 import Logica.Auxiliar;
 import Logica.Ponto;
 import Logica.Trabalhador;
-
 import sajas.core.Agent;
-import sajas.core.behaviours.SimpleBehaviour;
-import sajas.domain.DFService;
-
 import uchicago.src.sim.gui.Drawable;
 import uchicago.src.sim.gui.SimGraphics;
 import uchicago.src.sim.space.Object2DGrid;
-
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.lang.acl.ACLMessage;
 
 
 
 public class AgenteTrabalhador extends Agent implements Drawable
 {
 	public Trabalhador tr;
+	
+	public enum WorkingState{
+		WAITING_FOR_JOB, PREPARE_TO_WORK, WORKING, CHARGING_BATTERY, MOVING
+	}
+
+	protected WorkingState state;
+	protected String workerType;
+	protected ServiceManager serviceManager;
 	
 	static ImageIcon iconCarro = new ImageIcon(Auxiliar.folder + "carro.png");
 	static ImageIcon iconMota = new ImageIcon(Auxiliar.folder + "mota.png");
@@ -44,6 +42,9 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		super();
 		espaco = space;
 		
+		state = WorkingState.WAITING_FOR_JOB;
+		this.serviceManager = new ServiceManager(this);
+		
 		tr = new Trabalhador(nome, tipoTransporte);
 	}
 
@@ -59,26 +60,10 @@ public class AgenteTrabalhador extends Agent implements Drawable
 			System.out.println("Nao especificou o tipo");
 		}
 		
-		//Auxiliar.writeln("AgenteTrabalhador setup() 1");
-
-		DFAgentDescription dfd = new DFAgentDescription();
-		dfd.setName(getAID());
-		ServiceDescription sd = new ServiceDescription();
-		sd.setName(getName());
-		sd.setType("Agente " + tipo);
-		dfd.addServices(sd);
+		Service service = new Service(tipo, "");
+		serviceManager.offerService(service);
 		
-		
-		//Auxiliar.writeln("AgenteTrabalhador setup() 2");
-		
-		try
-		{
-			DFService.register(this, dfd);
-		} catch (FIPAException e) {
-			e.printStackTrace();
-		}
-		
-		//Auxiliar.writeln("AgenteTrabalhador setup() 3");
+		addBehaviour(new BasicWorkerBehaviour(this));
 	}
 	
 	@Override
@@ -114,84 +99,6 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	
 	public void executarMovimento(Vector<Ponto> percurso)
 	{
-		addBehaviour(new ComportamentoMovimento(percurso));
+		addBehaviour(new MovingBehaviour(this, percurso));
 	}
-	
-	public class ComportamentoMovimento extends SimpleBehaviour
-	{
-		private static final long serialVersionUID = 1L;
-		
-		Vector<Ponto> percurso;
-		int contador;
-		
-		public ComportamentoMovimento(Vector<Ponto> novoPercurso)
-		{
-			percurso = novoPercurso;
-			contador = 0;
-		}
-		
-		@Override
-		public void action()
-		{
-			int frequencia = 5;
-			
-			if(contador == frequencia*(6 - tr.velocidade) && tr.bateria > 0)
-			{
-				tr.bateria--;
-				contador = 0;
-				
-				Ponto p = percurso.elementAt(0);
-				percurso.removeElementAt(0);
-				
-				espaco.putObjectAt(tr.linha, tr.coluna, null);
-				tr.linha = p.linha;
-				tr.coluna = p.coluna;
-				espaco.putObjectAt(tr.linha, tr.coluna, this);
-			}
-			else
-			{
-				contador++;
-			}
-		}
-
-		@Override
-		public boolean done()
-		{
-			return ( percurso.size() == 0 || tr.bateria == 0);
-		}
-	}
-	
-	class ComportamentoDefault extends SimpleBehaviour {
-
-		private int n = 0;
-
-		public ComportamentoDefault(Agent a)
-		{
-			super(a);
-		}
-
-		public void action()
-		{
-			ACLMessage msg = blockingReceive();
-			if (msg.getPerformative() == ACLMessage.INFORM) {
-				System.out.println(++n + " " + getLocalName() + ": recebi " + msg.getContent());
-				// cria resposta
-				ACLMessage reply = msg.createReply();
-				// preenche conteudo da mensagem
-				if (msg.getContent().equals("ping"))
-					reply.setContent("pong");
-				else
-					reply.setContent("ping");
-				// envia mensagem
-				send(reply);
-			}
-		}
-
-		public boolean done() {
-			return n == 10;
-		}
-	}
-
-	
-	
 }
