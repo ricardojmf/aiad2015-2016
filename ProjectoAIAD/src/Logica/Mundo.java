@@ -163,6 +163,41 @@ public class Mundo
 			i++;
 		}
 		i++;
+		
+		// LEITURA DOS ARMAZENS
+		if (!linhas.elementAt(i).equals("RECARGAS"))
+		{
+			System.exit(0);
+		}
+		
+		i++;
+		while(i < linhas.size() && !linhas.elementAt(i).equals("END RECARGAS"))
+		{
+			String info = linhas.elementAt(i);
+			
+			String[] infoo = info.split(" ");
+			
+			String nome = "";
+			for(int k = 0; k < (infoo.length - 2); k++)
+			{
+				if (k == (infoo.length - 3)) // ultimo
+				{
+					nome += infoo[k];
+				}
+				else
+				{
+					nome += infoo[k] + " ";
+				}
+			}
+			
+			int linha = Integer.parseInt(infoo[infoo.length - 2]);
+			int coluna = Integer.parseInt(infoo[infoo.length - 1]);
+			
+			Recarga ar = new Recarga(linha, coluna, nome);
+			estacoes.addElement(ar);
+			i++;
+		}
+		i++;
 	}
 	
 	private void lerFicheiro(String ficheiro)
@@ -302,9 +337,9 @@ public class Mundo
 			for(int index = 0; index < s.length(); index++)
 			{
 				char cha = s.charAt(index);
-				if(cha != ' ' && cha != 'O')
+				if(cha != Auxiliar.letraEstrada && cha != Auxiliar.letraParede)
 				{
-					String novo = Auxiliar.substituir(s, index, ' ');
+					String novo = Auxiliar.substituir(s, index, Auxiliar.letraEstrada);
 					
 					cidade.matriz.set(linha, novo);
 					s = novo;

@@ -20,19 +20,19 @@ public class Quadro implements Drawable
 	public int COMPRIMENTO = 0;
 	public int LARGURA = 0;
 	
-	static ImageIcon iconParede = new ImageIcon(Auxiliar.folder + "parede.png");
-	static ImageIcon iconEstrada = new ImageIcon(Auxiliar.folder + "estrada.png");
-	static ImageIcon iconLoja = new ImageIcon(Auxiliar.folder + "loja.png");
-	static ImageIcon iconArmazem = new ImageIcon(Auxiliar.folder + "armazem.png");
-	static ImageIcon iconLixeira = new ImageIcon(Auxiliar.folder + "lixeira.png");
-	static ImageIcon iconRecarga = new ImageIcon(Auxiliar.folder + "recarga.png");
+	static final ImageIcon iconParede = new ImageIcon(Auxiliar.folder + "parede.png");
+	static final ImageIcon iconEstrada = new ImageIcon(Auxiliar.folder + "estrada.png");
+	static final ImageIcon iconLoja = new ImageIcon(Auxiliar.folder + "loja.png");
+	static final ImageIcon iconArmazem = new ImageIcon(Auxiliar.folder + "armazem.png");
+	static final ImageIcon iconLixeira = new ImageIcon(Auxiliar.folder + "lixeira.png");
+	static final ImageIcon iconRecarga = new ImageIcon(Auxiliar.folder + "recarga.png");
 	
-	static Image parede = iconParede.getImage();
-	static Image estrada = iconEstrada.getImage();
-	static Image loja = iconLoja.getImage();
-	static Image armazem = iconArmazem.getImage();
-	static Image lixeira = iconLixeira.getImage();
-	static Image recarga = iconRecarga.getImage();
+	static final Image parede = iconParede.getImage();
+	static final Image estrada = iconEstrada.getImage();
+	static final Image loja = iconLoja.getImage();
+	static final Image armazem = iconArmazem.getImage();
+	static final Image lixeira = iconLixeira.getImage();
+	static final Image recarga = iconRecarga.getImage();
 	
 	public Quadro(Vector<String> map)
 	{
@@ -44,7 +44,6 @@ public class Quadro implements Drawable
 	@Override
 	public void draw(SimGraphics arg0)
 	{
-		
 		for(int linha = 0; linha < matriz.size(); linha++)
 		{
 			String LINHA = matriz.elementAt(linha);

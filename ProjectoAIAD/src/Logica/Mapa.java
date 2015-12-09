@@ -80,6 +80,38 @@ public class Mapa
 		}
 	}
 	
+	public void verMelhor()
+	{
+		for(String s: matriz)
+		{
+			Auxiliar.writeln(s.length());
+		}
+	}
+	
+	public void verEstradas()
+	{
+		for(String s: matriz)
+		{
+			for(int index = 0; index < s.length(); index++)
+			{
+				char c = s.charAt(index);
+				if( c == Auxiliar.letraEstrada )
+				{
+					System.out.print('E');
+				}
+				else if( c == Auxiliar.letraParede )
+				{
+					System.out.print('F');
+				}
+				else
+				{
+					System.out.print('E');
+				}
+			}
+			Auxiliar.writeln("");
+		}
+	}
+	
 	public Mapa(String ficheiro)
 	{
 		iniciarMapa();

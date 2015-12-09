@@ -2,18 +2,14 @@ package Logica;
 
 public class Recarga extends Local
 {
-	public int preco;
-	
-	public Recarga(int li, int col, int p)
+	public Recarga(int li, int col)
 	{
 		super(li, col, 'R');
-		preco = p;
 	}
 	
-	public Recarga(int li, int col, String nome, int p)
+	public Recarga(int li, int col, String nome)
 	{
 		super(li, col, 'S', nome);
-		preco = p;
 	}
 	
 }

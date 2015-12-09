@@ -90,21 +90,15 @@ public class Janela extends Repast3Launcher
 			ag3 = new AgenteTrabalhador("Agente3", 3, espaco);
 			ag4 = new AgenteTrabalhador("Agente4", 2, espaco);
 			
-			System.out.println("1");
-			
 			ag1.setArguments(new String[] { "ping" });
 			ag2.setArguments(new String[] { "pong" });
-			ag3.setArguments(new String[] { "pong" });
+			ag3.setArguments(new String[] { "pang" });
 			ag4.setArguments(new String[] { "pung" });
 			
-			System.out.println("2");
-			
-			ag1.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 11, 35, 22, 27));
-			ag2.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 1, 1, 22, 24));
-			ag3.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 1, 9, 22, 24));
-			ag4.executarMovimento(Auxiliar.caminhoCurto(quadro.matriz, 22, 27, 2, 4));
-			
-			System.out.println("3");
+			ag1.movimentar(mundo, 35, 11, 22, 27); // carro
+			ag2.movimentar(mundo, 1, 1, 22, 12); // camiao
+			ag3.movimentar(mundo, 1, 9, 22, 24); // mota
+			ag4.movimentar(mundo, 27, 22, 2, 4); // drone
 			
 			agentes.addElement(ag1);
 			agentes.addElement(ag2);
@@ -115,8 +109,6 @@ public class Janela extends Repast3Launcher
 			{
 				contentorAgente.acceptNewAgent(at.tr.nome, at);
 			}
-			
-			System.out.println("4");
 			
 			for(AgenteTrabalhador at: agentes)
 			{

@@ -16,6 +16,11 @@ public class Ponto
 		return( new Ponto(this.linha, this.coluna) );
 	}
 	
+	public Ponto obterTransposta()
+	{
+		return( new Ponto(this.coluna, this.linha) );
+	}
+	
 	public String pontoToString()
 	{
 		return( linha + " " + coluna );

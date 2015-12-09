@@ -224,6 +224,11 @@ public class Auxiliar
 		return (x < 0 ? -1 : (x > 0 ? 1 : 0));
 	}
 	
+	public static Vector<Ponto> linhaRecta(Ponto src, Ponto dst)
+	{
+		return( linhaRecta(src.coluna, src.linha, dst.coluna, dst.linha) );
+	}
+	
 	public static Vector<Ponto> linhaRecta(int x1, int y1, int x2, int y2)
 	{
 		Vector<Ponto> r = new Vector<Ponto>();
@@ -330,12 +335,32 @@ public class Auxiliar
 		}
 	}
 	
-	public static Vector<Ponto> caminhoCurto(Vector<String> mapa, int x1, int y1, int x2, int y2)
+	public static Vector<Ponto> caminhoCurto(Vector<String> mapa, Ponto src, Ponto dst)
+	{
+		return( caminhoCurto(mapa, src.linha, src.coluna, dst.linha, dst.coluna) );
+	}
+	
+	public static Vector<Ponto> caminhoCurto(Vector<String> mapa, int linha1, int coluna1, int linha2, int coluna2)
 	{
 		Vector<Ponto> r = new Vector<Ponto>();
 		
-		char obstaculo = 'O';
-		char estrada = ' ';
+		int x1 = coluna1;
+		int y1 = linha1;
+		int x2 = coluna2;
+		int y2 = linha2;
+		
+		//System.out.println("CAMINHO CURTO 1");
+		//System.out.println("CAMINHO CURTO SRC: " + y1 + " " + x1);
+		//System.out.println("CAMINHO CURTO SRC: " + mapa.elementAt(x1).charAt(y1));
+		//System.out.println("CAMINHO CURTO DST: " + x2 + " " + y2);
+		//System.out.println("CAMINHO CURTO DST: " + mapa.elementAt(x2).charAt(y2));
+		
+		/*if(mapa.elementAt(x1).charAt(y1) == letraParede)
+		{
+			return r;
+		}*/
+		
+		//System.out.println("CAMINHO CURTO 2");
 		
 		int maxLinha = mapa.size();
 		int maxColuna = mapa.elementAt(0).length();
@@ -352,7 +377,7 @@ public class Auxiliar
 				NodoPesquisa np = new NodoPesquisa(linha, coluna);
 				
 				char c = s.charAt(coluna);
-				if (c == obstaculo)
+				if (c == letraParede)
 				{
 					np.valor = -2;
 				}
@@ -366,12 +391,18 @@ public class Auxiliar
 			nodos.addElement(nd);
 		}
 		
+		//System.out.println("CAMINHO CURTO 3");
+		
 		PriorityQueue<NodoPesquisa> queue = new PriorityQueue<NodoPesquisa>();
 		NodoPesquisa inicial = nodos.elementAt(x1).elementAt(y1);
+		NodoPesquisa ultimo = nodos.elementAt(x2).elementAt(y2);
+		
 		inicial.valor = 0;
 		
 		queue.add(inicial);		
 		NodoPesquisa agora = inicial;
+		
+		//System.out.println("CAMINHO CURTO 4");
 		
 		boolean condicaoParagem = true;
 		while(!queue.isEmpty() && condicaoParagem)
@@ -440,8 +471,8 @@ public class Auxiliar
 		}
 		
 		// posFinal.valor = (posFinal - 1).valor + 1 = (posFinal - 2).valor + 2 = ...
-		
-		agora = nodos.elementAt(x2).elementAt(y2);
+		//System.out.println("CAMINHO CURTO 5");
+		agora = ultimo;
 		
 		r.addElement(new Ponto(agora.linha, agora.coluna));
 		while(!(agora.linha == x1 && agora.coluna == y1))
@@ -494,11 +525,15 @@ public class Auxiliar
 			r.addElement(new Ponto(agora.linha, agora.coluna));
 		}
 		
+		//System.out.println("CAMINHO CURTO 6");
+		
 		Vector<Ponto> rr = new Vector<Ponto>();
 		for(int i = r.size() - 1; i >= 0; i--)
 		{
 			rr.addElement(r.elementAt(i));
 		}
+		
+		//System.out.println("CAMINHO CURTO 7");
 		
 		return rr;
 	}
