@@ -81,12 +81,6 @@ public class Main
 		
 		Vector<Ponto> vec = Auxiliar.caminhoCurto(mundo.cidade.matriz, 11, 35, 22, 27);
 		
-		String ss = tr1.stringEnviarEstado();
-		Auxiliar.writeln(ss);
-		ss = tr1.stringEnviarContentor();
-		Auxiliar.writeln(ss);
-		System.exit(0);
-		
 		int index = 0;
 		
 		while(true)
@@ -142,7 +136,7 @@ public class Main
 	
 	static public void main(String[] args)
 	{
-		//movimento();
-		aaa();
+		movimento();
+		//aaa();
 	}
 }

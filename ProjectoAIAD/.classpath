@@ -3,5 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/Miguel Moreira/Documents/Eclipse Mars x64/jade/lib/jade.jar"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Miguel Moreira/Documents/Eclipse Mars x64/projects/ProjectoAIAD/lib/SAJaS.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Miguel Moreira/Documents/Eclipse Mars x64/projects/ProjectoAIAD/lib/repast/repastj/repastj.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

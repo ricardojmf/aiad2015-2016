@@ -21,6 +21,12 @@ public class Ponto
 		return( linha + " " + coluna );
 	}
 	
+	public void set(int l, int c)
+	{
+		linha = l;
+		coluna = c;
+	}
+	
 	public int compareTo(Ponto obj) // posicao
 	{
 		if (this.linha == obj.linha)

@@ -15,17 +15,16 @@ public class Mundo
 	public Vector<Armazem> armazens;
 	public Vector<Lixeira> lixeiras;
 	public Vector<Recarga> estacoes;
-	public Vector<Agencia> agencias;
 	
 	public Vector<Produzir> producoes;
 	//public Vector<Trabalhador> trabalhadores;
 	
-	private char letraAgente = 'T';
-	private char letraLoja = 'S';
-	private char letraArmazem = 'W';
-	private char letraRecarga = 'R';
-	private char letraLixeira = 'G';
-	private char letraAgencia = 'A';
+	private static char letraAgente = 'T';
+	private static char letraLoja = 'S';
+	private static char letraArmazem = 'W';
+	private static char letraRecarga = 'R';
+	private static char letraLixeira = 'G';
+	private static char letraAgencia = 'A';
 	
 	private void inicializar()
 	{
@@ -35,7 +34,6 @@ public class Mundo
 		armazens = new Vector<Armazem>();
 		lixeiras = new Vector<Lixeira>();
 		estacoes = new Vector<Recarga>();
-		agencias = new Vector<Agencia>();
 		
 		producoes = new Vector<Produzir>();
 		//trabalhadores = new Vector<Trabalhador>();
@@ -292,13 +290,6 @@ public class Mundo
 		{
 			String linha = cidade.matriz.elementAt(edificio.linha);
 			String novo = Auxiliar.substituir(linha, edificio.coluna, letraRecarga);
-			cidade.matriz.set(edificio.linha, novo);
-		}
-		
-		for(Agencia edificio: agencias)
-		{
-			String linha = cidade.matriz.elementAt(edificio.linha);
-			String novo = Auxiliar.substituir(linha, edificio.coluna, letraAgencia);
 			cidade.matriz.set(edificio.linha, novo);
 		}
 		
