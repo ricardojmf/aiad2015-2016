@@ -37,12 +37,12 @@ public class ProcessManager extends CyclicBehaviour {
 
 		waitingForJob();
 		checkForRequestingServices();
-		block(1000);
+		//block(1000);
 	}
 	
 	protected void waitingForJob()
 	{
-		System.out.println("[" + workerName + "] Esta a espera de emprego");
+		//System.out.println("[" + workerName + "] Esta a espera de emprego");
 		
 		if(worker.serviceManager.haveJobsToDo())
 		{

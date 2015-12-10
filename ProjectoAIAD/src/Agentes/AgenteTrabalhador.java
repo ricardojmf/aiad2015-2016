@@ -58,16 +58,28 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	/************************************************************/
 	protected void setup()
 	{
-		String tipo = "";
+		String nomeServico = "";
+		String empregador = "";
+		
 		Object[] args = getArguments();
 		if (args != null && args.length > 0) {
-			tipo = (String) args[0];
+			nomeServico = (String) args[0];
+			empregador = (String) args[1];
 		} else {
 			System.out.println("Nao especificou o tipo");
 		}
-
-		Service service = new Service(tipo, "");
-		serviceManager.offerService(service);
+		
+		Service service = new Service(nomeServico, "");
+		
+		
+		if(empregador.equals("P"))
+		{
+			serviceManager.requestService(service);
+		}
+		else
+		{
+			serviceManager.offerService(service);
+		}
 		
 		addBehaviour(new BasicWorkerBehaviour(this));
 	}

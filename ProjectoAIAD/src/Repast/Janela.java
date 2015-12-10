@@ -88,10 +88,10 @@ public class Janela extends Repast3Launcher
 			ag3 = new AgenteTrabalhador("Agente3", 3, espaco);
 			ag4 = new AgenteTrabalhador("Agente4", 2, espaco);
 			
-			ag1.setArguments(new String[] { "ping" });
-			ag2.setArguments(new String[] { "pong" });
-			ag3.setArguments(new String[] { "pang" });
-			ag4.setArguments(new String[] { "pung" });
+			ag1.setArguments(new String[] { "ping", "E" });
+			ag2.setArguments(new String[] { "ping", "P" });
+			ag3.setArguments(new String[] { "pong", "E" });
+			ag4.setArguments(new String[] { "pung", "E" });
 			
 			ag1.movimentar(mundo, 35, 11, 22, 27); // carro
 			ag2.movimentar(mundo, 1, 1, 22, 12); // camiao

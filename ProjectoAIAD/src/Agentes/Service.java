@@ -5,7 +5,6 @@ public class Service {
 	private String name;
 	private String type;
 	
-	
 	public Service(String name, String type) {
 		super();
 		this.name = name;

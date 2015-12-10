@@ -2,8 +2,9 @@ package Agentes;
 
 import Agentes.AgenteTrabalhador.WorkingState;
 import sajas.core.behaviours.Behaviour;
+import sajas.core.behaviours.SimpleBehaviour;
 
-public class WorkingBehaviour extends Behaviour {
+public class WorkingBehaviour extends SimpleBehaviour {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,7 +28,7 @@ public class WorkingBehaviour extends Behaviour {
 
 	@Override
 	public void action() {
-		block(delay);
+		//block(delay);
 		System.out.print("[" + workerName + "] Estou a trabalhar em " + actualService.getName() + "! ");
 		qnt = qnt + 1;
 		System.out.println("Qnt: " + qnt);		
