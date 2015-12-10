@@ -1,5 +1,7 @@
 package Logica;
 
+import java.util.Vector;
+
 public class Ponto
 {
 	public int linha;
@@ -48,6 +50,139 @@ public class Ponto
 		else
 		{
 			return ( (this.linha < obj.linha) ? -1:1 );
+		}
+	}
+	
+	public static Vector<Ponto> percursoCurtoLojas(Vector<String> mapa, boolean ar, Ponto origem, Vector<Loja> pontosDestinos)
+	{
+		Vector<Ponto> percursoMinimo1 = null;
+		for(Loja re: pontosDestinos)
+		{
+			Vector<Ponto> percurso = null;
+			
+			if(ar)
+			{
+				percurso = Auxiliar.linhaRecta(origem.linha, origem.coluna,
+						re.linha, re.coluna);
+			}
+			else
+			{
+				percurso = Auxiliar.caminhoCurto(mapa,
+						origem.coluna, origem.linha,
+						re.coluna, re.linha);
+			}
+			
+			if (percursoMinimo1 == null)
+			{
+				percursoMinimo1 = new Vector<Ponto>();
+				percursoMinimo1 = percurso;
+			}
+			else
+			{
+				if( percurso.size() < percursoMinimo1.size())
+				{
+					percursoMinimo1 = percurso;
+				}
+			}
+		}
+		
+		return percursoMinimo1;
+	}
+	
+	public static Vector<Ponto> percursoCurtoArmazens(Vector<String> mapa, boolean ar, Ponto origem, Vector<Armazem> pontosDestinos)
+	{
+		Vector<Ponto> percursoMinimo1 = null;
+		for(Armazem re: pontosDestinos)
+		{
+			Vector<Ponto> percurso = null;
+			
+			if(ar)
+			{
+				percurso = Auxiliar.linhaRecta(origem.linha, origem.coluna,
+						re.linha, re.coluna);
+			}
+			else
+			{
+				percurso = Auxiliar.caminhoCurto(mapa,
+						origem.coluna, origem.linha,
+						re.coluna, re.linha);
+			}
+			
+			if (percursoMinimo1 == null)
+			{
+				percursoMinimo1 = new Vector<Ponto>();
+				percursoMinimo1 = percurso;
+			}
+			else
+			{
+				if( percurso.size() < percursoMinimo1.size())
+				{
+					percursoMinimo1 = percurso;
+				}
+			}
+		}
+		
+		return percursoMinimo1;
+	}
+	
+	public static Vector<Ponto> percursoCurtoEstacoes(Vector<String> mapa, boolean ar, Ponto origem, Vector<Recarga> pontosDestinos)
+	{
+		Vector<Ponto> percursoMinimo1 = null;
+		for(Recarga re: pontosDestinos)
+		{
+			Vector<Ponto> percurso = null;
+			
+			if(ar)
+			{
+				percurso = Auxiliar.linhaRecta(origem.linha, origem.coluna,
+						re.linha, re.coluna);
+			}
+			else
+			{
+				percurso = Auxiliar.caminhoCurto(mapa,
+						origem.coluna, origem.linha,
+						re.coluna, re.linha);
+			}
+			
+			if (percursoMinimo1 == null)
+			{
+				percursoMinimo1 = new Vector<Ponto>();
+				percursoMinimo1 = percurso;
+			}
+			else
+			{
+				if( percurso.size() < percursoMinimo1.size())
+				{
+					percursoMinimo1 = percurso;
+				}
+			}
+		}
+		
+		return percursoMinimo1;
+	}
+
+	public static Vector<Ponto> percursoCurtoDirecto(Vector<String> mapa, boolean ar, Ponto origem, Ponto destino)
+	{
+		Vector<Ponto> percursoDestino = null;
+		if(ar)
+		{
+			percursoDestino = Auxiliar.linhaRecta(origem.linha, origem.coluna,
+					destino.linha, destino.coluna);
+		}
+		else
+		{
+			percursoDestino = Auxiliar.caminhoCurto(mapa,
+					origem.coluna, origem.linha,
+					destino.coluna, destino.linha);
+		}
+		return percursoDestino;
+	}	
+
+	public static void verVector(Vector<Ponto> lista)
+	{
+		for(Ponto p: lista)
+		{
+			System.out.println(p.pontoToString());
 		}
 	}
 }

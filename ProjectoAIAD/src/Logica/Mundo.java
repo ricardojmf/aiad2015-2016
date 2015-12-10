@@ -164,7 +164,7 @@ public class Mundo
 		}
 		i++;
 		
-		// LEITURA DOS ARMAZENS
+		// LEITURA DOS RECARGAS
 		if (!linhas.elementAt(i).equals("RECARGAS"))
 		{
 			System.exit(0);

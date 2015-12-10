@@ -40,7 +40,7 @@ public class Trabalhador extends Identidade
 		case (2):
 			letra = 'H';
 			velocidade = 5;
-			bateriaMax = 250;
+			bateriaMax = 73; // 250 , 73: gasolineira
 			cargaMax = 100;
 			meioTransporte = true;
 			ferramentas.addElement("f1");

@@ -6,7 +6,7 @@ import Logica.*;
 
 public class Main
 {
-	public void mostrarMatriz(Vector<Ponto> vc)
+	public static void mostrarMatriz(Vector<Ponto> vc)
 	{
 		char[][] mat;
 		mat = new char[10][10];
@@ -136,7 +136,41 @@ public class Main
 	
 	static public void main(String[] args)
 	{
-		movimento();
+		//movimento();
 		//aaa();
+		
+		int E = 5;
+		int C = 4;
+		int D = 1;
+		
+		Vector<Ponto> vc = null;
+		
+		vc = Auxiliar.linhaRecta(D, D, C, C);
+		mostrarMatriz(vc);
+		
+		vc = Auxiliar.linhaRecta(D, C, C, C);
+		mostrarMatriz(vc);
+		
+		vc = Auxiliar.linhaRecta(D, E, C, C);
+		mostrarMatriz(vc);
+		
+		
+		
+		vc = Auxiliar.linhaRecta(C, D, C, C);
+		mostrarMatriz(vc);
+		
+		vc = Auxiliar.linhaRecta(C, E, C, C);
+		mostrarMatriz(vc);
+		
+		
+		
+		vc = Auxiliar.linhaRecta(E, D, C, C);
+		mostrarMatriz(vc);
+		
+		vc = Auxiliar.linhaRecta(E, C, C, C);
+		mostrarMatriz(vc);
+		
+		vc = Auxiliar.linhaRecta(E, E, C, C);
+		mostrarMatriz(vc);
 	}
 }

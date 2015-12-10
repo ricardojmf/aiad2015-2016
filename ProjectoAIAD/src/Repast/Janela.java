@@ -1,7 +1,6 @@
 package Repast;
 
 import Agentes.AgenteTrabalhador;
-import Logica.Auxiliar;
 import Logica.Mundo;
 
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ public class Janela extends Repast3Launcher
 {
 	// CLASSES PROPRIAS
 	Quadro quadro;
-	
 	private Mundo mundo;
 	
 	// CLASSES REPAST
@@ -42,7 +40,6 @@ public class Janela extends Repast3Launcher
 	Vector<AgenteTrabalhador> agentes;
 	
 	public static final boolean SEPARADOS = false;
-	public static final int NUM_AGENTS = 3;
 	
 	/*********************
 			FUNCOES 
@@ -81,6 +78,7 @@ public class Janela extends Repast3Launcher
 		try
 		{
 			quadro = new Quadro(mundo.cidade.matriz);
+			System.out.println( "CRIADO MUNDO " + mundo.cidade.linhas + " X " + mundo.cidade.colunas);
 			mundo.mostrarMundo();
 			
 			espaco = new Object2DGrid(mundo.cidade.colunas, mundo.cidade.linhas);
@@ -98,7 +96,8 @@ public class Janela extends Repast3Launcher
 			ag1.movimentar(mundo, 35, 11, 22, 27); // carro
 			ag2.movimentar(mundo, 1, 1, 22, 12); // camiao
 			ag3.movimentar(mundo, 1, 9, 22, 24); // mota
-			ag4.movimentar(mundo, 27, 22, 2, 4); // drone
+			//ag4.movimentar(mundo, 21, 27, 2, 4); // drone
+			ag4.movimentar(mundo, 2, 53, 2, 4); // drone
 			
 			agentes.addElement(ag1);
 			agentes.addElement(ag2);
