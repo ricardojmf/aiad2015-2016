@@ -145,6 +145,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		if( (distOrigemDestino + distDestinoRecargaY) <= tr.bateria )
 		{
 			percursos.addElement(percursoDestino);
+			
 			executarMovimento(percursos, false);
 		}
 		else if( (distRecargaXDestino + distDestinoRecargaY) <= tr.bateria )
