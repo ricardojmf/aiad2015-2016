@@ -111,14 +111,11 @@ public class MovingBehaviour extends SimpleBehaviour {
 			{
 				if (temQueRecargar && recarregando && !recargado)
 				{
-					//System.out.println("RECARREGANDO 1");
 					if (recarregando)
 					{
-						//System.out.println("RECARREGANDO 2 com contador = " + contador);
 						contador++;
 						if (contador == (tempoEspera*20))
 						{
-							//System.out.println("RECARREGANDO 3");
 							recarregando = false;
 							recargado = true;
 							contador = 0;
@@ -138,8 +135,6 @@ public class MovingBehaviour extends SimpleBehaviour {
 						{
 							recarregando = true;
 						}
-						
-						//contador = 0;
 						
 						verBateriaMovimento();
 					}
@@ -164,8 +159,6 @@ public class MovingBehaviour extends SimpleBehaviour {
 					
 					if(percursos.size() == 0 && percurso.size() == 0)
 					{
-						//verBateriaFim();
-						
 						superContador++;
 						
 						if(superContador < 5)
@@ -188,14 +181,11 @@ public class MovingBehaviour extends SimpleBehaviour {
 		{
 			if (temQueRecargar && recarregando && !recargado)
 			{
-				//System.out.println("RECARREGANDO 1");
 				if (recarregando)
 				{
-					//System.out.println("RECARREGANDO 2 com contador = " + contador);
 					contador++;
 					if (contador == (tempoEspera*20))
 					{
-						//System.out.println("RECARREGANDO 3");
 						recarregando = false;
 						recargado = true;
 						contador = 0;
@@ -215,8 +205,6 @@ public class MovingBehaviour extends SimpleBehaviour {
 					{
 						recarregando = true;
 					}
-					
-					//contador = 0;
 					
 					verBateriaMovimento();
 				}
