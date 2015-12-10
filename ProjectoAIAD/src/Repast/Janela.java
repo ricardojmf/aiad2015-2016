@@ -100,7 +100,6 @@ public class Janela extends Repast3Launcher
 			ag1.movimentar(mundo, 35, 11, 22, 27); // carro
 			ag2.movimentar(mundo, 1, 1, 22, 12); // camiao
 			ag3.movimentar(mundo, 1, 9, 22, 24); // mota
-			//ag4.movimentar(mundo, 21, 27, 2, 4); // drone
 			//ag4.movimentar(mundo, 2, 53, 2, 4); // drone
 			
 			ag4.movimentar(mundo, 2, 53, pontos); // drone

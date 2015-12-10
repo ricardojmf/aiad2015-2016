@@ -37,7 +37,7 @@ public class MovingBehaviour extends SimpleBehaviour {
 		superContador = 0;
 	}
 	
-	public void calcularCenas()
+	public void calcularPercursos()
 	{
 		worker.tr.set(origem.linha, origem.coluna);
 		
@@ -103,7 +103,7 @@ public class MovingBehaviour extends SimpleBehaviour {
 	{
 		if(percursos == null)
 		{
-			calcularCenas();
+			calcularPercursos();
 		}
 		else
 		{
@@ -170,7 +170,7 @@ public class MovingBehaviour extends SimpleBehaviour {
 						
 						if(superContador < 5)
 						{
-							calcularCenas();
+							calcularPercursos();
 						}
 					}
 				}
@@ -182,7 +182,7 @@ public class MovingBehaviour extends SimpleBehaviour {
 	{
 		if(percursos == null)
 		{
-			calcularCenas();
+			calcularPercursos();
 		}
 		else
 		{
