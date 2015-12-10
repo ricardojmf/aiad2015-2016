@@ -6,12 +6,11 @@ public class ReplyMessage extends AgentMessage{
 	
 	public String messageInfo;
 	
-	public ReplyMessage(String agentName, String messageInfo) {
-		super(agentName);
+	public ReplyMessage(String messageInfo) {
 		this.messageInfo = messageInfo;
 	}
 	
 	public String toString(){
-		return messageType.REPLY_MESSAGE + "-" + agentName + "-" + messageInfo;
+		return messageType.REPLY_MESSAGE + "-" + messageInfo;
 	}
 }

@@ -5,12 +5,11 @@ public class RequestJobMessage extends AgentMessage{
 	
 	Job job;
 
-	public RequestJobMessage(String agentName, Job job) {
-		super(agentName);
+	public RequestJobMessage(Job job) {
 		this.job = job;
 	}
 	
 	public String toString(){
-		return messageType.REQUEST_JOB + "-" + agentName + "-" + job.jobType + "-" + job.jobInfo;
+		return messageType.REQUEST_JOB + "-" + job.jobType + "-" + job.jobInfo;
 	}
 }
