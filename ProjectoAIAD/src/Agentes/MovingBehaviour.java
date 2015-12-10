@@ -58,7 +58,7 @@ public class MovingBehaviour extends SimpleBehaviour {
 			Ponto.percursoCurtoDirecto(mundo.cidade.matriz, worker.tr.meioTransporte, percursoMinimo1.elementAt(percursoMinimo1.size() - 1), destino);
 				
 		int distOrigemDestino = percursoDestino.size();
-		int distOrigemRecargaX = (percursoMinimo1 != null ? percursoMinimo1.size() : -1);
+		//int distOrigemRecargaX = (percursoMinimo1 != null ? percursoMinimo1.size() : -1);
 		int distDestinoRecargaY = (percursoMinimo2 != null ? percursoMinimo2.size() : -1);
 		int distRecargaXDestino = percursoMinimo3.size();
 		
