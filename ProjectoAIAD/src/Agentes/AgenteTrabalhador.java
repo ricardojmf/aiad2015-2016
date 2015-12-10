@@ -11,7 +11,8 @@ import Logica.Ponto;
 import Logica.Trabalhador;
 
 import sajas.core.Agent;
-
+import sajas.core.behaviours.SequentialBehaviour;
+import sajas.core.behaviours.SimpleBehaviour;
 import uchicago.src.sim.gui.Drawable;
 import uchicago.src.sim.gui.SimGraphics;
 import uchicago.src.sim.space.Object2DGrid;
@@ -38,6 +39,8 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	public enum WorkingState{
 		WAITING_FOR_JOB, PREPARE_TO_WORK, WORKING, CHARGING_BATTERY, MOVING
 	}
+	
+	MySequentialBehaviour listaComportamentos;
 
 	protected WorkingState state;
 	protected String workerType;
@@ -122,54 +125,45 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		movimentar(mundo, destino);
 	}
 	
+	public void movimentar(Mundo mundo, int linha1, int coluna1, Vector<Ponto> destinos)
+	{
+		tr.set(linha1, coluna1);
+		movimentar(mundo, destinos);
+	}
+		
 	public void movimentar(Mundo mundo, Ponto destino)
 	{
-		// percurso entre origem e destino
-		Vector<Ponto> percursoDestino =
-			Ponto.percursoCurtoDirecto(mundo.cidade.matriz, tr.meioTransporte, tr.obterLocalizacao(), destino);
-
-		// percurso minimo para verificar se ha bateria ate ao percurso
-		Vector<Ponto> percursoMinimo1 =
-			Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, tr.meioTransporte, tr.obterLocalizacao(), mundo.estacoes);
+		Vector<SimpleBehaviour> vec = new Vector<SimpleBehaviour>();
+		Ponto actual = tr.obterLocalizacao();
 		
-		// percurso minimo para verificar se quando chegar ao destino, tem suficiente para ir a uma estacao recarga
-		Vector<Ponto> percursoMinimo2 =
-			Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, tr.meioTransporte, destino, mundo.estacoes);
+		MovingBehaviour mb = new MovingBehaviour(this, mundo, actual, destino);
+		vec.addElement(mb);
 		
-		// percurso minimo da estacao mais curta da origem ate ao destino
-		Vector<Ponto> percursoMinimo3 =
-			Ponto.percursoCurtoDirecto(mundo.cidade.matriz, tr.meioTransporte, percursoMinimo1.elementAt(percursoMinimo1.size() - 1), destino);
-				
-		int distOrigemDestino = percursoDestino.size();
-		int distOrigemRecargaX = (percursoMinimo1 != null ? percursoMinimo1.size() : -1);
-		int distDestinoRecargaY = (percursoMinimo2 != null ? percursoMinimo2.size() : -1);
-		int distRecargaXDestino = percursoMinimo3.size();
+		listaComportamentos = new MySequentialBehaviour(this, vec);
 		
-		//System.out.println("Trabalhador   : " + tr.nome);
-		//System.out.println("Bateria       : " + tr.bateria);
-		//System.out.println("OrigemDestino : " + distOrigemDestino);
-		//System.out.println("OrigemRecargaX : " + distOrigemRecargaX);
-		//System.out.println("RecargaXDestino: " + distRecargaXDestino);
-		//System.out.println("DestinoRecargaY: " + distDestinoRecargaY);
-		
-		Vector<Vector<Ponto>> percursos = new Vector<Vector<Ponto>>();
-		
-		if( (distOrigemDestino + distDestinoRecargaY) <= tr.bateria )
-		{
-			percursos.addElement(percursoDestino);
-			
-			executarMovimento(percursos, false);
-		}
-		else if( (distRecargaXDestino + distDestinoRecargaY) <= tr.bateria )
-		{
-			percursos.addElement(percursoMinimo1);
-			percursos.addElement(percursoMinimo3);
-			executarMovimento(percursos, true);
-		}
+		this.addBehaviour(listaComportamentos);
 	}
 	
-	public void executarMovimento(Vector<Vector<Ponto>> percursos, boolean temQueRecargar)
+	public void movimentar(Mundo mundo, Vector<Ponto> destinos)
 	{
-		addBehaviour(new MovingBehaviour(this, percursos, temQueRecargar));
+		Vector<SimpleBehaviour> vec = new Vector<SimpleBehaviour>();
+		
+		Ponto actual = tr.obterLocalizacao();
+		
+		MovingBehaviour mb = new MovingBehaviour(this, mundo, actual, destinos.elementAt(0));
+		vec.addElement(mb);
+		
+		for(int index = 0; index < (destinos.size() - 1); index++)
+		{
+			Ponto origem = destinos.elementAt(index);
+			Ponto destino = destinos.elementAt(index + 1);
+			
+			mb = new MovingBehaviour(this, mundo, origem, destino);
+			vec.addElement(mb);
+		}
+		
+		listaComportamentos = new MySequentialBehaviour(this, vec);
+		
+		this.addBehaviour(listaComportamentos);
 	}
 }

@@ -7,7 +7,8 @@ import java.util.Vector;
 
 public class Auxiliar
 {
-	public static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/ficheiros/";
+	//public static String folder = "/usr/users2/mieic2012/ei12012/Documents/workspace/ProjectoAIAD/ficheiros/";
+	public static String folder = "ficheiros/";
 	//public static String folder = "C:\\Users\\Miguel Moreira\\Documents\\Eclipse Mars x64\\projects\\ProjectoAIAD\\ficheiros\\";
 	
 	public static final char letraParede = 'O';
