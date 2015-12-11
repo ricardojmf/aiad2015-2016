@@ -45,13 +45,14 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	protected WorkingState state;
 	protected String workerType;
 	protected ServiceManager serviceManager;
+	protected SocialBehaviour socializer;
+	protected ProcessManager processManager;
 	
 	public AgenteTrabalhador(String nome, int tipoTransporte, Object2DGrid space)
 	{
 		super();
 		espaco = space;
 		state = WorkingState.WAITING_FOR_JOB;
-		this.serviceManager = new ServiceManager(this);
 		
 		tr = new Trabalhador(nome, tipoTransporte);
 	}
@@ -71,9 +72,10 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		} else {
 			System.out.println("Nao especificou o tipo");
 		}
+
+		this.serviceManager = new ServiceManager(this);
 		
 		Service service = new Service(nomeServico, "");
-		
 		
 		if(empregador.equals("P"))
 		{
@@ -84,7 +86,11 @@ public class AgenteTrabalhador extends Agent implements Drawable
 			serviceManager.offerService(service);
 		}
 		
-		addBehaviour(new BasicWorkerBehaviour(this));
+		processManager = new ProcessManager(this);
+		socializer = new SocialBehaviour(this);
+		
+		addBehaviour(processManager);
+		addBehaviour(socializer);
 	}
 	
 	@Override

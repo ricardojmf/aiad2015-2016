@@ -34,7 +34,7 @@ public class RequestingBehaviour extends Behaviour
 
 			System.out.println("[" + workerName + "] Encontrou " + worker.getName().getLocalName() + " para servico " + requestedService.getName());
 
-			msg = new ACLMessage(ACLMessage.INFORM);
+			msg = new ACLMessage(ACLMessage.PROPOSE);
 			msg.addReceiver(worker.getName());
 			msg.setContent("DO JOB-" + requestedService.getName().toUpperCase());
 			myAgent.send(msg);
