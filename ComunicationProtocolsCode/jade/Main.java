@@ -7,6 +7,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
+		/*
 		Job j1 = new Job("Transport", "50->Wood->WarehouseOne");
 		Job j2 = new Job("Make/Give", "20->Chair");
 		
@@ -14,6 +15,8 @@ public class Main {
 		System.out.println(rjm1.toString());
 		
 		RequestJobMessage rjm2 = new RequestJobMessage(j2);
-		System.out.println(rjm2.toString());
+		System.out.println(rjm2.toString());*/
+		
+		Job job = new Job("Transport", "50::Wood::WarehouseOne");
 	}
 }

@@ -24,10 +24,10 @@ public class RequestingJobBehaviour extends Behaviour{
 	private boolean receivingProducts;
 	private Object[] productsReceived;
 
-	public RequestingJobBehaviour(Agent myAgent, Job job, boolean receivingProducts) {
+	public RequestingJobBehaviour(Agent myAgent, boolean receivingProducts) {
 		super(myAgent);
 		behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
-		this.job = job;
+		this.job = new Job("Transport", "50::Wood::WarehouseOne");
 		this.receivingProducts = receivingProducts;
 	}
 
@@ -56,7 +56,7 @@ public class RequestingJobBehaviour extends Behaviour{
 	}
 	
 	private void findWorkersWithService(){
-
+		
 		try {			
 			ServiceDescription sd = new ServiceDescription();
 			sd.setType(job.jobType);
@@ -65,9 +65,13 @@ public class RequestingJobBehaviour extends Behaviour{
 			DFAgentDescription[] result = DFService.search(myAgent, dfd);
 			
 			if(result.length != 0){
-				assignedWorker = result[0].getName();
+				System.out.println("Worker Founded: " + result[0].getName().getLocalName());
+				assignedWorker = result[0].getName(); 
 				behaviourState = RequestJobBehaviourState.ASKING_TO_WORK;
-			}else behaviourState = RequestJobBehaviourState.NO_WORKERS_FOUND;
+			}else{
+				System.out.println("No worker Found");
+				behaviourState = RequestJobBehaviourState.NO_WORKERS_FOUND;
+			}
 			
 		} catch (FIPAException e) {
 			e.printStackTrace();
@@ -89,9 +93,9 @@ public class RequestingJobBehaviour extends Behaviour{
 		{
 			System.out.println("RECEIVE: " + message);		
 			String messageParts[] = message.getContent().split("-");			
-			if(messageParts[0].equals(messageType.REPLY_MESSAGE) && 
+			if(messageParts[0].equals("REPLY_MESSAGE") && 
 			   message.getSender().getLocalName().equals(assignedWorker.getLocalName()) && 
-			   messageParts[2].equals("YES-JOB"))
+			   messageParts[1].equals("YES-JOB"))
 				behaviourState = RequestJobBehaviourState.WAITING_FOR_WORKER;	
 		} else block();
 	}
@@ -103,9 +107,9 @@ public class RequestingJobBehaviour extends Behaviour{
 		{
 			System.out.println("RECEIVE: " + message);		
 			String messageParts[] = message.getContent().split("-");			
-			if(messageParts[0].equals(messageType.REPLY_MESSAGE) && 
+			if(messageParts[0].equals("REPLY_MESSAGE") && 
 			   message.getSender().getLocalName().equals(assignedWorker.getLocalName()) && 
-			   messageParts[2].equals("DONE-JOB"))
+			   messageParts[1].equals("DONE-JOB"))
 				if(receivingProducts)
 					behaviourState = RequestJobBehaviourState.RECEIVING_PRODUCTS;
 				else
