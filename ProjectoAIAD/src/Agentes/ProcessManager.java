@@ -55,9 +55,9 @@ public class ProcessManager extends CyclicBehaviour {
 	
 	protected void checkForPendingMessages()
 	{
-		if (worker.socializer.havePendingProposeMsgs())
+		if (worker.socializer.haveProposePendingMsgs())
 		{
-			parseReceivedMsg(worker.socializer.get1stPendingMsg());
+			parseReceivedMsg(worker.socializer.get1stProposePendingMsg());
 		}
 	}
 	

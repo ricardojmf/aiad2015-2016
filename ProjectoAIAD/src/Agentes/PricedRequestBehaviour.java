@@ -12,7 +12,7 @@ public class PricedRequestBehaviour extends Behaviour {
 
 	private static final long serialVersionUID = 1L;
 
-	public enum RequestPricedJobBehaviourState{
+	public enum RequestPricedJobBehaviourState {
 		FINDING_AVAILABLE_WORKERS, ASKING_TO_WORK, CONFIRM_TO_WORK, RECEIVING_CONFIRMATION, 
 		WAITING_FOR_WORKER, REWARDING_WORKER, RECEIVING_PRODUCTS, DONE, NO_WORKERS_FOUND
 	}
@@ -22,25 +22,67 @@ public class PricedRequestBehaviour extends Behaviour {
 
 	private AgenteTrabalhador worker;
 	private String workerName;
-	private ACLMessage msg;
+	private ACLMessage msgToSend;
 	private ArrayList<AID> possibleWorkers;
 	private ArrayList<AID> confirmedWorkers;
 	private AID winnerWorker;
 	private Service requestedService;
-	private boolean requestedServiceDone;
 
-	public PricedRequestBehaviour(AgenteTrabalhador worker, Service requestedService) {
+
+	public PricedRequestBehaviour(AgenteTrabalhador worker, Service requestedService)
+	{
 		//super(worker);
 		this.worker = worker;
 		this.workerName = worker.getLocalName();
 		this.requestedService = requestedService;
-		this.requestedServiceDone = false;
 		this.conversationID = System.currentTimeMillis()+"";
 		this.possibleWorkers = new ArrayList<AID>();
 		this.confirmedWorkers = new ArrayList<AID>();
+		this.winnerWorker = null;
 	}
 
-	private void findPossibleWorkers() {
+	@Override
+	public void action()
+	{
+		switch (behaviourState) {
+		case FINDING_AVAILABLE_WORKERS:
+			findPossibleWorkers();		// QUERY
+			break;
+		case ASKING_TO_WORK:
+			askingToWork(); 			// SEND - Begin Process
+			break;
+		case RECEIVING_CONFIRMATION:
+			receivingConfirmations(); 	// RECEIVE
+			break;
+		case CONFIRM_TO_WORK:
+			confirmToWork(); 			// SEND
+			break;
+		case WAITING_FOR_WORKER:
+			waitingForWorkers(); 		// RECEIVE
+			break;
+		case REWARDING_WORKER:
+			rewardingWorkers(); 		// SEND
+			break;
+		case RECEIVING_PRODUCTS:
+			receivingProducts(); 		// RECEIVE
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public boolean done()
+	{
+		if(behaviourState == RequestPricedJobBehaviourState.DONE)
+		{
+			System.out.println("[" + workerName + "] trabalho a preco fixo concluido");
+			return true;
+		} else return false;
+	}
+
+	private void findPossibleWorkers()
+	{
 		DFAgentDescription[] workers = worker.serviceManager.procuraServico(requestedService);
 
 		if(possibleWorkers != null) {
@@ -50,24 +92,27 @@ public class PricedRequestBehaviour extends Behaviour {
 		}
 	}
 
-	private void askingToWork() {
-		msg = new ACLMessage(ACLMessage.PROPOSE);
-		msg.setConversationId(conversationID);
-		msg.setContent("DO JOB-" + requestedService.getName().toUpperCase());
+	private void askingToWork() // SEND
+	{
+		msgToSend = new ACLMessage(ACLMessage.PROPOSE);
+		msgToSend.setConversationId(conversationID);
+		msgToSend.setContent("DO JOB-" + requestedService.getName().toUpperCase());
 
 		System.out.println("[" + workerName + "] Enviou proposta de trabalho a preco fixo a: ");
 		for(AID worker: possibleWorkers) {
 			System.out.print((worker.getName()) + ", ");
-			msg.addReceiver(worker);
+			msgToSend.addReceiver(worker);
 		}
 		System.out.println();
-		myAgent.send(msg);
+		myAgent.send(msgToSend);
+		behaviourState = RequestPricedJobBehaviourState.RECEIVING_CONFIRMATION;
 	}
 
-	private void receivingConfirmations() {
+	private void receivingConfirmations() // RECEIVE
+	{
 		if(!possibleWorkers.isEmpty()) {
-			if(worker.socializer.havePendingReplyMsgs()) {
-				for(Iterator<ACLMessage> msgItem =  worker.socializer.getPendingReplyMsgs().iterator(); msgItem.hasNext();) {
+			if(worker.socializer.haveReplyPendingMsgs()) {
+				for(Iterator<ACLMessage> msgItem =  worker.socializer.getReplyPendingMsgs().iterator(); msgItem.hasNext();) {
 					ACLMessage msg = msgItem.next();
 					if(msg.getConversationId().equals(conversationID)) {
 						for(Iterator<AID> workerItem =  possibleWorkers.iterator(); workerItem.hasNext();) {
@@ -92,93 +137,107 @@ public class PricedRequestBehaviour extends Behaviour {
 			behaviourState = RequestPricedJobBehaviourState.CONFIRM_TO_WORK;
 	}
 
-	private void confirmToWork() {
-		msg = new ACLMessage(ACLMessage.CONFIRM);
-		msg.setConversationId(conversationID);
-		msg.setContent("DO JOB-" + requestedService.getName().toUpperCase());
+	private void confirmToWork() // SEND
+	{
+		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
+		msgToSend.setConversationId(conversationID);
+		msgToSend.setContent("DO JOB-" + requestedService.getName().toUpperCase());
 
 		System.out.println("[" + workerName + "] Enviou confirmação de trabalho a preco fixo a: ");
 		for(AID worker: confirmedWorkers) {
 			System.out.print((worker.getLocalName() + ", "));
-			msg.addReceiver(worker);
+			msgToSend.addReceiver(worker);
 		}
 		System.out.println();
-		myAgent.send(msg);
+		myAgent.send(msgToSend);
+
+		behaviourState = RequestPricedJobBehaviourState.WAITING_FOR_WORKER;
 	}
 
-	private void waitingForWorkers() {
-		if(worker.socializer.havePendingReplyMsgs()) {
-			for(Iterator<ACLMessage> msgItem =  worker.socializer.getPendingReplyMsgs().iterator(); msgItem.hasNext();) {
-				ACLMessage msg = msgItem.next();
-				if(msg.getConversationId().equals(conversationID)) {
-					for(Iterator<AID> workerItem =  confirmedWorkers.iterator(); workerItem.hasNext();) {
-						AID confirmedWorker = workerItem.next();
-						if(confirmedWorker.getName().equals(msg.getSender().getLocalName())) {
-							if(msg.getPerformative() == ACLMessage.CONFIRM) {
-								winnerWorker = msg.getSender();
-								msgItem.remove();
-								workerItem.remove();
-							}
-							else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
-								msgItem.remove();
-								workerItem.remove();
+	private void waitingForWorkers() // RECEIVE
+	{
+		if(winnerWorker == null) {
+			if(worker.socializer.haveReplyPendingMsgs()) {
+				for(Iterator<ACLMessage> msgItem =  worker.socializer.getReplyPendingMsgs().iterator(); msgItem.hasNext();) {
+					ACLMessage msg = msgItem.next();
+					if(msg.getConversationId().equals(conversationID)) {
+						for(Iterator<AID> workerItem =  confirmedWorkers.iterator(); workerItem.hasNext();) {
+							AID confirmedWorker = workerItem.next();
+							if(confirmedWorker.getName().equals(msg.getSender().getLocalName())) {
+								if(msg.getPerformative() == ACLMessage.CONFIRM) {
+									winnerWorker = msg.getSender();
+									msgItem.remove();
+									workerItem.remove();
+								}
+								else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
+									msgItem.remove();
+									workerItem.remove();
+								}
 							}
 						}
 					}
 				}
 			}
+			else
+				behaviourState = RequestPricedJobBehaviourState.REWARDING_WORKER;
 		}
-		else
-			behaviourState = RequestPricedJobBehaviourState.CONFIRM_TO_WORK;
 	}
-	
-	public void RewardingWorkers() {
-		msg = new ACLMessage(ACLMessage.CONFIRM);
-		msg.setConversationId(conversationID);
-		msg.setContent("REWARD-" + 1000);
+
+	public void rewardingWorkers() // SEND
+	{
+		// ------------ Paga o 1º agentes que concluido trabalho ----------------------
+		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
+		msgToSend.setConversationId(conversationID);
+		msgToSend.setContent("REWARD-" + 1000);
 
 		System.out.println("[" + workerName + "] Enviou reconpenssa a: " + winnerWorker.getLocalName());
-		msg.addReceiver(winnerWorker);
-		myAgent.send(msg);
+		msgToSend.addReceiver(winnerWorker);
+		myAgent.send(msgToSend);
+
+		// ------------ Avisa outro agentes que o trabalho foi concluido ----------------------
+		msgToSend = new ACLMessage(ACLMessage.CANCEL);
+		msgToSend.setConversationId(conversationID);
+		msgToSend.setContent("JOB DONE-" + 0);
+
+		boolean cancelOthersWorkers = false;
+
+		if(worker.socializer.haveReplyPendingMsgs()) {
+			for(Iterator<ACLMessage> msgItem =  worker.socializer.getReplyPendingMsgs().iterator(); msgItem.hasNext();) {
+				ACLMessage msg = msgItem.next();
+				if(msg.getConversationId().equals(conversationID)) {
+					for(Iterator<AID> workerItem =  confirmedWorkers.iterator(); workerItem.hasNext();) {
+						AID confirmedWorker = workerItem.next();
+						if(confirmedWorker.getName().equals(msg.getSender().getLocalName())) {
+							msgToSend.addReceiver((AID) confirmedWorker.clone());
+							msgItem.remove();
+							workerItem.remove();
+							cancelOthersWorkers = true;
+						}
+					}
+				}
+			}
+		}
+
+		if(cancelOthersWorkers)
+			myAgent.send(msgToSend);
 	}
 
-	@Override
-	public void action() {
+	private void receivingProducts()
+	{
+		System.out.println("[" + workerName + "] Recebeu Produto de: " + winnerWorker.getLocalName());
+		behaviourState = RequestPricedJobBehaviourState.DONE;
 
-		switch (behaviourState) {
-		case FINDING_AVAILABLE_WORKERS:
-			findPossibleWorkers();
-			break;
-		case ASKING_TO_WORK:
-			askingToWork();
-			break;
-		case RECEIVING_CONFIRMATION:
-			receivingConfirmations();
-			break;
-		case CONFIRM_TO_WORK:
-			confirmToWork();
-			break;
-		case WAITING_FOR_WORKER:
-			waitingForWorkers();
-			break;
-		case REWARDING_WORKER:
-			RewardingWorkers();
-			break;
-		case RECEIVING_PRODUCTS:
-			System.out.println("Received Products"); //Efeitos de teste
-			behaviourState = RequestPricedJobBehaviourState.DONE;
-		default:
-			break;
+		if(worker.socializer.haveReplyPendingMsgs()) {
+			for(Iterator<ACLMessage> msgItem =  worker.socializer.getReplyPendingMsgs().iterator(); msgItem.hasNext();) {
+				ACLMessage msg = msgItem.next();
+				if(msg.getConversationId().equals(conversationID)) {					
+					if(winnerWorker.getName().equals(msg.getSender().getLocalName())) {
+						if(msg.getPerformative() == ACLMessage.CONFIRM) {
+							msgItem.remove();
+						}
+					}
+				}
+			}
 		}
 	}
-
-	@Override
-	public boolean done() {
-		if(requestedServiceDone)
-		{
-			System.out.println("[" + workerName + "] ordem de trabalho enviada");
-			return true;
-		} else return false;
-	}
-
 }
