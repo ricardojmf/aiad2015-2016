@@ -39,6 +39,7 @@ public class PricedRequestBehaviour extends Behaviour {
 		this.possibleWorkers = new ArrayList<AID>();
 		this.confirmedWorkers = new ArrayList<AID>();
 		this.winnerWorker = null;
+		this.behaviourState = RequestPricedJobBehaviourState.FINDING_AVAILABLE_WORKERS;
 	}
 
 	@Override
@@ -220,6 +221,8 @@ public class PricedRequestBehaviour extends Behaviour {
 
 		if(cancelOthersWorkers)
 			myAgent.send(msgToSend);
+		
+		behaviourState = RequestPricedJobBehaviourState.RECEIVING_PRODUCTS;
 	}
 
 	private void receivingProducts()
@@ -239,5 +242,6 @@ public class PricedRequestBehaviour extends Behaviour {
 				}
 			}
 		}
+		behaviourState = RequestPricedJobBehaviourState.DONE;
 	}
 }
