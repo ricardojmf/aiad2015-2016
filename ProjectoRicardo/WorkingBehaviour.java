@@ -29,15 +29,12 @@ public class WorkingBehaviour extends Behaviour{
 		this.workingState = WorkingBehaviourState.WAITING_FOR_WORK;
 		this.job = new Job("Transport", "50::Wood::WarehouseOne");
 		this.makingProducts = makingProducts;
-		registWork(job);
+		DeregistWork(job);
 	}
 	
 	@Override
 	public void action() {
-		switch (workingState) {
-		case WAITING_FOR_WORK:
-			waitingForWork();
-			break;			
+		switch (workingState) {		
 		case WORKING:
 			working();
 			break;
@@ -55,20 +52,9 @@ public class WorkingBehaviour extends Behaviour{
 		}
 	}
 	
-	private void waitingForWork(){
-		ACLMessage message = myAgent.receive();
-		if(message != null)
-		{
-			System.out.println("RECEIVE: " + message);		
-			String messageParts[] = message.getContent().split("-");			
-			if(messageParts[0].equals("REQUEST_JOB") && 
-			   messageParts[1].equals(job.jobType))
-			{
-				sendReply();
-				requestWorker = message.getSender();
-				workingState = WorkingBehaviourState.WORKING;
-			}
-		} else block();
+	private void working(){
+		if(job.work(this))
+			workingState = WorkingBehaviourState.FINNISH_COMUNICATION;
 	}
 	
 	private void sendReply()
@@ -101,7 +87,7 @@ public class WorkingBehaviour extends Behaviour{
 	private void finishComunication(){
 		ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 		message.addReceiver(requestWorker);
-		message.setContent(new ReplyMessage("DONE-JOB").toString());
+		message.setContent(new ReplyMessage("DONE").toString());
 		myAgent.send(message);
 		if(makingProducts)
 			workingState = WorkingBehaviourState.DELIVERING_PRODUCTS;

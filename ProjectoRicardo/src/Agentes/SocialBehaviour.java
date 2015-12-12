@@ -16,7 +16,7 @@ public class SocialBehaviour extends CyclicBehaviour {
 	private ArrayList<ACLMessage> pendingConfirmMessages;
 	private ArrayList<ACLMessage> pendingInformMessages;
 	private ArrayList<ACLMessage> pendingNotUnderstoodMessages;
-	private ArrayList<ACLMessage> pendingRequestMessages;
+	private ArrayList<ACLMessage> pendingProposeMessages;
 	private ArrayList<ACLMessage> pendingRefuseMessages;
 
 	public SocialBehaviour(AgenteTrabalhador worker) {
@@ -26,9 +26,8 @@ public class SocialBehaviour extends CyclicBehaviour {
 		this.pendingConfirmMessages = new ArrayList<ACLMessage>();
 		this.pendingInformMessages = new ArrayList<ACLMessage>();
 		this.pendingNotUnderstoodMessages = new ArrayList<ACLMessage>();
-		this.pendingRequestMessages = new ArrayList<ACLMessage>();
-		this.pendingRefuseMessages = new ArrayList<ACLMessage>();	
-		
+		this.pendingProposeMessages = new ArrayList<ACLMessage>();
+		this.pendingRefuseMessages = new ArrayList<ACLMessage>();		
 	}
 
 	@Override
@@ -58,8 +57,8 @@ public class SocialBehaviour extends CyclicBehaviour {
 		case ACLMessage.CONFIRM:
 			pendingConfirmMessages.add(msg);
 			break;
-		case ACLMessage.REQUEST:
-			pendingRequestMessages.add(msg);
+		case ACLMessage.PROPOSE:
+			pendingProposeMessages.add(msg);
 			break;
 		case ACLMessage.NOT_UNDERSTOOD:
 			pendingNotUnderstoodMessages.add(msg);
@@ -79,8 +78,8 @@ public class SocialBehaviour extends CyclicBehaviour {
 		return !pendingAcceptProposalMessages.isEmpty();
 	}
 	
-	public boolean haveRequestPendingMsgs() {
-		return !pendingRequestMessages.isEmpty();
+	public boolean haveProposePendingMsgs() {
+		return !pendingProposeMessages.isEmpty();
 	}
 	
 	public boolean haveRefusePendingMsgs() {
@@ -103,8 +102,8 @@ public class SocialBehaviour extends CyclicBehaviour {
 		return pendingAcceptProposalMessages;
 	}
 	
-	public ArrayList<ACLMessage> getRequestPendingMsgs() {
-		return pendingRequestMessages;
+	public ArrayList<ACLMessage> getProposePendingMsgs() {
+		return pendingProposeMessages;
 	}
 	
 	public ArrayList<ACLMessage> getRefusePendingMsgs() {
@@ -132,10 +131,10 @@ public class SocialBehaviour extends CyclicBehaviour {
 		return null;
 	}
 	
-	public ACLMessage get1stRequestPendingMsg() {
-		if(!pendingRequestMessages.isEmpty()) {
-			ACLMessage msg = pendingRequestMessages.get(0);
-			remove1stRequestPendingMsg();
+	public ACLMessage get1stProposePendingMsg() {
+		if(!pendingProposeMessages.isEmpty()) {
+			ACLMessage msg = pendingProposeMessages.get(0);
+			remove1stProposePendingMsg();
 			return msg;
 		}
 		return null;
@@ -182,9 +181,9 @@ public class SocialBehaviour extends CyclicBehaviour {
 			pendingAcceptProposalMessages.remove(0);
 	}
 	
-	private void remove1stRequestPendingMsg() {
-		if(!pendingRequestMessages.isEmpty())
-			pendingRequestMessages.remove(0);
+	private void remove1stProposePendingMsg() {
+		if(!pendingProposeMessages.isEmpty())
+			pendingProposeMessages.remove(0);
 	}
 	
 	private void remove1stRefusePendingMsg() {

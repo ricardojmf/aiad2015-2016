@@ -1,12 +1,17 @@
 package Agentes;
 
+import Messages.*;
+
 import sajas.core.behaviours.Behaviour;
+
+import java.util.Iterator;
 
 import com.sun.media.rtsp.protocol.RequestMessage;
 
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
+
 
 public class RequestBehaviour extends Behaviour
 {
@@ -18,7 +23,9 @@ public class RequestBehaviour extends Behaviour
 	}
 
 	private RequestJobBehaviourState behaviourState;
+
 	private AgenteTrabalhador worker;
+	private String conversationID;
 	private String workerName;
 	private ACLMessage msg;	
 	private DFAgentDescription[] possibleWorkers;
@@ -27,12 +34,13 @@ public class RequestBehaviour extends Behaviour
 	private boolean receivingProducts;
 	private Object[] productsReceived;
 	private AID assignedWorker;
-	
+
 	public RequestBehaviour(AgenteTrabalhador worker, Service requestedService) {
 		super(worker);
 		this.behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
 		this.worker = worker;
 		this.workerName = worker.getLocalName();
+		this.conversationID = System.currentTimeMillis()+"";
 		this.requestedService = requestedService;
 		this.requestedServiceDone = false;
 	}
@@ -65,9 +73,9 @@ public class RequestBehaviour extends Behaviour
 	}
 
 	private void findWorkersWithService(){
-		
+
 		possibleWorkers = worker.serviceManager.procuraServico(requestedService);
-		
+
 		if(possibleWorkers.length != 0){
 			worker.printToConsole("Worker Founded: " + possibleWorkers[0].getName().getLocalName());
 			assignedWorker = possibleWorkers[0].getName(); 
@@ -75,7 +83,7 @@ public class RequestBehaviour extends Behaviour
 		}else
 			behaviourState = RequestJobBehaviourState.NO_WORKERS_FOUND;	
 	}
-	
+
 	private void noWorkersFound(){
 		worker.printToConsole("No worker found for the requested service! Trying again in 15 seconds!");
 		block(1500);
@@ -84,40 +92,42 @@ public class RequestBehaviour extends Behaviour
 	private void askingToWork(){	
 		ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
 		message.addReceiver(assignedWorker);
-		message.setContent(new Messages.RequestMessage(myAgent.getLocalName(), requestedService.getType()).toString());
+		message.setContent(new Messages.ProposeMessage(myAgent.getLocalName(), requestedService.getType()).toString());
 		myAgent.send(message);
 		behaviourState = RequestJobBehaviourState.RECEIVING_CONFIRMATION;
 	}
 
 	private void receivingConfirmation(){
 
-		ACLMessage message = myAgent.receive();
-		if(message != null)
-		{
-			System.out.println("RECEIVE: " + message);		
-			String messageParts[] = message.getContent().split("-");			
-			if(messageParts[0].equals(ACLMessage.CONFIRM) && 
-					message.getSender().getLocalName().equals(assignedWorker.getLocalName()) && 
-					messageParts[1].equals("YES-JOB"))
-				behaviourState = RequestJobBehaviourState.WAITING_FOR_WORKER;	
-		} else block();
+		if(worker.socializer.haveConfirmPendingMsgs()) {
+			for(Iterator<ACLMessage> msgItem =  worker.socializer.getConfirmPendingMsgs().iterator(); msgItem.hasNext();) {
+				ACLMessage msg = msgItem.next();
+				if(msg.getConversationId().equals(conversationID)) {
+					if(assignedWorker.getName().equals(msg.getSender().getLocalName())) {
+						if(msg.getContent().contains("YES"))	
+						behaviourState = RequestJobBehaviourState.WAITING_FOR_WORKER;
+					}
+				}
+			}
+		}
 	}
 
 	private void waitingForWorker(){
-
-		ACLMessage message = myAgent.receive();
-		if(message != null)
-		{
-			System.out.println("RECEIVE: " + message);		
-			String messageParts[] = message.getContent().split("-");			
-			if(messageParts[0].equals("REPLY_MESSAGE") && 
-					message.getSender().getLocalName().equals(assignedWorker.getLocalName()) && 
-					messageParts[1].equals("DONE-JOB"))
-				if(receivingProducts)
-					behaviourState = RequestJobBehaviourState.RECEIVING_PRODUCTS;
-				else
-					behaviourState = RequestJobBehaviourState.DONE;
-		} else block();		
+		
+		if(worker.socializer.haveConfirmPendingMsgs()) {
+			for(Iterator<ACLMessage> msgItem =  worker.socializer.getConfirmPendingMsgs().iterator(); msgItem.hasNext();) {
+				ACLMessage msg = msgItem.next();
+				if(msg.getConversationId().equals(conversationID)) {
+					if(assignedWorker.getName().equals(msg.getSender().getLocalName())) {
+						if(msg.getContent().contains("DONE"))
+							if(receivingProducts)
+								behaviourState = RequestJobBehaviourState.RECEIVING_PRODUCTS;
+							else
+								behaviourState = RequestJobBehaviourState.DONE;
+					}
+				}
+			}
+		}		
 	}
 
 	private void receivingProducts()

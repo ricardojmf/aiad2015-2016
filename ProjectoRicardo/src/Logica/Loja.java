@@ -17,5 +17,4 @@ public class Loja extends Local
 		super(li, col, 'S', nome);
 		productos = new Vector<ProductoLoja>();
 	}
-	
 }

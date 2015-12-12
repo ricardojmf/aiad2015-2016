@@ -18,45 +18,15 @@ public class ProcessManager extends CyclicBehaviour {
 	}
 
 	@Override
-	public void action() {
-		
-		switch (worker.state) {
-		case WAITING_FOR_JOB:
-			waitingForJob();
-			break;
-		case PREPARE_TO_WORK:
-			prepareToWork();
-			break;
-		case WAITING_FOR_RESOURCES:
-			break;
-		case WORKING:
-			break;
-		case CHARGING_BATTERY:
-			break;
-		default:
-			break;
-		}
+	public void action() {		
+		checkForPendingMessages();		
 	}
-	
-	//ISTO AQUI E ERRADO...
-	/*
-	 * 
 	 
 	protected void checkForPendingMessages()
 	{
-		if (worker.socializer.haveAcceptProposalPendingMsgs())
-			parseReceivedMsg(worker.socializer.get1stAcceptProposalPendingMsg());
-		else if (worker.socializer.haveRequestPendingMsgs())
-			parseReceivedMsg(worker.socializer.get1stRequestPendingMsg());
-		else if (worker.socializer.haveRefusePendingMsgs())
-			parseReceivedMsg(worker.socializer.get1stRefusePendingMsg());
-		else if (worker.socializer.haveInformPendingMsgs())
-			parseReceivedMsg(worker.socializer.get1stInformPendingMsg());
-		else if (worker.socializer.haveNotUnderstoodPendingMsgs())
-			parseReceivedMsg(worker.socializer.get1stNotUnderstoodPendingMsg());
-		else if (worker.socializer.haveConfirmPendingMsgs())
-			parseReceivedMsg(worker.socializer.get1stConfirmPendingMsg());
-	}*/
+		if (worker.socializer.haveProposePendingMsgs())
+			parseReceivedMsg(worker.socializer.get1stProposePendingMsg());
+	}
 	
 	protected void checkForRequestingServices()
 	{
@@ -70,8 +40,6 @@ public class ProcessManager extends CyclicBehaviour {
 	
 	protected void waitingForJob()
 	{
-		if (worker.socializer.haveRequestPendingMsgs())
-			parseReceivedMsg(worker.socializer.get1stRequestPendingMsg());		
 		
 		if(worker.serviceManager.haveJobsToDo())
 		{
@@ -104,9 +72,8 @@ public class ProcessManager extends CyclicBehaviour {
 			if(worker.serviceManager.canDoService(job))
 			{
 				System.out.println("[" + workerName + "] Recebeu ordem de encomenda de " + aclMessage.getSender().getLocalName() + " para servico " + job.getName());
-
-				replyOK(aclMessage.getSender(), receivedMsg);
-				worker.serviceManager.addJobToDo(job);
+				replyOK(aclMessage.getSender(), receivedMsg);				
+				worker.addBehaviour(new WorkingBehaviour(worker, job));
 			}
 			else
 				replyNO(aclMessage.getSender(), receivedMsg);
