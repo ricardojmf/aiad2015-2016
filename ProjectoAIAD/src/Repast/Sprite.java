@@ -1,40 +1,21 @@
 package Repast;
-import java.awt.Graphics;
+
 import java.awt.Image;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
+import javax.swing.ImageIcon;
 
-public class Sprite extends Image
+public class Sprite
 {
-
-	@Override
-	public int getWidth(ImageObserver observer) {
-		// TODO Auto-generated method stub
-		return 0;
+	Image imagem;
+	ImageIcon fundo;
+	
+	public Sprite(String src)
+	{
+		fundo = new ImageIcon(src);
+		imagem = fundo.getImage();
 	}
-
-	@Override
-	public int getHeight(ImageObserver observer) {
-		// TODO Auto-generated method stub
-		return 0;
+	
+	public Image value()
+	{
+		return imagem;
 	}
-
-	@Override
-	public ImageProducer getSource() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Graphics getGraphics() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object getProperty(String name, ImageObserver observer) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

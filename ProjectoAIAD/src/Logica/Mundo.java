@@ -48,7 +48,7 @@ public class Mundo
 			String[] varios = s.split(" ");
 			
 			String nome = "";
-			for(int k = 0; k < (varios.length - 1); k++)
+			for(int k = 0; k < (varios.length - 2); k++)
 			{
 				if (k == (varios.length - 2)) // ultimo
 				{
@@ -61,8 +61,9 @@ public class Mundo
 			}
 			
 			int peso = Integer.parseInt(varios[varios.length - 1]);
+			int preco = Integer.parseInt(varios[varios.length - 2]);
 			
-			productos.addElement(new Producto(nome, peso));
+			productos.addElement(new Producto(nome, preco, peso));
 			i++;
 		}
 		i++;
@@ -109,11 +110,10 @@ public class Mundo
 					String[] rr = r.split(" ");
 					
 					int index = Integer.parseInt(rr[0]);
-					int preco = Integer.parseInt(rr[1]);
 					
 					Producto p = productos.elementAt(index);
 					
-					lj.productos.add(new ProductoLoja(p, preco));
+					lj.productos.add(p);
 					
 					i++;
 				}
@@ -198,6 +198,74 @@ public class Mundo
 			i++;
 		}
 		i++;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		// LEITURA DAS LOJAS
+		if (!linhas.elementAt(i).equals("PRODUCOES"))
+		{
+			System.exit(0);
+		}
+		
+		i++;
+		while(i < linhas.size() && !linhas.elementAt(i).equals("END PRODUCOES"))
+		{
+			String s = linhas.elementAt(i);
+			if (s.equals("PRODUCAO"))
+			{
+				i++;
+				String info = linhas.elementAt(i);
+				i++;
+				
+				String[] infoo = info.split(" ");
+				
+				int indexNovo = Integer.parseInt(infoo[0]);
+				int quantidadeNovo = Integer.parseInt(infoo[1]);
+				String ferramenta = infoo[2];
+				
+				Vector<String> ferramentas = new Vector<String>();
+				ferramentas.addElement(ferramenta);
+				
+				Producto p = productos.elementAt(indexNovo);
+				
+				Vector<Ranhura> requisitos = new Vector<Ranhura>();
+				
+				while(i < linhas.size() && !linhas.elementAt(i).equals("END PRODUCAO"))
+				{
+					String r = linhas.elementAt(i);
+					String[] rr = r.split(" ");
+					
+					int indexRequerido = Integer.parseInt(rr[0]);
+					int quantidadeRequerido = Integer.parseInt(rr[1]);
+					
+					Producto p2 = productos.elementAt(indexRequerido);
+					Ranhura ra = new Ranhura(p2, quantidadeRequerido);
+					
+					requisitos.addElement(ra);
+					
+					i++;
+				}
+				
+				Produzir pro = new Produzir(requisitos, ferramentas, p, quantidadeNovo);
+				
+				producoes.addElement(pro);
+			}
+			else
+			{
+				System.exit(0);
+			}
+			
+			i++;
+		}
+		i++;
 	}
 	
 	private void lerFicheiro(String ficheiro)
@@ -274,9 +342,9 @@ public class Mundo
 		for(Loja lj: lojas)
 		{
 			Auxiliar.writeln(lj.nome + " em (" + lj.linha + " , " + lj.coluna + ")");
-			for(ProductoLoja pj: lj.productos)
+			for(Producto pj: lj.productos)
 			{
-				Auxiliar.writeln("+ " + pj.p.nome + " " + pj.preco + "�");
+				Auxiliar.writeln(pj.toString());
 			}
 		}
 	}

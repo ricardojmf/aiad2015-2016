@@ -264,18 +264,52 @@ public class Trabalhador extends Identidade
 	
 	public boolean comprar(Loja lj, int indexProductoLoja, int quantidade)
 	{
-		ProductoLoja pl = lj.productos.elementAt(indexProductoLoja);
+		Producto pl = lj.productos.elementAt(indexProductoLoja);
 		
 		if (riqueza > (pl.preco*quantidade))
 		{
-			if ( (carga + (pl.p.peso*quantidade)) < cargaMax)
+			if ( (carga + (pl.peso*quantidade)) < cargaMax)
 			{
-				boolean estado = adicionarContentor(pl.p, quantidade);
+				boolean estado = adicionarContentor(pl, quantidade);
 				
 				if (estado)
 				{
 					riqueza = riqueza - (pl.preco*quantidade);
-					carga = carga + (pl.p.peso*quantidade);
+					carga = carga + (pl.peso*quantidade);
+				}
+				
+				return estado;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean comprar(Loja lj, Producto producto, int quantidade)
+	{
+		int indexProductoLoja = 0;
+		while(indexProductoLoja < lj.productos.size() && !lj.productos.elementAt(indexProductoLoja).nome.equals(producto.nome))
+		{
+			indexProductoLoja++;
+		}
+		
+		if(indexProductoLoja >= lj.productos.size() )
+		{
+			return false;
+		}
+		
+		Producto pl = lj.productos.elementAt(indexProductoLoja);
+		
+		if (riqueza > (pl.preco*quantidade))
+		{
+			if ( (carga + (pl.peso*quantidade)) < cargaMax)
+			{
+				boolean estado = adicionarContentor(pl, quantidade);
+				
+				if (estado)
+				{
+					riqueza = riqueza - (pl.preco*quantidade);
+					carga = carga + (pl.peso*quantidade);
 				}
 				
 				return estado;
@@ -287,6 +321,65 @@ public class Trabalhador extends Identidade
 	
 	public boolean armazenar(Armazem ar, int indexRanhura, int quantidade)
 	{
+		Ranhura ra = contentor.elementAt(indexRanhura);
+		
+		if (ra.quantidade < quantidade)
+		{
+			return false;
+		}
+		
+		removerContentor(ra.producto, quantidade);
+		
+		int i = 0;
+		while (i < ar.clientes.size())
+		{
+			// procurar o deposito do trabalhador no armazem
+			ContentorArmazem ca = ar.clientes.elementAt(i);
+			if(ca.trabalhador.nome.equals(nome))
+			{
+				int j = 0;
+				while(j < ca.contentor.size())
+				{
+					// procurar a ranhura do producto a acrescentar em quantidade
+					ProductoArmazenado pr = ca.contentor.elementAt(j);
+					if (pr.producto.nome.equals(ra.producto.nome))
+					{
+						pr.quantidade += quantidade;
+						return true;
+					}
+					
+					j++;
+				}
+				
+				ca.contentor.addElement(new ProductoArmazenado(ra.producto, quantidade));
+				
+				return true;
+			}
+			
+			i++;
+		}
+		
+		// adicionar novo cliente a lista
+		ContentorArmazem ca = new ContentorArmazem(this);
+		ca.contentor.addElement(new ProductoArmazenado(ra.producto, quantidade));
+		ar.clientes.addElement(ca);
+		
+		return true;
+	}
+	
+	public boolean armazenar(Armazem ar, Producto producto, int quantidade)
+	{
+		int indexRanhura = 0;
+		while(indexRanhura < contentor.size() && !contentor.elementAt(indexRanhura).producto.nome.equals(producto.nome))
+		{
+			indexRanhura++;
+		}
+		
+		if(indexRanhura >= contentor.size() )
+		{
+			return false;
+		}
+		
 		Ranhura ra = contentor.elementAt(indexRanhura);
 		
 		if (ra.quantidade < quantidade)

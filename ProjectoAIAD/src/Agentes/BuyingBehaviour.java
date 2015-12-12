@@ -1,8 +1,8 @@
 package Agentes;
 
-import sajas.core.behaviours.SimpleBehaviour;
+import sajas.core.behaviours.Behaviour;
 
-public class BuyingBehaviour extends SimpleBehaviour
+public class BuyingBehaviour extends Behaviour
 {
 	AgenteTrabalhador agente;
 	

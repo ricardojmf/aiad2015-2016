@@ -3,26 +3,26 @@ package Logica;
 public class Producto
 {
 	public String nome;
-	public String detalhes;
+	public int preco;
 	public int peso;
 	
 	public Producto(String arg1, int arg2)
 	{
 		nome = arg1;
-		detalhes = "";
+		preco = 0;
 		peso = arg2;
 	}
 	
-	public Producto(String arg1, String arg2, int arg3)
+	public Producto(String arg1, int arg2, int arg3)
 	{
 		nome = arg1;
-		detalhes = arg2;
+		preco = arg2;
 		peso = arg3;
 	}
 	
 	public String toString()
 	{
-		return( nome + " " + peso + "kg" );
+		return( nome + " " + peso + "kg " + preco + "€");
 	}
 	
 	public int compareTo(Producto obj)

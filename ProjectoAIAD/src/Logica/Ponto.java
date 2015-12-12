@@ -28,6 +28,11 @@ public class Ponto
 		return( linha + " " + coluna );
 	}
 	
+	public boolean mesmaPosicao(Ponto p)
+	{
+		return( this.linha == p.linha && this.coluna == p.coluna );
+	}
+	
 	public void set(int l, int c)
 	{
 		linha = l;

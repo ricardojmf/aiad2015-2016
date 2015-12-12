@@ -9,7 +9,7 @@ import Logica.Auxiliar;
 import Logica.Mundo;
 import Logica.Ponto;
 import Logica.Trabalhador;
-
+import Repast.Sprite;
 import sajas.core.Agent;
 import sajas.core.behaviours.SequentialBehaviour;
 import sajas.core.behaviours.SimpleBehaviour;
@@ -23,17 +23,10 @@ public class AgenteTrabalhador extends Agent implements Drawable
 {
 	public Trabalhador tr;
 	
-	static final ImageIcon iconCarro = new ImageIcon(Auxiliar.folder + "carro.png");
-	static final ImageIcon iconMota = new ImageIcon(Auxiliar.folder + "mota.png");
-	static final ImageIcon iconDrone_Estrada = new ImageIcon(Auxiliar.folder + "drone_estrada.png");
-	static final ImageIcon iconDrone_Parede = new ImageIcon(Auxiliar.folder + "drone_parede.png");
-	static final ImageIcon iconCamiao = new ImageIcon(Auxiliar.folder + "camiao.png");
-	
-	static final Image carro = iconCarro.getImage();
-	static final Image mota = iconMota.getImage();
-	static final Image drone_estrada = iconDrone_Estrada.getImage();
-	static final Image drone_parede = iconDrone_Parede.getImage();
-	static final Image camiao = iconCamiao.getImage();
+	static final Sprite carro = new Sprite(Auxiliar.folder + "carro.png");
+	static final Sprite mota = new Sprite(Auxiliar.folder + "mota.png");
+	static final Sprite drone = new Sprite(Auxiliar.folder + "drone_parede.png");
+	static final Sprite camiao = new Sprite(Auxiliar.folder + "camiao.png");
 	
 	Object2DGrid espaco;
 	public enum WorkingState{
@@ -100,16 +93,16 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		switch(tr.transporte)
 		{
 		case 2:
-			arg0.drawImage(drone_estrada);
+			arg0.drawImage(drone.value());
 			break;
 		case 4:
-			arg0.drawImage(camiao);
+			arg0.drawImage(camiao.value());
 			break;
 		case 1:
-			arg0.drawImage(carro);
+			arg0.drawImage(carro.value());
 			break;
 		case 3:
-			arg0.drawImage(mota);
+			arg0.drawImage(mota.value());
 			break;
 		}
 	}

@@ -20,19 +20,12 @@ public class Quadro implements Drawable
 	public int COMPRIMENTO = 0;
 	public int LARGURA = 0;
 	
-	static final ImageIcon iconParede = new ImageIcon(Auxiliar.folder + "parede.png");
-	static final ImageIcon iconEstrada = new ImageIcon(Auxiliar.folder + "estrada.png");
-	static final ImageIcon iconLoja = new ImageIcon(Auxiliar.folder + "loja.png");
-	static final ImageIcon iconArmazem = new ImageIcon(Auxiliar.folder + "armazem.png");
-	static final ImageIcon iconLixeira = new ImageIcon(Auxiliar.folder + "lixeira.png");
-	static final ImageIcon iconRecarga = new ImageIcon(Auxiliar.folder + "recarga.png");
-	
-	static final Image parede = iconParede.getImage();
-	static final Image estrada = iconEstrada.getImage();
-	static final Image loja = iconLoja.getImage();
-	static final Image armazem = iconArmazem.getImage();
-	static final Image lixeira = iconLixeira.getImage();
-	static final Image recarga = iconRecarga.getImage();
+	static final Sprite parede = new Sprite(Auxiliar.folder + "parede.png");
+	static final Sprite estrada = new Sprite(Auxiliar.folder + "estrada.png");
+	static final Sprite loja = new Sprite(Auxiliar.folder + "loja.png");
+	static final Sprite armazem = new Sprite(Auxiliar.folder + "armazem.png");
+	static final Sprite lixeira = new Sprite(Auxiliar.folder + "lixeira.png");
+	static final Sprite recarga = new Sprite(Auxiliar.folder + "recarga.png");
 	
 	public Quadro(Vector<String> map)
 	{
@@ -57,22 +50,22 @@ public class Quadro implements Drawable
 				{
 				case Auxiliar.letraParede: // parede
 					//arg0.drawFastRect(Color.black);
-					arg0.drawImage(parede);
+					arg0.drawImage(parede.value());
 					break;
 				case Auxiliar.letraEstrada: // estrada
-					arg0.drawImage(estrada);
+					arg0.drawImage(estrada.value());
 					break;
 				case Auxiliar.letraLoja: // parede
-					arg0.drawImage(loja);
+					arg0.drawImage(loja.value());
 					break;
 				case Auxiliar.letraArmazem: // estrada
-					arg0.drawImage(armazem);
+					arg0.drawImage(armazem.value());
 					break;
 				case Auxiliar.letraLixeira: // parede
-					arg0.drawImage(lixeira);
+					arg0.drawImage(lixeira.value());
 					break;
 				case Auxiliar.letraRecarga: // estrada
-					arg0.drawImage(recarga);
+					arg0.drawImage(recarga.value());
 					break;
 				}
 			}
