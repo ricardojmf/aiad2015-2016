@@ -66,7 +66,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 
 		this.serviceManager = new ServiceManager(this);
 		
-		Service service = new Service(nomeServico, "");
+		Service service = new Service(nomeServico, "", 1000);
 		
 		if(empregador.equals("P"))
 		{

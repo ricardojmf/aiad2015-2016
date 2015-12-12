@@ -88,10 +88,10 @@ public class Janela extends Repast3Launcher
 			ag3 = new AgenteTrabalhador("Agente3", 3, espaco);
 			ag4 = new AgenteTrabalhador("Agente4", 2, espaco);
 			
-			ag1.setArguments(new String[] { "ping", "E" });
-			ag2.setArguments(new String[] { "ping", "P" });
-			ag3.setArguments(new String[] { "pong", "E" });
-			ag4.setArguments(new String[] { "pung", "E" });
+			ag1.setArguments(new String[] { "madeira", "E" });
+			ag2.setArguments(new String[] { "madeira", "P" });
+			ag3.setArguments(new String[] { "madeira", "E" });
+			ag4.setArguments(new String[] { "ferro", "E" });
 			
 			Vector<Logica.Ponto> pontos = new Vector<Logica.Ponto>();
 			pontos.addElement(new Logica.Ponto(2, 4));

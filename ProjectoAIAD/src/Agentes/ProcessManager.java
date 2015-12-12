@@ -1,8 +1,8 @@
 package Agentes;
 
 import Agentes.AgenteTrabalhador.WorkingState;
-import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import jade.core.AID;
 import sajas.core.behaviours.CyclicBehaviour;
 
 public class ProcessManager extends CyclicBehaviour {
@@ -36,7 +36,7 @@ public class ProcessManager extends CyclicBehaviour {
 		default:
 			break;
 		}
-		
+
 		waitingForJob();
 		checkForRequestingServices();
 		checkForPendingMessages();
@@ -49,7 +49,10 @@ public class ProcessManager extends CyclicBehaviour {
 		{
 			Service requestedService = worker.serviceManager.get1stRequestedService();
 			worker.serviceManager.remove1stRequestedService();
-			myAgent.addBehaviour(new RequestingBehaviour(worker, requestedService));
+			
+			//myAgent.addBehaviour(new RequestingBehaviour(worker, requestedService));
+			//myAgent.addBehaviour(new PricedRequestBehaviour(worker, requestedService));
+			myAgent.addBehaviour(new SimpleRequestBehaviour(worker, requestedService));
 		}
 	}
 	
@@ -85,20 +88,22 @@ public class ProcessManager extends CyclicBehaviour {
 		String receivedMsg = aclMessage.getContent().toString();
 		System.out.println("[" + workerName + "] Parsing mensagem de [" + aclMessage.getSender().getLocalName() + "] dizendo: " + receivedMsg);
 
-		if(receivedMsg.contains("DO JOB"))		// proposta de encomenda
+		if(receivedMsg.contains("DO WORK ON FOR"))		// proposta de encomenda
 		{	
 			String[] parts = receivedMsg.split("-");
 
 			String requestedServiceName = parts[1];
 			String requestedServiceType = "";
-			Service job = new Service(requestedServiceName, requestedServiceType);
+			Service job = new Service(requestedServiceName, requestedServiceType, 1000);
 
 			if(worker.serviceManager.canDoService(job))
 			{
-				System.out.println("[" + workerName + "] Recebeu ordem de encomenda de " + aclMessage.getSender().getLocalName() + " para servico " + job.getName());
+				System.out.println("[" + workerName + "] Recebeu ordem de encomenda de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
 
-				replyOK(aclMessage.getSender(), receivedMsg);
-				worker.serviceManager.addJobToDo(job);
+				worker.addBehaviour(new SimpleJobBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
+				
+				//replyOK(aclMessage.getSender(), receivedMsg);
+				//worker.serviceManager.addJobToDo(job);
 			}
 			else
 				replyNO(aclMessage.getSender(), receivedMsg);
@@ -108,14 +113,16 @@ public class ProcessManager extends CyclicBehaviour {
 
 			String requestedServiceName = parts[1];
 			String requestedServiceType = "";
-			Service job = new Service(requestedServiceName, requestedServiceType);
+			Service job = new Service(requestedServiceName, requestedServiceType, 1000);
 
 			if(worker.serviceManager.canDoService(job))
 			{
-				System.out.println("[" + workerName + "] Recebeu proposta de trabalho a preco fixo de " + aclMessage.getSender().getLocalName() + " para servico " + job.getName());
+				System.out.println("[" + workerName + "] Recebeu proposta de trabalho a preco fixo de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
 
-				replyOK(aclMessage.getSender(), receivedMsg);
-				worker.serviceManager.addJobToDo(job);
+				worker.addBehaviour(new PricedJobBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
+				
+				//replyOK(aclMessage.getSender(), receivedMsg);
+				//worker.serviceManager.addJobToDo(job);
 			}
 			else
 				replyNO(aclMessage.getSender(), receivedMsg);
@@ -125,11 +132,11 @@ public class ProcessManager extends CyclicBehaviour {
 
 			String requestedServiceName = parts[1];
 			String requestedServiceType = "";
-			Service job = new Service(requestedServiceName, requestedServiceType);
+			Service job = new Service(requestedServiceName, requestedServiceType, 1000);
 
 			if(worker.serviceManager.canDoService(job))
 			{
-				System.out.println("[" + workerName + "] Recebeu proposta de trabalho a leilao de " + aclMessage.getSender().getLocalName() + " para servico " + job.getName());
+				System.out.println("[" + workerName + "] Recebeu proposta de trabalho a leilao de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
 
 				replyOK(aclMessage.getSender(), receivedMsg);
 				worker.serviceManager.addJobToDo(job);
@@ -147,7 +154,7 @@ public class ProcessManager extends CyclicBehaviour {
 	}
 
 	public void replyNO(AID agent, String replyMsg) {
-		ACLMessage msg = new ACLMessage(ACLMessage.REFUSE);
+		ACLMessage msg = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
 		msg.addReceiver(agent);
 		msg.setContent(replyMsg);
 		myAgent.send(msg);

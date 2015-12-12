@@ -41,7 +41,7 @@ public class WorkingBehaviour extends SimpleBehaviour {
 			System.out.println("[" + workerName + "] Acabei a minha tarefa em " + actualService.getName());
 			qnt = 0;
 			worker.state = WorkingState.WAITING_FOR_JOB;
-			worker.serviceManager.offerService(new Service("pedras", ""));
+			worker.serviceManager.offerService(new Service("pedras", "", 1000));
 			actualService = null;
 			return true;
 		} else return false;
