@@ -1,15 +1,17 @@
 package Agentes;
 
-import java.awt.Image;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
-
-import Logica.*;
-
+import Logica.Armazem;
+import Logica.Auxiliar;
+import Logica.Loja;
+import Logica.Mundo;
+import Logica.Ponto;
+import Logica.Producto;
+import Logica.Ranhura;
+import Logica.Trabalhador;
 import Repast.Sprite;
 import sajas.core.Agent;
-import sajas.core.behaviours.SequentialBehaviour;
 import sajas.core.behaviours.Behaviour;
 import uchicago.src.sim.gui.Drawable;
 import uchicago.src.sim.gui.SimGraphics;
@@ -34,6 +36,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	MySequentialBehaviour listaComportamentos;
 
 	protected WorkingState state;
+	protected String nome;
 	protected String workerType;
 	protected ServiceManager serviceManager;
 	protected SocialBehaviour socializer;
@@ -43,6 +46,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	{
 		super();
 		espaco = space;
+		this.nome = nome;
 		state = WorkingState.WAITING_FOR_JOB;
 		
 		tr = new Trabalhador(nome, tipoTransporte);
@@ -256,5 +260,10 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		{
 			// vender productos ?
 		}
-	}	
+	}
+	
+	
+	public void debug(String msg) {
+		System.out.println("[" + nome + "]: -> " + msg);
+	}
 }

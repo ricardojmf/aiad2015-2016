@@ -20,25 +20,25 @@ public class SimpleRequestBehaviour extends Behaviour
 
 	private AgenteTrabalhador worker;
 	private String conversationID;
-	private String workerName;
 	private ACLMessage msgToSend;
 	private DFAgentDescription[] possibleWorkers;
 	private Service requestedService;
-	//private boolean requestedServiceDone;
 	private boolean receivingProducts;
-	//private Object[] productsReceived;
 	private AID assignedWorker;
+	//private String workerName;
+	//private boolean requestedServiceDone;
+	//private Object[] productsReceived;
 
 	public SimpleRequestBehaviour(AgenteTrabalhador worker, Service requestedService)
 	{
 		super(worker);
 		this.worker = worker;
-		this.workerName = worker.getLocalName();
 		this.conversationID = System.currentTimeMillis()+"";
 		this.requestedService = requestedService;
 		this.receivingProducts = requestedService.isEnvolveProducts();
-		//this.requestedServiceDone = false;
 		this.behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
+		//this.workerName = worker.getLocalName();
+		//this.requestedServiceDone = false;
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class SimpleRequestBehaviour extends Behaviour
 	public boolean done()
 	{
 		if(behaviourState.equals(RequestJobBehaviourState.DONE) || behaviourState.equals(RequestJobBehaviourState.DONE)) {
-			System.out.println("[" + workerName + "] Proposta de trabalho a preco fixo em (" + requestedService.getName() + ") concluida.");
+			worker.debug("Proposta de trabalho a preco fixo em (" + requestedService.getName() + ") concluida.");
 			return true;
 		}
 		else return false;
@@ -84,7 +84,6 @@ public class SimpleRequestBehaviour extends Behaviour
 		possibleWorkers = worker.serviceManager.procuraServico(requestedService);
 
 		if(possibleWorkers.length != 0){
-			//worker.printToConsole("Worker Founded: " + possibleWorkers[0].getName().getLocalName());
 			assignedWorker = possibleWorkers[0].getName(); 
 			behaviourState = RequestJobBehaviourState.ASKING_TO_WORK;
 		}else
@@ -93,8 +92,7 @@ public class SimpleRequestBehaviour extends Behaviour
 
 	private void noWorkersFound()
 	{
-		//worker.printToConsole("No worker found for the requested service! Trying again in 15 seconds!");
-		System.out.println("No worker found for the requested service! Trying again in 15 seconds!");
+		worker.debug("No worker found for the requested service! Trying again in 15 seconds!");
 		block(1500);
 	}
 
@@ -104,7 +102,7 @@ public class SimpleRequestBehaviour extends Behaviour
 		msgToSend.setConversationId(conversationID);
 		msgToSend.setContent("DO WORK ON FOR-" + requestedService.getName().toUpperCase());
 
-		System.out.println("[" + workerName + "] Enviou proposta de trabalho em (" + requestedService.getName() + ") para ["+ assignedWorker.getLocalName() + "], ");
+		worker.debug("Enviou proposta de trabalho em (" + requestedService.getName() + ") para ["+ assignedWorker.getLocalName() + "], ");
 		msgToSend.addReceiver(assignedWorker);
 		myAgent.send(msgToSend);
 		behaviourState = RequestJobBehaviourState.RECEIVING_CONFIRMATION;
@@ -119,12 +117,12 @@ public class SimpleRequestBehaviour extends Behaviour
 					if(assignedWorker.getLocalName().equals(msg.getSender().getLocalName())) {
 						if(msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
 							msgItem.remove();
-							System.out.println("[" + workerName + "] Recebeu aceitacao de [" + assignedWorker.getLocalName() + "] para trabalhar em (" + requestedService.getName() + ")");
+							worker.debug("Recebeu aceitacao de [" + assignedWorker.getLocalName() + "] para trabalhar em (" + requestedService.getName() + ")");
 							behaviourState = RequestJobBehaviourState.WAITING_FOR_WORKER;
 						}
 						else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
 							msgItem.remove();
-							System.out.println("[" + workerName + "] Recebeu negacao de [" + assignedWorker.getLocalName() + "] para trabalhar em (" + requestedService.getName() + ")");
+							worker.debug("Recebeu negacao de [" + assignedWorker.getLocalName() + "] para trabalhar em (" + requestedService.getName() + ")");
 							behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
 						}
 					}
@@ -142,12 +140,12 @@ public class SimpleRequestBehaviour extends Behaviour
 					if(assignedWorker.getLocalName().equals(msg.getSender().getLocalName())) {
 						if(msg.getPerformative() == ACLMessage.CONFIRM) {
 							msgItem.remove();
-							System.out.println("[" + workerName + "] Recebeu de [" + assignedWorker.getLocalName() + "] trabalho em (" + requestedService.getName() + ") concluido ");
+							worker.debug("Recebeu de [" + assignedWorker.getLocalName() + "] trabalho em (" + requestedService.getName() + ") concluido ");
 							behaviourState = RequestJobBehaviourState.REWARDING_WORKER;
 						}
 						else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
 							msgItem.remove();
-							System.out.println("[" + workerName + "] Recebeu de [" + assignedWorker.getLocalName() + "] trabalho em (" + requestedService.getName() + ") cancelado ");
+							worker.debug("Recebeu de [" + assignedWorker.getLocalName() + "] trabalho em (" + requestedService.getName() + ") cancelado ");
 							behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
 						}
 					}
@@ -163,7 +161,7 @@ public class SimpleRequestBehaviour extends Behaviour
 		msgToSend.setConversationId(conversationID);
 		msgToSend.setContent("REWARD-" + 1000);
 
-		System.out.println("[" + workerName + "] Enviou reconpensa a [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
+		worker.debug("Enviou reconpensa a [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
 		msgToSend.addReceiver(assignedWorker);
 		myAgent.send(msgToSend);
 
@@ -191,7 +189,7 @@ public class SimpleRequestBehaviour extends Behaviour
 					if(assignedWorker.getLocalName().equals(msg.getSender().getLocalName())) {
 						if(msg.getPerformative() == ACLMessage.CONFIRM) {
 							msgItem.remove();
-							System.out.println("[" + workerName + "] Recebeu Produto de [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
+							worker.debug("Recebeu Produto de [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
 							behaviourState = RequestJobBehaviourState.DONE;
 						}
 					}

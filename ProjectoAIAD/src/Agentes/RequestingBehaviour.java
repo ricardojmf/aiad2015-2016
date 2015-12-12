@@ -9,7 +9,7 @@ public class RequestingBehaviour extends Behaviour
 	private static final long serialVersionUID = 1L;
 
 	private AgenteTrabalhador worker;
-	private String workerName;
+	//private String workerName;
 	private ACLMessage msg;
 	private DFAgentDescription[] possibleWorkers;
 	private Service requestedService;
@@ -19,7 +19,7 @@ public class RequestingBehaviour extends Behaviour
 	public RequestingBehaviour(AgenteTrabalhador worker, Service requestedService) {
 		//super(worker);
 		this.worker = worker;
-		this.workerName = worker.getLocalName();
+		//this.workerName = worker.getLocalName();
 		this.requestedService = requestedService;
 		this.requestedServiceDone = false;
 	}
@@ -30,16 +30,16 @@ public class RequestingBehaviour extends Behaviour
 		possibleWorkers = worker.serviceManager.procuraServico(requestedService);
 
 		if(possibleWorkers != null) {
-			DFAgentDescription worker = possibleWorkers[0];
+			DFAgentDescription possibleWorker = possibleWorkers[0];
 
-			System.out.println("[" + workerName + "] Encontrou " + worker.getName().getLocalName() + " para servico " + requestedService.getName());
+			worker.debug("Encontrou " + possibleWorker.getName().getLocalName() + " para servico " + requestedService.getName());
 
 			msg = new ACLMessage(ACLMessage.PROPOSE);
-			msg.addReceiver(worker.getName());
+			msg.addReceiver(possibleWorker.getName());
 			msg.setContent("DO JOB-" + requestedService.getName().toUpperCase());
 			myAgent.send(msg);
 
-			System.out.println("[" + workerName + "] Enviou ordem de trabalho a " + worker.getName().getLocalName());
+			worker.debug("Enviou ordem de trabalho a " + possibleWorker.getName().getLocalName());
 
 			requestedServiceDone = true;
 		}
@@ -50,7 +50,7 @@ public class RequestingBehaviour extends Behaviour
 	public boolean done() {
 		if(requestedServiceDone)
 		{
-			System.out.println("[" + workerName + "] ordem de trabalho enviada");
+			worker.debug("ordem de trabalho enviada");
 			return true;
 		} else return false;
 	}

@@ -10,7 +10,7 @@ public class SocialBehaviour extends CyclicBehaviour {
 
 	private static final long serialVersionUID = 1L;
 	//private AgenteTrabalhador worker;
-	private String workerName;
+	//private String workerName;
 
 	private ArrayList<ACLMessage> pendingProposeMessages;
 	private ArrayList<ACLMessage> pendingReplyMessages;
@@ -24,7 +24,8 @@ public class SocialBehaviour extends CyclicBehaviour {
 
 	public SocialBehaviour(AgenteTrabalhador worker) {
 		//this.worker = worker;
-		this.workerName = worker.getLocalName();
+		//this.workerName = worker.getLocalName();
+		
 		this.pendingProposeMessages = new ArrayList<ACLMessage>();
 		this.pendingReplyMessages = new ArrayList<ACLMessage>();
 
@@ -37,14 +38,14 @@ public class SocialBehaviour extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		//System.out.println("[" + workerName + "] Listening... ");
+		//worker.debug("Listening... ");
 
 		ACLMessage aclMessage = myAgent.receive();
 
 		if(aclMessage != null)
 		{
 			addPendingMsg(aclMessage);
-			//System.out.println("[" + workerName + "] Recebeu uma mensagem de [" + aclMessage.getSender().getLocalName() + "] dizendo: " + aclMessage.getContent() + " id: " + aclMessage.getConversationId());
+			//worker.debug("Recebeu uma mensagem de [" + aclMessage.getSender().getLocalName() + "] dizendo: " + aclMessage.getContent() + " id: " + aclMessage.getConversationId());
 		}
 		else {
 			block();

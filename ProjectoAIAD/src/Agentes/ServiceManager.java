@@ -11,14 +11,14 @@ import sajas.domain.DFService;
 public class ServiceManager {
 
 	private AgenteTrabalhador worker;
-	private String workerName;
+	//private String workerName;
 	private ArrayList<Service> offeredServices;
 	private ArrayList<Service> requestedServices;
 	private ArrayList<Service> jobsToDo;
 
 	public ServiceManager(AgenteTrabalhador worker) {
 		this.worker = worker;
-		this.workerName = worker.getLocalName();
+		//this.workerName = worker.getLocalName();
 		this.offeredServices = new ArrayList<Service>();
 		this.requestedServices = new ArrayList<Service>();
 		this.jobsToDo = new ArrayList<Service>();
@@ -140,16 +140,16 @@ public class ServiceManager {
 			DFAgentDescription[] resultado = DFService.search(worker, dfd);
 			if(resultado.length != 0)
 			{
-				System.out.println("[" + workerName + "] Encontrou " + resultado.length + " agente(s) que oferece(m) " + servico.getName());
+				worker.debug("Encontrou " + resultado.length + " agente(s) que oferece(m) " + servico.getName());
 				return resultado;
 			}
 			else
 			{
-				System.out.println("[" + workerName + "] Nao encontrou nenhum agente que oferece " + servico.getName());
+				worker.debug("Nao encontrou nenhum agente que oferece " + servico.getName());
 				return null;
 			}
 		} catch (FIPAException e) {
-			System.err.println("[" + workerName + "] Não consegui pesquisar agentes que oferecem " + servico.getName());
+			worker.debug("Não consegui pesquisar agentes que oferecem " + servico.getName());
 		}
 		return null;
 	}
@@ -168,10 +168,10 @@ public class ServiceManager {
 
 		try {
 			DFService.register(worker, dfd);
-			System.out.println("[" + workerName + "] Registou-se para oferecer " + oferedServicesToString());
+			worker.debug("Registou-se para oferecer " + oferedServicesToString());
 			return true;
 		} catch (FIPAException e) {
-			System.err.println("[" + workerName + "] Não consegui registar-se para oferecer " + oferedServicesToString());
+			worker.debug("Não consegui registar-se para oferecer " + oferedServicesToString());
 		}
 		return false;
 	}
@@ -181,7 +181,7 @@ public class ServiceManager {
 		try {
 			DFService.deregister(worker);
 		} catch (FIPAException e) {
-			System.err.println("[" + workerName + "] Ainda não estava registado para oferecer qualquer servico");
+			worker.debug("Ainda não estava registado para oferecer qualquer servico");
 		}
 	}
 }
