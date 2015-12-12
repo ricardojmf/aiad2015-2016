@@ -419,7 +419,42 @@ public class Mundo
 	/*
 	 * DEFINICAO DE FUNCOES OBJECTIVO
 	 */
-
+	public Loja obterLoja(Ponto pos)
+	{
+		for(Loja local: lojas)
+		{
+			if(local.mesmaPosicao(pos))
+			{
+				return local;
+			}
+		}
+		return null;
+	}
+	
+	public Armazem obterArmazem(Ponto pos)
+	{
+		for(Armazem local: armazens)
+		{
+			if(local.mesmaPosicao(pos))
+			{
+				return local;
+			}
+		}
+		return null;
+	}
+	
+	public Recarga obterEstacao(Ponto pos)
+	{
+		for(Recarga local: estacoes)
+		{
+			if(local.mesmaPosicao(pos))
+			{
+				return local;
+			}
+		}
+		return null;
+	}
+	
 	public boolean aceitarTrabalhoPreco(Trabalhador tr, Agencia ag, int index)
 	{
 		Vector<TrabalhoPreco> lista = ag.trabalhosPrecos;
@@ -529,4 +564,42 @@ public class Mundo
 		return false;
 	}
 
+	public Vector<Loja> obterLojasProducto(Producto p)
+	{
+		Vector<Loja> r = new Vector<Loja>();
+		
+		for(Loja l: lojas)
+		{
+			for(Producto p2: l.productos)
+			{
+				if(p2.nome.equals(p.nome))
+				{
+					r.addElement(l);
+					break;
+				}
+			}
+		}
+		
+		return r;
+	}
+	
+	public Vector<Armazem> obterArmazensProducto(Trabalhador tr, Producto p)
+	{
+		Vector<Armazem> r = new Vector<Armazem>();
+		
+		for(Armazem ar: armazens)
+		{
+			ContentorArmazem contentor = ar.obterContentor(tr);
+			if (contentor != null)
+			{
+				ProductoArmazenado pa = contentor.existeProducto(p);
+				if(pa != null)
+				{
+					r.addElement(ar);
+				}
+			}
+		}
+		
+		return r;
+	}
 }

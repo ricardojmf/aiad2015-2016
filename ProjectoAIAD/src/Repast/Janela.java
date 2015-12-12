@@ -96,13 +96,15 @@ public class Janela extends Repast3Launcher
 			Vector<Logica.Ponto> pontos = new Vector<Logica.Ponto>();
 			pontos.addElement(new Logica.Ponto(2, 4));
 			pontos.addElement(new Logica.Ponto(17, 24));
-			
+						
 			ag1.movimentar(mundo, 35, 11, 22, 27); // carro
 			ag2.movimentar(mundo, 1, 1, 22, 12); // camiao
 			ag3.movimentar(mundo, 1, 9, 22, 24); // mota
 			//ag4.movimentar(mundo, 2, 53, 2, 4); // drone
 			
-			ag4.movimentar(mundo, 2, 53, pontos); // drone
+			//ag4.movimentar(mundo, 2, 53, pontos); // drone
+			ag4.tr.set(2, 53);
+			ag4.comprar(mundo, mundo.productos.elementAt(0), 2);
 			
 			agentes.addElement(ag1);
 			agentes.addElement(ag2);

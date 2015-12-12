@@ -36,6 +36,16 @@ public class Ranhura
 		}
 	}
 	
+	public int obterPrecoTotal()
+	{
+		return producto.preco*quantidade ;
+	}
+	
+	public int obterTamanhoTotal()
+	{
+		return producto.peso*quantidade ;
+	}
+	
 	public String toString()
 	{
 		String s = producto.nome + " x" + quantidade;

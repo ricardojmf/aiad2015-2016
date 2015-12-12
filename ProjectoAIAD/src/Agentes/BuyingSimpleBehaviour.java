@@ -17,6 +17,7 @@ public class BuyingSimpleBehaviour extends Behaviour
 	{
 		agente = at;
 		terminado = false;
+		loja = l;
 		
 		productos = new Ranhura(p, q);
 	}
@@ -25,15 +26,18 @@ public class BuyingSimpleBehaviour extends Behaviour
 	{
 		agente = at;
 		terminado = false;
+		loja = l;
 		
 		productos = ra;
 	}
 	
 	public void action()
 	{
-		if(agente.tr.mesmaPosicao(loja))
+		boolean estado = agente.tr.mesmaPosicao(loja);
+		
+		if(estado)
 		{
-			//agente.tr.comprar(loja, productos.producto, productos.quantidade);
+			agente.tr.comprar(loja, productos.producto, productos.quantidade);
 			
 			terminado = true;
 		}	
@@ -41,7 +45,7 @@ public class BuyingSimpleBehaviour extends Behaviour
 
 	public boolean done()
 	{
-		
+		agente.tr.ver();
 		return terminado;
 	}
 

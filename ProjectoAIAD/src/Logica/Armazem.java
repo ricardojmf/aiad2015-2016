@@ -18,6 +18,24 @@ public class Armazem extends Local
 		clientes = new Vector<ContentorArmazem>();
 	}
 
+	public ContentorArmazem obterContentor(Trabalhador tr)
+	{
+		for(ContentorArmazem ca: clientes)
+		{
+			if (ca.trabalhador.nome.equals(tr.nome))
+				return ca;
+		}
+		return null;
+	}
+	
+	public ProductoArmazenado obterProducto(Trabalhador tr, Producto p)
+	{
+		ContentorArmazem ca = obterContentor(tr);
+		ProductoArmazenado pa = ca.existeProducto(p);
+		
+		return pa;
+	}
+	
 	public String stringEnviarEstado()
 	{
 		return( localToString() );

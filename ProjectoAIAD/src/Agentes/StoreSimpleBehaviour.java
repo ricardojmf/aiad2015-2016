@@ -36,7 +36,7 @@ public class StoreSimpleBehaviour extends Behaviour
 	{
 		if(agente.tr.mesmaPosicao(armazem))
 		{
-			//agente.tr.armazenar(armazem, productos.producto, productos.quantidade);
+			agente.tr.armazenar(armazem, productos.producto, productos.quantidade);
 			
 			terminado = true;
 		}

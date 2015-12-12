@@ -134,43 +134,26 @@ public class Main
 		Auxiliar.writeln(s);
 	}
 	
+	public static void testeCompra()
+	{
+		Mundo mundo = new Mundo("mapa.txt", "objectos.txt");
+		
+		Trabalhador tr1 = new Trabalhador("Bruno's Car", 1);
+		tr1.adicionarContentor(mundo.productos.elementAt(2), 5);
+		tr1.adicionarContentor(mundo.productos.elementAt(3), 4);
+		
+		Loja lj = new Loja(1, 1);
+		lj.productos.addElement(mundo.productos.elementAt(0));
+		
+		mundo.lojas.addElement(lj);
+		
+		tr1.ver();
+		tr1.comprar(lj, mundo.productos.elementAt(0), 3);
+		tr1.ver();
+	}
+	
 	static public void main(String[] args)
 	{
-		//movimento();
-		//aaa();
-		
-		int E = 5;
-		int C = 4;
-		int D = 1;
-		
-		Vector<Ponto> vc = null;
-		
-		vc = Auxiliar.linhaRecta(D, D, C, C);
-		mostrarMatriz(vc);
-		
-		vc = Auxiliar.linhaRecta(D, C, C, C);
-		mostrarMatriz(vc);
-		
-		vc = Auxiliar.linhaRecta(D, E, C, C);
-		mostrarMatriz(vc);
-		
-		
-		
-		vc = Auxiliar.linhaRecta(C, D, C, C);
-		mostrarMatriz(vc);
-		
-		vc = Auxiliar.linhaRecta(C, E, C, C);
-		mostrarMatriz(vc);
-		
-		
-		
-		vc = Auxiliar.linhaRecta(E, D, C, C);
-		mostrarMatriz(vc);
-		
-		vc = Auxiliar.linhaRecta(E, C, C, C);
-		mostrarMatriz(vc);
-		
-		vc = Auxiliar.linhaRecta(E, E, C, C);
-		mostrarMatriz(vc);
+		testeCompra();
 	}
 }

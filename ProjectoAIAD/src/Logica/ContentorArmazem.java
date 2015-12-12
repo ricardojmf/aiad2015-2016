@@ -17,4 +17,16 @@ public class ContentorArmazem
 	{
 		return( trabalhador.nome.compareTo(obj.trabalhador.nome) );
 	}
+	
+	public ProductoArmazenado existeProducto(Producto p)
+	{
+		for(ProductoArmazenado pa: contentor)
+		{
+			if(pa.producto.nome.equals(p.nome))
+			{
+				return pa;
+			}
+		}
+		return null;
+	}
 }

@@ -24,8 +24,14 @@ public class MovingBehaviour extends SimpleBehaviour {
 	int superContador;
 	
 	Mundo mundo;
-	Ponto origem;
-	Ponto destino;
+	public Ponto origem;
+	public Ponto destino;
+	
+	private enum Pesquisa {
+		DESTINO, LOJA, ARMAZEM, RECARGA
+	};
+	
+	Pesquisa pes;
 	
 	public MovingBehaviour(AgenteTrabalhador worker, Mundo mundo, Ponto origem, Ponto destino)
 	{
@@ -33,6 +39,31 @@ public class MovingBehaviour extends SimpleBehaviour {
 		this.mundo = mundo;
 		this.destino = destino;
 		this.origem = origem;
+		
+		pes = Pesquisa.DESTINO;
+		
+		superContador = 0;
+	}
+	
+	public MovingBehaviour(AgenteTrabalhador worker, Mundo mundo, Ponto origem, int tipoPesquisa)
+	{
+		this.worker = worker;		
+		this.mundo = mundo;
+		this.destino = null;
+		this.origem = origem;
+		
+		switch(tipoPesquisa)
+		{
+		case 1:
+			pes = Pesquisa.LOJA;
+			break;
+		case 2:
+			pes = Pesquisa.ARMAZEM;
+			break;
+		case 3:
+			pes = Pesquisa.RECARGA;
+			break;
+		}
 		
 		superContador = 0;
 	}
@@ -42,19 +73,51 @@ public class MovingBehaviour extends SimpleBehaviour {
 		worker.tr.set(origem.linha, origem.coluna);
 		
 		// percurso entre origem e destino
-		Vector<Ponto> percursoDestino =
-			Ponto.percursoCurtoDirecto(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), destino);
-
+		Vector<Ponto> percursoDestino = null;
+		
 		// percurso minimo para verificar se ha bateria ate ao percurso
-		Vector<Ponto> percursoMinimo1 =
-			Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.estacoes);
+		Vector<Ponto> percursoMinimo1 = null;
 		
 		// percurso minimo para verificar se quando chegar ao destino, tem suficiente para ir a uma estacao recarga
-		Vector<Ponto> percursoMinimo2 =
-			Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, worker.tr.meioTransporte, destino, mundo.estacoes);
+		Vector<Ponto> percursoMinimo2 = null;
 		
 		// percurso minimo da estacao mais curta da origem ate ao destino
-		Vector<Ponto> percursoMinimo3 =
+		Vector<Ponto> percursoMinimo3 = null;
+		
+		if(pes == Pesquisa.LOJA)
+		{
+			percursoDestino =
+				Ponto.percursoCurtoLojas(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.lojas);
+		
+			destino = percursoDestino.elementAt(percursoDestino.size() - 1);
+		}
+		else if(pes == Pesquisa.ARMAZEM)
+		{
+			percursoDestino =
+				Ponto.percursoCurtoArmazens(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.armazens);
+		
+			destino = percursoDestino.elementAt(percursoDestino.size() - 1);
+		}
+		else if(pes == Pesquisa.RECARGA)
+		{
+			percursoDestino =
+				Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.estacoes);
+		
+			destino = percursoDestino.elementAt(percursoDestino.size() - 1);
+		}
+		else
+		{
+			percursoDestino =
+					Ponto.percursoCurtoDirecto(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), destino);
+		}
+		
+		percursoMinimo1 =
+			Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.estacoes);
+		
+		percursoMinimo2 =
+			Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, worker.tr.meioTransporte, destino, mundo.estacoes);
+		
+		percursoMinimo3 =
 			Ponto.percursoCurtoDirecto(mundo.cidade.matriz, worker.tr.meioTransporte, percursoMinimo1.elementAt(percursoMinimo1.size() - 1), destino);
 				
 		int distOrigemDestino = percursoDestino.size();

@@ -36,7 +36,7 @@ public class ProcessManager extends CyclicBehaviour {
 		default:
 			break;
 		}
-
+		
 		waitingForJob();
 		checkForRequestingServices();
 		checkForPendingMessages();

@@ -5,14 +5,12 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
-import Logica.Auxiliar;
-import Logica.Mundo;
-import Logica.Ponto;
-import Logica.Trabalhador;
+import Logica.*;
+
 import Repast.Sprite;
 import sajas.core.Agent;
 import sajas.core.behaviours.SequentialBehaviour;
-import sajas.core.behaviours.SimpleBehaviour;
+import sajas.core.behaviours.Behaviour;
 import uchicago.src.sim.gui.Drawable;
 import uchicago.src.sim.gui.SimGraphics;
 import uchicago.src.sim.space.Object2DGrid;
@@ -132,7 +130,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		
 	public void movimentar(Mundo mundo, Ponto destino)
 	{
-		Vector<SimpleBehaviour> vec = new Vector<SimpleBehaviour>();
+		Vector<Behaviour> vec = new Vector<Behaviour>();
 		Ponto actual = tr.obterLocalizacao();
 		
 		MovingBehaviour mb = new MovingBehaviour(this, mundo, actual, destino);
@@ -145,7 +143,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	
 	public void movimentar(Mundo mundo, Vector<Ponto> destinos)
 	{
-		Vector<SimpleBehaviour> vec = new Vector<SimpleBehaviour>();
+		Vector<Behaviour> vec = new Vector<Behaviour>();
 		
 		Ponto actual = tr.obterLocalizacao();
 		
@@ -165,4 +163,98 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		
 		this.addBehaviour(listaComportamentos);
 	}
+	
+	public void comprar(Mundo mundo, Producto producto, int quantidade)
+	{
+		Ranhura productos = new Ranhura(producto, quantidade);
+		comprar(mundo, productos);
+	}
+	
+	public void comprar(Mundo mundo, Ranhura productos)
+	{
+		int totalPeso = productos.obterTamanhoTotal();
+		int totalPreco = productos.obterPrecoTotal();
+		
+		if(totalPreco <= tr.riqueza)
+		{
+			Vector<Behaviour> vec = new Vector<Behaviour>();
+			Ponto actual = tr.obterLocalizacao();
+			
+			if( (totalPeso + tr.carga ) <= tr.cargaMax) // caso possa cargar os productos
+			{
+				Vector<Loja> lojasComProducto = mundo.obterLojasProducto(productos.producto);
+				Vector<Ponto> percursoPerto =
+					Ponto.percursoCurtoLojas(mundo.cidade.matriz, tr.meioTransporte,
+							tr.obterLocalizacao(), lojasComProducto);
+				
+				Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
+				
+				// trajecto loja
+				MovingBehaviour mb1 = new MovingBehaviour(this, mundo, actual, destino);
+				
+				// comprar
+				BuyingSimpleBehaviour mb2 =
+					new BuyingSimpleBehaviour(this, mundo.obterLoja(destino), productos);
+				
+				// adicionar os behaviours
+				vec.addElement(mb1);
+				vec.addElement(mb2);
+			}
+			else // ir ao armazem mais proximo
+			{
+				Vector<Armazem> armazensComProducto = mundo.obterArmazensProducto(tr, productos.producto);
+				
+				Vector<Ponto> percursoPerto;
+				
+				if(armazensComProducto.size() != 0)
+				{
+					percursoPerto =
+						Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
+							tr.obterLocalizacao(), armazensComProducto);
+				}
+				else
+				{
+					percursoPerto =
+							Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
+								tr.obterLocalizacao(), mundo.armazens);
+				}
+				
+				Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
+				
+				// trajecto ate armazem
+				MovingBehaviour mb1 = new MovingBehaviour(this, mundo, actual, destino);
+				
+				// armazenar
+				MovingBehaviour mb2;
+				
+				
+				
+				Vector<Loja> lojasComProducto = mundo.obterLojasProducto(productos.producto);
+				Vector<Ponto> percursoPerto2 =
+					Ponto.percursoCurtoLojas(mundo.cidade.matriz, tr.meioTransporte,
+							tr.obterLocalizacao(), lojasComProducto);
+				
+				Ponto destino2 = percursoPerto2.elementAt(percursoPerto2.size() - 1);
+				
+				
+				// trajecto loja
+				MovingBehaviour mb3 = new MovingBehaviour(this, mundo, actual, 1);
+				
+				// comprar
+				
+				
+				// adicionar os behaviours
+				vec.addElement(mb1);
+				
+				vec.addElement(mb3);
+			}
+			
+			listaComportamentos = new MySequentialBehaviour(this, vec);
+			this.addBehaviour(listaComportamentos);
+		}
+		else
+		{
+			// vender productos ?
+		}
+	}	
 }

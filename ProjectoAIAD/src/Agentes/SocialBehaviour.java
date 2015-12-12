@@ -28,7 +28,7 @@ public class SocialBehaviour extends CyclicBehaviour {
 		System.out.println("[" + workerName + "] Listening... ");
 
 		ACLMessage aclMessage = myAgent.receive();
-
+		
 		if(aclMessage != null)
 		{
 			addPendingMsg(aclMessage);

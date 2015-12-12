@@ -266,9 +266,9 @@ public class Trabalhador extends Identidade
 	{
 		Producto pl = lj.productos.elementAt(indexProductoLoja);
 		
-		if (riqueza > (pl.preco*quantidade))
-		{
-			if ( (carga + (pl.peso*quantidade)) < cargaMax)
+		if (riqueza >= (pl.preco*quantidade))
+		{			
+			if ( (carga + (pl.peso*quantidade)) <= cargaMax)
 			{
 				boolean estado = adicionarContentor(pl, quantidade);
 				
@@ -300,9 +300,9 @@ public class Trabalhador extends Identidade
 		
 		Producto pl = lj.productos.elementAt(indexProductoLoja);
 		
-		if (riqueza > (pl.preco*quantidade))
+		if (riqueza >= (pl.preco*quantidade))
 		{
-			if ( (carga + (pl.peso*quantidade)) < cargaMax)
+			if ( (carga + (pl.peso*quantidade)) <= cargaMax)
 			{
 				boolean estado = adicionarContentor(pl, quantidade);
 				
