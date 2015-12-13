@@ -4,6 +4,8 @@ import jade.core.AID;
 
 import java.util.Iterator;
 
+import Agentes.SimpleWorkBehaviour.WorkingBehaviourState;
+import Logica.Producto;
 import jade.lang.acl.ACLMessage;
 import sajas.core.behaviours.Behaviour;
 
@@ -17,7 +19,8 @@ public class PricedWorkBehaviour extends Behaviour {
 	private PricedWorkBehaviourState behaviourState;
 
 	private AID bossAgent;
-
+	boolean firstTime = true;
+	
 	private String conversationID;
 
 	private AgenteTrabalhador worker;
@@ -143,9 +146,21 @@ public class PricedWorkBehaviour extends Behaviour {
 			}
 		}
 		
-		if(debugJobCounter <= 0)
+		if(firstTime)
+		{
+			Producto p = worker.mundo.obterLista(requestedJob.getName());
+			
+			worker.adquirir(p, Integer.parseInt(requestedJob.getType()));
+			firstTime = false;
+		}
+		
+		if(worker.listaComportamentos.done())
+		{
+			//System.out.println(worker.tr.pontoToString());
 			behaviourState = PricedWorkBehaviourState.SENDING_JOB_DONE;
-		debugJobCounter--;
+			
+			//worker.tr.verContentor();
+		}
 	}
 
 	public void sendingJobDone()
@@ -202,9 +217,17 @@ public class PricedWorkBehaviour extends Behaviour {
 
 	public void givingProducts()
 	{
+		worker.tr.verContentor();
+		Producto p = worker.mundo.obterLista(requestedJob.getName());
+		
+		products.addObject(p);
+		worker.tr.removerContentor(p, Integer.parseInt(requestedJob.getType()));
+		
 		worker.socializer.sendObject(ACLMessage.CONFIRM, bossAgent, conversationID, "PRODUCT", products);
 		worker.debug("Enviou produto do trabalho a preco fixo em (" + requestedJob.getName() + ") a [" + bossAgent.getLocalName() + "]");
 		behaviourState = PricedWorkBehaviourState.DONE;
+		
+		worker.tr.verContentor();
 	}
 
 }

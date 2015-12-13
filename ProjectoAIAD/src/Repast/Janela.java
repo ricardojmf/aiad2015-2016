@@ -111,7 +111,7 @@ public class Janela extends Repast3Launcher
 			ag3 = new AgenteTrabalhador("Agente3", 3, espaco, mundo); // mota
 			ag4 = new AgenteTrabalhador("Agente4", 2, espaco, mundo); // drone
 			
-			ag1.setArguments(new String[] { "Madeira 3", "P" });
+			ag1.setArguments(new String[] { "Madeira", "P" });
 			ag2.setArguments(new String[] { "Ferro", "E" });
 			ag3.setArguments(new String[] { "Madeira", "E" });
 			ag4.setArguments(new String[] { "Madeira", "E" });

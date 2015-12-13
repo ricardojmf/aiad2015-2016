@@ -229,7 +229,7 @@ public class SimpleRequestBehaviour extends Behaviour
 							try {
 								TransferedObjects objects = (TransferedObjects) msg.getContentObject();
 								for(Producto produto: objects.getObjects()) {
-									worker.tr.adicionarContentor(produto, 1);
+									worker.tr.adicionarContentor(produto, Integer.parseInt(requestedService.getType())  );
 								}
 								worker.tr.verContentor();
 							} catch (UnreadableException e) {
