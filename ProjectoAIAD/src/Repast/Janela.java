@@ -83,10 +83,10 @@ public class Janela extends Repast3Launcher
 			
 			espaco = new Object2DGrid(mundo.cidade.colunas, mundo.cidade.linhas);
 			
-			ag1 = new AgenteTrabalhador("Agente1", 1, espaco);
-			ag2 = new AgenteTrabalhador("Agente2", 4, espaco);
-			ag3 = new AgenteTrabalhador("Agente3", 3, espaco);
-			ag4 = new AgenteTrabalhador("Agente4", 2, espaco);
+			ag1 = new AgenteTrabalhador("Agente1", 1, espaco, mundo);
+			ag2 = new AgenteTrabalhador("Agente2", 4, espaco, mundo);
+			ag3 = new AgenteTrabalhador("Agente3", 3, espaco, mundo);
+			ag4 = new AgenteTrabalhador("Agente4", 2, espaco, mundo);
 			
 			ag1.setArguments(new String[] { "madeira", "E" });
 			ag2.setArguments(new String[] { "madeira", "P" });
@@ -97,14 +97,14 @@ public class Janela extends Repast3Launcher
 			pontos.addElement(new Logica.Ponto(2, 4));
 			pontos.addElement(new Logica.Ponto(17, 24));
 						
-			ag1.movimentar(mundo, 35, 11, 22, 27); // carro
-			ag2.movimentar(mundo, 1, 1, 22, 12); // camiao
-			ag3.movimentar(mundo, 1, 9, 22, 24); // mota
+			ag1.movimentar(35, 11, 22, 27); // carro
+			ag2.movimentar(1, 1, 22, 12); // camiao
+			ag3.movimentar(1, 9, 22, 24); // mota
 			//ag4.movimentar(mundo, 2, 53, 2, 4); // drone
 			
 			//ag4.movimentar(mundo, 2, 53, pontos); // drone
 			ag4.tr.set(2, 53);
-			ag4.comprar(mundo, mundo.productos.elementAt(0), 2);
+			ag4.comprar(mundo.productos.elementAt(0), 2);
 			
 			agentes.addElement(ag1);
 			agentes.addElement(ag2);

@@ -181,7 +181,9 @@ public class Ponto
 					destino.coluna, destino.linha);
 		}
 		return percursoDestino;
-	}	
+	}
+	
+	
 
 	public static void verVector(Vector<Ponto> lista)
 	{

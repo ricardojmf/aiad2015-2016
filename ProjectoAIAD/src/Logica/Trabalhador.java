@@ -193,27 +193,32 @@ public class Trabalhador extends Identidade
 	
 	public boolean adicionarContentor(Producto p, int quantidade)
 	{
+		return adicionarContentor(new Ranhura(p, quantidade));
+	}
+	
+	public boolean adicionarContentor(Ranhura productos)
+	{
 		// se existir no contentor, acrescentar mais unidades
 		int index = 0;
 		while(index < contentor.size())
 		{
 			Ranhura ra = contentor.elementAt(index);
 			
-			if (ra.producto.compareTo(p) == 0)
+			if (ra.producto.compareTo(productos.producto) == 0)
 			{
-				ra.quantidade += quantidade;
+				ra.quantidade += productos.quantidade;
 				return true;
 			}
 			index++;
 		}
 		
 		// senao criar uma nova ranhura
-		contentor.addElement(new Ranhura(p, quantidade));
+		contentor.addElement(productos);
 		
 		return true;
 	}
 	
-	public boolean removerContentor(Producto p, int quantidade)
+	public boolean removerContentor(Ranhura productos)
 	{
 		// se existir no contentor, remove-lo
 		int index = 0;
@@ -221,15 +226,15 @@ public class Trabalhador extends Identidade
 		{
 			Ranhura ra = contentor.elementAt(index);
 			
-			if (ra.producto.compareTo(p) == 0)
+			if (ra.producto.compareTo(productos.producto) == 0)
 			{
-				if (ra.quantidade <= quantidade)
+				if (ra.quantidade <= productos.quantidade)
 				{
 					contentor.remove(index);
 				}
 				else
 				{
-					ra.quantidade -= quantidade;
+					ra.quantidade -= productos.quantidade;
 				}
 				
 				return true;
@@ -239,6 +244,12 @@ public class Trabalhador extends Identidade
 		// senao existir, tanto faz
 		
 		return true;
+	}
+	
+	public boolean removerContentor(Producto p, int quantidade)
+	{
+		// se existir no contentor, remove-lo
+		return( removerContentor(new Ranhura(p, quantidade)) );
 	}
 	
 	public boolean removerContentor(Producto p)
@@ -380,50 +391,95 @@ public class Trabalhador extends Identidade
 			return false;
 		}
 		
-		Ranhura ra = contentor.elementAt(indexRanhura);
+		return( armazenar(ar, indexRanhura, quantidade) );
+	}
+	
+	public boolean armazenar(Armazem ar, Ranhura productos)
+	{
+		return( armazenar(ar, productos.producto, productos.quantidade) );
+	}
+	
+	public boolean podeAdicionarContentor(Producto producto, int quantidade)
+	{
+		return podeAdicionarContentor(new Ranhura(producto, quantidade));
+	}
+	
+	public boolean podeAdicionarContentor(Ranhura productos)
+	{
+		return( productos.obterTamanhoTotal() + carga <= cargaMax );
+	}
+	
+	public boolean podeComprar(Producto producto, int quantidade)
+	{
+		return podeComprar(new Ranhura(producto, quantidade));
+	}
+	
+	public boolean podeComprar(Ranhura productos)
+	{
+		return( productos.obterPrecoTotal() <= riqueza );
+	}
+	
+	public boolean removerArmazem(Armazem ar, Producto producto, int quantidade)
+	{
+		int indexRanhura = 0;
+		while(indexRanhura < contentor.size() && !contentor.elementAt(indexRanhura).producto.nome.equals(producto.nome))
+		{
+			indexRanhura++;
+		}
 		
-		if (ra.quantidade < quantidade)
+		if(indexRanhura >= contentor.size() )
 		{
 			return false;
 		}
 		
-		removerContentor(ra.producto, quantidade);
+		return( armazenar(ar, indexRanhura, quantidade) );
+	}
+	
+	public boolean removerArmazem(Armazem ar, int indexRanhura, int quantidade)
+	{
+		Ranhura ra = contentor.elementAt(indexRanhura);
 		
-		int i = 0;
-		while (i < ar.clientes.size())
+		return(removerArmazem(ar, ra));
+	}
+	
+	public boolean removerArmazem(Armazem ar, Ranhura productos)
+	{		
+		if(!podeAdicionarContentor(productos))
 		{
-			// procurar o deposito do trabalhador no armazem
-			ContentorArmazem ca = ar.clientes.elementAt(i);
-			if(ca.trabalhador.nome.equals(nome))
-			{
-				int j = 0;
-				while(j < ca.contentor.size())
-				{
-					// procurar a ranhura do producto a acrescentar em quantidade
-					ProductoArmazenado pr = ca.contentor.elementAt(j);
-					if (pr.producto.nome.equals(ra.producto.nome))
-					{
-						pr.quantidade += quantidade;
-						return true;
-					}
-					
-					j++;
-				}
-				
-				ca.contentor.addElement(new ProductoArmazenado(ra.producto, quantidade));
-				
-				return true;
-			}
-			
-			i++;
+			return false;
+		}		
+		
+		ContentorArmazem ca = ar.obterContentor(this);
+		if(ca == null)
+		{
+			return false;
 		}
 		
-		// adicionar novo cliente a lista
-		ContentorArmazem ca = new ContentorArmazem(this);
-		ca.contentor.addElement(new ProductoArmazenado(ra.producto, quantidade));
-		ar.clientes.addElement(ca);
+		ProductoArmazenado pa = ca.existeProducto(productos.producto);
+		if(pa == null)
+		{
+			return false;
+		}
 		
-		return true;
+		if(productos.quantidade > pa.quantidade)
+		{
+			return false;
+		}
+		else
+		{
+			boolean estado = adicionarContentor( pa.producto, pa.quantidade );
+			
+			if(productos.quantidade == pa.quantidade)
+			{
+				ca.contentor.removeElement(pa);
+			}
+			else
+			{
+				pa.quantidade -= productos.quantidade;
+			}
+			
+			return(estado);
+		}
 	}
 	
 	public boolean produzir(Produzir pd)
@@ -472,6 +528,62 @@ public class Trabalhador extends Identidade
 		
 		// colocar no contentor do trabalhor o novo producto
 		return adicionarContentor(pd.recompensa, pd.quantidade);
+	}
+	
+	private Vector<Ranhura> naoInterseccao(Vector<Ranhura> request)
+	{
+		Vector<Ranhura> r = new Vector<Ranhura>();
+		
+		for(Ranhura guardado: contentor)
+		{
+			boolean existe = false;
+			for(Ranhura evitar: request)
+			{
+				if(!guardado.producto.nome.equals(evitar.producto.nome))
+				{
+					existe = true;
+					break;
+				}
+			}
+			
+			if(existe)
+			{
+				r.addElement(guardado);
+			}
+		}
+		
+		return r;
+	}
+	
+	public boolean armazenarAleatoriamente(Armazem ar, Vector<Ranhura> productosNaoArmazenar)
+	{
+		Vector<Ranhura> productosArmazenar = naoInterseccao( productosNaoArmazenar );
+		
+		for(int index = 0; index < productosArmazenar.size() && carga > cargaMax; index++)
+		{
+			Ranhura productos = productosArmazenar.elementAt(index);
+			
+			// calcular minimo de tamanho a remover
+			int qMax = 0;
+			for(qMax = 1; qMax <= productos.quantidade; qMax++)
+			{
+				if( (carga - qMax*productos.producto.peso) <= cargaMax)
+				{
+					break;
+				}
+			}
+			
+			if(qMax <= productos.quantidade)
+			{
+				armazenar(ar, productos.producto, qMax);
+			}
+			else
+			{
+				armazenar(ar, productos);
+			}
+		}
+		
+		return true;
 	}
 	
 	// MENSAGENS ENTRE SERVIDOR/CLIENTE E CLIENTE/CLIENTE

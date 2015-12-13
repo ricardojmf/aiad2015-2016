@@ -8,51 +8,29 @@ public class ProduceBehaviour extends SimpleBehaviour
 	AgenteTrabalhador at;
 	Produzir producao;
 	
-	private static enum Estado {
-		INICIO, FIM, PRODUZINDO
-	}
-	
-	Estado estadoProducao;
-	
-	int contador;
-	private static final int tempoEspera = 5;
+	boolean terminado;
 	
 	public ProduceBehaviour(AgenteTrabalhador agente, Produzir pro)
 	{
 		at = agente;
 		producao = pro;
 		
-		estadoProducao = Estado.INICIO;
+		terminado = false;
 	}
 	
 	@Override
 	public void action()
 	{
-		if( estadoProducao == Estado.PRODUZINDO )
+		if(at.tr.produzir(producao))
 		{
-			if (contador == tempoEspera)
-			{
-				contador = 0;
-				estadoProducao = Estado.FIM;
-			}
-			else
-			{
-				contador++;
-			}
-		}
-		else
-		{
-			if(at.tr.produzir(producao))
-			{
-				estadoProducao = Estado.PRODUZINDO;
-			}
+			terminado = true;
 		}
 	}
 
 	@Override
 	public boolean done()
 	{
-		return ( estadoProducao == Estado.FIM );
+		return ( terminado );
 	}
 	
 }

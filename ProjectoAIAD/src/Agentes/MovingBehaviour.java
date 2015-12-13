@@ -23,7 +23,6 @@ public class MovingBehaviour extends SimpleBehaviour {
 	
 	int superContador;
 	
-	Mundo mundo;
 	public Ponto origem;
 	public Ponto destino;
 	
@@ -33,10 +32,9 @@ public class MovingBehaviour extends SimpleBehaviour {
 	
 	Pesquisa pes;
 	
-	public MovingBehaviour(AgenteTrabalhador worker, Mundo mundo, Ponto origem, Ponto destino)
+	public MovingBehaviour(AgenteTrabalhador worker, Ponto origem, Ponto destino)
 	{
-		this.worker = worker;		
-		this.mundo = mundo;
+		this.worker = worker;	
 		this.destino = destino;
 		this.origem = origem;
 		
@@ -45,10 +43,9 @@ public class MovingBehaviour extends SimpleBehaviour {
 		superContador = 0;
 	}
 	
-	public MovingBehaviour(AgenteTrabalhador worker, Mundo mundo, Ponto origem, int tipoPesquisa)
+	public MovingBehaviour(AgenteTrabalhador worker, Ponto origem, int tipoPesquisa)
 	{
-		this.worker = worker;		
-		this.mundo = mundo;
+		this.worker = worker;
 		this.destino = null;
 		this.origem = origem;
 		
@@ -87,38 +84,38 @@ public class MovingBehaviour extends SimpleBehaviour {
 		if(pes == Pesquisa.LOJA)
 		{
 			percursoDestino =
-				Ponto.percursoCurtoLojas(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.lojas);
+				Ponto.percursoCurtoLojas(worker.mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), worker.mundo.lojas);
 		
 			destino = percursoDestino.elementAt(percursoDestino.size() - 1);
 		}
 		else if(pes == Pesquisa.ARMAZEM)
 		{
 			percursoDestino =
-				Ponto.percursoCurtoArmazens(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.armazens);
+				Ponto.percursoCurtoArmazens(worker.mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), worker.mundo.armazens);
 		
 			destino = percursoDestino.elementAt(percursoDestino.size() - 1);
 		}
 		else if(pes == Pesquisa.RECARGA)
 		{
 			percursoDestino =
-				Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.estacoes);
+				Ponto.percursoCurtoEstacoes(worker.mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), worker.mundo.estacoes);
 		
 			destino = percursoDestino.elementAt(percursoDestino.size() - 1);
 		}
 		else
 		{
 			percursoDestino =
-					Ponto.percursoCurtoDirecto(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), destino);
+					Ponto.percursoCurtoDirecto(worker.mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), destino);
 		}
 		
 		percursoMinimo1 =
-			Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), mundo.estacoes);
+			Ponto.percursoCurtoEstacoes(worker.mundo.cidade.matriz, worker.tr.meioTransporte, worker.tr.obterLocalizacao(), worker.mundo.estacoes);
 		
 		percursoMinimo2 =
-			Ponto.percursoCurtoEstacoes(mundo.cidade.matriz, worker.tr.meioTransporte, destino, mundo.estacoes);
+			Ponto.percursoCurtoEstacoes(worker.mundo.cidade.matriz, worker.tr.meioTransporte, destino, worker.mundo.estacoes);
 		
 		percursoMinimo3 =
-			Ponto.percursoCurtoDirecto(mundo.cidade.matriz, worker.tr.meioTransporte, percursoMinimo1.elementAt(percursoMinimo1.size() - 1), destino);
+			Ponto.percursoCurtoDirecto(worker.mundo.cidade.matriz, worker.tr.meioTransporte, percursoMinimo1.elementAt(percursoMinimo1.size() - 1), destino);
 				
 		int distOrigemDestino = percursoDestino.size();
 		//int distOrigemRecargaX = (percursoMinimo1 != null ? percursoMinimo1.size() : -1);

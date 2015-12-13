@@ -2,14 +2,7 @@ package Agentes;
 
 import java.util.Vector;
 
-import Logica.Armazem;
-import Logica.Auxiliar;
-import Logica.Loja;
-import Logica.Mundo;
-import Logica.Ponto;
-import Logica.Producto;
-import Logica.Ranhura;
-import Logica.Trabalhador;
+import Logica.*;
 import Repast.Sprite;
 import sajas.core.Agent;
 import sajas.core.behaviours.Behaviour;
@@ -34,7 +27,8 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	}
 	
 	MySequentialBehaviour listaComportamentos;
-
+	
+	public Mundo mundo;
 	protected WorkingState state;
 	protected String nome;
 	protected String workerType;
@@ -42,12 +36,13 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	protected SocialBehaviour socializer;
 	protected ProcessManager processManager;
 	
-	public AgenteTrabalhador(String nome, int tipoTransporte, Object2DGrid space)
+	public AgenteTrabalhador(String nome, int tipoTransporte, Object2DGrid space, Mundo mundo)
 	{
 		super();
 		espaco = space;
 		this.nome = nome;
 		state = WorkingState.WAITING_FOR_JOB;
+		this.mundo = mundo;
 		
 		tr = new Trabalhador(nome, tipoTransporte);
 	}
@@ -120,25 +115,25 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		return( tr.linha );
 	}
 	
-	public void movimentar(Mundo mundo, int linha1, int coluna1, int linha2, int coluna2)
+	public void movimentar(int linha1, int coluna1, int linha2, int coluna2)
 	{
 		tr.set(linha1, coluna1);
 		Ponto destino = new Ponto(linha2, coluna2);
-		movimentar(mundo, destino);
+		movimentar(destino);
 	}
 	
-	public void movimentar(Mundo mundo, int linha1, int coluna1, Vector<Ponto> destinos)
+	public void movimentar(int linha1, int coluna1, Vector<Ponto> destinos)
 	{
 		tr.set(linha1, coluna1);
-		movimentar(mundo, destinos);
+		movimentar(destinos);
 	}
 		
-	public void movimentar(Mundo mundo, Ponto destino)
+	public void movimentar(Ponto destino)
 	{
 		Vector<Behaviour> vec = new Vector<Behaviour>();
 		Ponto actual = tr.obterLocalizacao();
 		
-		MovingBehaviour mb = new MovingBehaviour(this, mundo, actual, destino);
+		MovingBehaviour mb = new MovingBehaviour(this, actual, destino);
 		vec.addElement(mb);
 		
 		listaComportamentos = new MySequentialBehaviour(this, vec);
@@ -146,13 +141,13 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		this.addBehaviour(listaComportamentos);
 	}
 	
-	public void movimentar(Mundo mundo, Vector<Ponto> destinos)
+	public void movimentar(Vector<Ponto> destinos)
 	{
 		Vector<Behaviour> vec = new Vector<Behaviour>();
 		
 		Ponto actual = tr.obterLocalizacao();
 		
-		MovingBehaviour mb = new MovingBehaviour(this, mundo, actual, destinos.elementAt(0));
+		MovingBehaviour mb = new MovingBehaviour(this, actual, destinos.elementAt(0));
 		vec.addElement(mb);
 		
 		for(int index = 0; index < (destinos.size() - 1); index++)
@@ -160,7 +155,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 			Ponto origem = destinos.elementAt(index);
 			Ponto destino = destinos.elementAt(index + 1);
 			
-			mb = new MovingBehaviour(this, mundo, origem, destino);
+			mb = new MovingBehaviour(this, origem, destino);
 			vec.addElement(mb);
 		}
 		
@@ -169,13 +164,74 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		this.addBehaviour(listaComportamentos);
 	}
 	
-	public void comprar(Mundo mundo, Producto producto, int quantidade)
+	public void adquirir(Producto producto, int quantidade)
 	{
-		Ranhura productos = new Ranhura(producto, quantidade);
-		comprar(mundo, productos);
+		adquirir(new Ranhura(producto, quantidade) );
 	}
 	
-	public void comprar(Mundo mundo, Ranhura productos)
+	public void adquirir(Ranhura productos)
+	{
+		Vector<Armazem> armazensComProducto = mundo.obterArmazensProducto(tr, productos.producto);
+		
+		if(armazensComProducto.size() != 0) //se houver armazens com o producto, ir ate la
+		{
+			// trajectoria ate armazem
+			Vector<Ponto> percursoPerto =
+				Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
+					tr.obterLocalizacao(), armazensComProducto);
+			
+			Armazem ar = mundo.obterArmazem(percursoPerto.elementAt(percursoPerto.size() - 1));
+			
+			ContentorArmazem ca = ar.obterContentor(tr);
+			if(ca == null)
+			{
+				comprar(productos);
+				return;
+			}
+			
+			ProductoArmazenado pa = ca.existeProducto(productos.producto);
+			
+			if(pa == null)
+			{
+				comprar(productos);
+				return;
+			}
+			
+			if(pa.quantidade < productos.quantidade)
+			{
+				comprar(productos);
+				return;
+			}
+			
+			Vector<Behaviour> vec = new Vector<Behaviour>();
+			Ponto actual = tr.obterLocalizacao();
+			
+			Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
+			
+			MovingBehaviour mb1 = new MovingBehaviour(this, actual, destino);
+			
+			// armazenar
+			PickupSimpleBehaviour mb2 = new PickupSimpleBehaviour(this, mundo.obterArmazem(destino), productos);
+			
+			vec.addElement(mb1);
+			vec.addElement(mb2);
+			
+			listaComportamentos = new MySequentialBehaviour(this, vec);
+			this.addBehaviour(listaComportamentos);
+		}
+		else //senao houver, vai comprar
+		{
+			comprar(productos);
+		}
+	}
+	
+	public void comprar(Producto producto, int quantidade)
+	{
+		Ranhura productos = new Ranhura(producto, quantidade);
+		comprar(productos);
+	}
+	
+	public void comprar(Ranhura productos)
 	{
 		int totalPeso = productos.obterTamanhoTotal();
 		int totalPreco = productos.obterPrecoTotal();
@@ -195,7 +251,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 				Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
 				
 				// trajecto loja
-				MovingBehaviour mb1 = new MovingBehaviour(this, mundo, actual, destino);
+				MovingBehaviour mb1 = new MovingBehaviour(this, actual, destino);
 				
 				// comprar
 				BuyingSimpleBehaviour mb2 =
@@ -205,53 +261,50 @@ public class AgenteTrabalhador extends Agent implements Drawable
 				vec.addElement(mb1);
 				vec.addElement(mb2);
 			}
-			else // ir ao armazem mais proximo
+			else // ir ao armazem mais proximo despejar
 			{
+				// trajecto ate armazem para despejar
 				Vector<Armazem> armazensComProducto = mundo.obterArmazensProducto(tr, productos.producto);
 				
-				Vector<Ponto> percursoPerto;
-				
-				if(armazensComProducto.size() != 0)
+				Vector<Ponto> percursoPerto = null;
+				if(armazensComProducto.size() == 0) //caso n tenha armazens com producto
 				{
-					percursoPerto =
-						Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
-							tr.obterLocalizacao(), armazensComProducto);
+					percursoPerto = Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
+								tr.obterLocalizacao(), mundo.armazens);
 				}
 				else
 				{
 					percursoPerto =
-							Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
-								tr.obterLocalizacao(), mundo.armazens);
-				}
+						Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
+								tr.obterLocalizacao(), armazensComProducto);
+				}				
 				
 				Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
 				
-				// trajecto ate armazem
-				MovingBehaviour mb1 = new MovingBehaviour(this, mundo, actual, destino);
+				MovingBehaviour mb1 = new MovingBehaviour(this, actual, destino);
 				
-				// armazenar
-				MovingBehaviour mb2;
+				// armazenar productos aleatoriamente
+				StoreRandomSimpleBehaviour mb2 = new StoreRandomSimpleBehaviour(this, mundo.obterArmazem(destino), productos);	
 				
-				
-				
+				// trajecto loja
 				Vector<Loja> lojasComProducto = mundo.obterLojasProducto(productos.producto);
 				Vector<Ponto> percursoPerto2 =
 					Ponto.percursoCurtoLojas(mundo.cidade.matriz, tr.meioTransporte,
-							tr.obterLocalizacao(), lojasComProducto);
+							destino, lojasComProducto);
 				
 				Ponto destino2 = percursoPerto2.elementAt(percursoPerto2.size() - 1);
 				
-				
-				// trajecto loja
-				MovingBehaviour mb3 = new MovingBehaviour(this, mundo, actual, 1);
+				MovingBehaviour mb3 = new MovingBehaviour(this, destino, destino2);
 				
 				// comprar
-				
+				BuyingSimpleBehaviour mb4 =
+					new BuyingSimpleBehaviour(this, mundo.obterLoja(destino2), productos);
 				
 				// adicionar os behaviours
 				vec.addElement(mb1);
-				
+				vec.addElement(mb2);
 				vec.addElement(mb3);
+				vec.addElement(mb4);
 			}
 			
 			listaComportamentos = new MySequentialBehaviour(this, vec);
