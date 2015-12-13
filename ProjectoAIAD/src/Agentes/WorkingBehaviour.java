@@ -40,7 +40,7 @@ public class WorkingBehaviour extends SimpleBehaviour {
 			worker.debug("Acabei a minha tarefa em " + actualService.getName());
 			qnt = 0;
 			worker.state = WorkingState.WAITING_FOR_JOB;
-			worker.serviceManager.offerService(new Service("pedras", "", 1000));
+			//worker.serviceManager.offerService(new Service("pedras", "", 1000, null, null, ""));
 			actualService = null;
 			return true;
 		} else return false;

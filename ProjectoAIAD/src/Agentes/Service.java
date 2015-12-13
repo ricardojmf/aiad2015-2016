@@ -1,18 +1,31 @@
 package Agentes;
 
-public class Service {
+import Logica.TarefaLeiloada;
+import Logica.TarefaPreco;
+import jade.util.leap.Serializable;
+
+public class Service implements Serializable
+{
+	private static final long serialVersionUID = 1L;
 	
 	private String name;
 	private String type;
 	private boolean envolveProducts;
 	private int value;
+	private TarefaLeiloada tarefaLeiloada;
+	private TarefaPreco tarefaPreco;
+	private String msg;
 	
-	public Service(String name, String type, int value) {
+	
+	public Service(String name, String type, int value, TarefaLeiloada tarefaLeiloada, TarefaPreco tarefaPreco, String msg) {
 		super();
 		this.name = name;
 		this.type = type;
 		this.value = value;
 		this.envolveProducts = true;
+		this.tarefaLeiloada = tarefaLeiloada;
+		this.tarefaPreco = tarefaPreco;
+		this.msg = msg;
 	}
 
 	public String getName() {
@@ -49,5 +62,29 @@ public class Service {
 	
 	public Boolean equals(Service service) {
 		return this.name.equalsIgnoreCase(service.name) && this.type.equalsIgnoreCase(service.type);
+	}
+
+	public TarefaLeiloada getTarefaLeiloada() {
+		return tarefaLeiloada;
+	}
+
+	public void setTarefaLeiloada(TarefaLeiloada tarefaLeiloada) {
+		this.tarefaLeiloada = tarefaLeiloada;
+	}
+
+	public TarefaPreco getTarefaPreco() {
+		return tarefaPreco;
+	}
+
+	public void setTarefaPreco(TarefaPreco tarefaPreco) {
+		this.tarefaPreco = tarefaPreco;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
 	}
 }

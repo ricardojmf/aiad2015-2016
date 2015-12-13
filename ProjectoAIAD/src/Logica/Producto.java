@@ -1,23 +1,26 @@
 package Logica;
 
-public class Producto
+import jade.util.leap.Serializable;
+
+public class Producto implements Serializable
 {
+	private static final long serialVersionUID = 1L;
 	public String nome;
 	public int preco;
 	public int peso;
 	
-	public Producto(String arg1, int arg2)
+	public Producto(String nome, int peso)
 	{
-		nome = arg1;
-		preco = 0;
-		peso = arg2;
+		this.nome = nome;
+		this.preco = 0;
+		this.peso = peso;
 	}
 	
-	public Producto(String arg1, int arg2, int arg3)
+	public Producto(String nome, int preco, int peso)
 	{
-		nome = arg1;
-		preco = arg2;
-		peso = arg3;
+		this.nome = nome;
+		this.preco = preco;
+		this.peso = peso;
 	}
 	
 	public String toString()

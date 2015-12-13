@@ -2,16 +2,18 @@ package Agentes;
 
 import java.util.Iterator;
 
+import Logica.Producto;
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import sajas.core.behaviours.Behaviour;
 
 public class SimpleRequestBehaviour extends Behaviour
 {
 	private static final long serialVersionUID = 1L;
 
-	public enum RequestJobBehaviourState{
+	public enum RequestJobBehaviourState {
 		FINDING_AVAILABLE_WORKERS, ASKING_TO_WORK, RECEIVING_CONFIRMATION, 
 		WAITING_FOR_WORKER, REWARDING_WORKER, RECEIVING_PRODUCTS, DONE, NO_WORKERS_FOUND
 	}
@@ -20,10 +22,8 @@ public class SimpleRequestBehaviour extends Behaviour
 
 	private AgenteTrabalhador worker;
 	private String conversationID;
-	private ACLMessage msgToSend;
 	private DFAgentDescription[] possibleWorkers;
 	private Service requestedService;
-	private boolean receivingProducts;
 	private AID assignedWorker;
 	//private String workerName;
 	//private boolean requestedServiceDone;
@@ -35,7 +35,6 @@ public class SimpleRequestBehaviour extends Behaviour
 		this.worker = worker;
 		this.conversationID = System.currentTimeMillis()+"";
 		this.requestedService = requestedService;
-		this.receivingProducts = requestedService.isEnvolveProducts();
 		this.behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
 		//this.workerName = worker.getLocalName();
 		//this.requestedServiceDone = false;
@@ -97,14 +96,9 @@ public class SimpleRequestBehaviour extends Behaviour
 	}
 
 	private void askingToWork()
-	{	
-		msgToSend = new ACLMessage(ACLMessage.PROPOSE);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.setContent("DO WORK ON FOR-" + requestedService.getName().toUpperCase());
-
+	{
+		worker.socializer.sendObject(ACLMessage.PROPOSE, assignedWorker, conversationID, "DO WORK ON FOR-" + requestedService.getName().toUpperCase(), requestedService);
 		worker.debug("Enviou proposta de trabalho em (" + requestedService.getName() + ") para ["+ assignedWorker.getLocalName() + "], ");
-		msgToSend.addReceiver(assignedWorker);
-		myAgent.send(msgToSend);
 		behaviourState = RequestJobBehaviourState.RECEIVING_CONFIRMATION;
 	}
 
@@ -119,11 +113,13 @@ public class SimpleRequestBehaviour extends Behaviour
 							msgItem.remove();
 							worker.debug("Recebeu aceitacao de [" + assignedWorker.getLocalName() + "] para trabalhar em (" + requestedService.getName() + ")");
 							behaviourState = RequestJobBehaviourState.WAITING_FOR_WORKER;
+							break;
 						}
 						else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
 							msgItem.remove();
 							worker.debug("Recebeu negacao de [" + assignedWorker.getLocalName() + "] para trabalhar em (" + requestedService.getName() + ")");
 							behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
+							break;
 						}
 					}
 				}
@@ -142,11 +138,13 @@ public class SimpleRequestBehaviour extends Behaviour
 							msgItem.remove();
 							worker.debug("Recebeu de [" + assignedWorker.getLocalName() + "] trabalho em (" + requestedService.getName() + ") concluido ");
 							behaviourState = RequestJobBehaviourState.REWARDING_WORKER;
+							break;
 						}
 						else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
 							msgItem.remove();
 							worker.debug("Recebeu de [" + assignedWorker.getLocalName() + "] trabalho em (" + requestedService.getName() + ") cancelado ");
 							behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
+							break;
 						}
 					}
 				}
@@ -157,13 +155,9 @@ public class SimpleRequestBehaviour extends Behaviour
 	public void rewardingWorkers() // SEND
 	{
 		// ------------ Paga o agente que concluido trabalho ----------------------
-		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.setContent("REWARD-" + 1000);
 
+		worker.socializer.send(ACLMessage.CONFIRM, assignedWorker, conversationID, "REWARD-" + 1000);
 		worker.debug("Enviou reconpensa a [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
-		msgToSend.addReceiver(assignedWorker);
-		myAgent.send(msgToSend);
 
 		if(worker.socializer.haveReplyPendingMsgs()) {
 			for(Iterator<ACLMessage> msgItem =  worker.socializer.getReplyPendingMsgs().iterator(); msgItem.hasNext();) {
@@ -174,7 +168,7 @@ public class SimpleRequestBehaviour extends Behaviour
 			}
 		}
 
-		if(receivingProducts)
+		if(requestedService.isEnvolveProducts())
 			behaviourState = RequestJobBehaviourState.RECEIVING_PRODUCTS;
 		else
 			behaviourState = RequestJobBehaviourState.DONE;
@@ -188,9 +182,18 @@ public class SimpleRequestBehaviour extends Behaviour
 				if(msg.getConversationId().equals(conversationID)) {					
 					if(assignedWorker.getLocalName().equals(msg.getSender().getLocalName())) {
 						if(msg.getPerformative() == ACLMessage.CONFIRM) {
+							try {
+								TransferedObjects objects = (TransferedObjects) msg.getContentObject();
+								for(Producto produto: objects.getObjects()) {
+									worker.tr.adicionarContentor(produto, 1);
+								}
+							} catch (UnreadableException e) {
+								worker.debug("ERRO AO DESERIALIZAR O OBJETO A RECEBER DE [" + assignedWorker.getLocalName() + "]");
+							}
 							msgItem.remove();
 							worker.debug("Recebeu Produto de [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
 							behaviourState = RequestJobBehaviourState.DONE;
+							break;
 						}
 					}
 				}

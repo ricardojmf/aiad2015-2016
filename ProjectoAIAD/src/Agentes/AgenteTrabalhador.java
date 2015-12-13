@@ -29,7 +29,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	static final Sprite camiao = new Sprite(Auxiliar.folder + "camiao.png");
 	
 	Object2DGrid espaco;
-	public enum WorkingState{
+	public enum WorkingState {
 		WAITING_FOR_JOB, PREPARE_TO_WORK, WORKING, CHARGING_BATTERY, MOVING
 	}
 	
@@ -70,7 +70,8 @@ public class AgenteTrabalhador extends Agent implements Drawable
 
 		this.serviceManager = new ServiceManager(this);
 		
-		Service service = new Service(nomeServico, "", 1000);
+		//Service service = new Service(nomeServico, "", 1000, null, null, "DO WORK ON FOR");
+		Service service = new Service(nomeServico, "", 1000, null, null, "WANT TO WORK ON FOR");
 		
 		if(empregador.equals("P"))
 		{

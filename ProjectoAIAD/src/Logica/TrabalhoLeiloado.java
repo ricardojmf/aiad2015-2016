@@ -7,8 +7,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-public class TrabalhoLeiloado
+import jade.util.leap.Serializable;
+
+public class TrabalhoLeiloado implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+	
 	public int recompensa;
 	public String detalhes;
 	public boolean realizado;

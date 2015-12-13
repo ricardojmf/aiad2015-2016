@@ -2,8 +2,12 @@ package Logica;
 
 import java.util.Date;
 
-public class TarefaLeiloada
+import jade.util.leap.Serializable;
+
+public class TarefaLeiloada implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+	
 	public TrabalhoLeiloado tb;
 	public Date tempoAceite;
 	

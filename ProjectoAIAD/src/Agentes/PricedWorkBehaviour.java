@@ -7,14 +7,14 @@ import java.util.Iterator;
 import jade.lang.acl.ACLMessage;
 import sajas.core.behaviours.Behaviour;
 
-public class PricedJobBehaviour extends Behaviour {
+public class PricedWorkBehaviour extends Behaviour {
 
 	private static final long serialVersionUID = 1L;
 
-	public enum PricedJobBehaviourState {
+	public enum PricedWorkBehaviourState {
 		SENDING_CONFIRMATION, RECEIVING_CONFIRMATION, WORKING, SENDING_JOB_DONE, WAITING_FOR_REWARD, GIVING_PRODUCTS, DONE
 	}
-	private PricedJobBehaviourState behaviourState;
+	private PricedWorkBehaviourState behaviourState;
 
 	private AID bossAgent;
 
@@ -22,12 +22,12 @@ public class PricedJobBehaviour extends Behaviour {
 
 	private AgenteTrabalhador worker;
 	//private String workerName;
-	private ACLMessage msgToSend;
 	private Service requestedJob;
 	private boolean jobOnTime;
+	private TransferedObjects products;
 	private int debugJobCounter;
 
-	public PricedJobBehaviour(AgenteTrabalhador worker, Service job, String conversationID, AID bossAgent)
+	public PricedWorkBehaviour(AgenteTrabalhador worker, Service job, String conversationID, AID bossAgent)
 	{
 		//super(worker);
 		this.worker = worker;
@@ -36,8 +36,9 @@ public class PricedJobBehaviour extends Behaviour {
 		this.conversationID = conversationID;
 		this.bossAgent = bossAgent;
 		this.jobOnTime = true;
+		this.products = new TransferedObjects();
 		this.debugJobCounter = 5;
-		this.behaviourState = PricedJobBehaviourState.SENDING_CONFIRMATION;
+		this.behaviourState = PricedWorkBehaviourState.SENDING_CONFIRMATION;
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class PricedJobBehaviour extends Behaviour {
 
 	@Override
 	public boolean done() {
-		if(behaviourState == PricedJobBehaviourState.DONE)
+		if(behaviourState == PricedWorkBehaviourState.DONE)
 		{
 			if (jobOnTime)
 				worker.debug("Trabalho a preco fixo em (" + requestedJob.getName() + ") concluido para [" + bossAgent.getLocalName() + "]");
@@ -80,22 +81,15 @@ public class PricedJobBehaviour extends Behaviour {
 
 	public void sendingConfirmation()
 	{
-		msgToSend = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.addReceiver(bossAgent);
-
 		if(true) {
-			msgToSend.setContent("OK I DO JOB-" + requestedJob.getName().toUpperCase());
-			myAgent.send(msgToSend);
+			worker.socializer.send(ACLMessage.ACCEPT_PROPOSAL, bossAgent, conversationID, "OK I DO JOB-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou aceitacao do trabalho a preco fixo em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
-			behaviourState = PricedJobBehaviourState.RECEIVING_CONFIRMATION;
+			behaviourState = PricedWorkBehaviourState.RECEIVING_CONFIRMATION;
 		}
 		else {
-			msgToSend.setPerformative(ACLMessage.REJECT_PROPOSAL);
-			msgToSend.setContent("I DONT DO JOB-" + requestedJob.getName().toUpperCase());
-			myAgent.send(msgToSend);
+			worker.socializer.send(ACLMessage.REJECT_PROPOSAL, bossAgent, conversationID, "I DONT DO JOB-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou recusacao do trabalho a preco fixo em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
-			behaviourState = PricedJobBehaviourState.DONE;
+			behaviourState = PricedWorkBehaviourState.DONE;
 		}
 	}
 
@@ -109,12 +103,14 @@ public class PricedJobBehaviour extends Behaviour {
 						if(msg.getPerformative() == ACLMessage.CONFIRM) {
 							msgItem.remove();
 							worker.debug("Recebeu confirmacao de [" + bossAgent.getLocalName() + "] para trabalhar a preco fixo em (" + requestedJob.getName() + ")");
-							behaviourState = PricedJobBehaviourState.WORKING;
+							behaviourState = PricedWorkBehaviourState.WORKING;
+							break;
 						}
 						else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
 							msgItem.remove();
 							worker.debug("Recebeu cancelamento de [" + bossAgent.getLocalName() + "] para trabalhar a preco fixo em (" + requestedJob.getName() + ")");
-							behaviourState = PricedJobBehaviourState.DONE;
+							behaviourState = PricedWorkBehaviourState.DONE;
+							break;
 						}
 					}
 				}
@@ -137,7 +133,8 @@ public class PricedJobBehaviour extends Behaviour {
 							msgItem.remove();
 							jobOnTime = false;
 							worker.debug("Recebeu cancelamento de [" + bossAgent.getLocalName() + "] para trabalhar a preco fixo em (" + requestedJob.getName() + ") porque ja foi concluido por outro");
-							behaviourState = PricedJobBehaviourState.DONE;
+							behaviourState = PricedWorkBehaviourState.DONE;
+							break;
 						}
 					}
 				}
@@ -145,27 +142,21 @@ public class PricedJobBehaviour extends Behaviour {
 		}
 		
 		if(debugJobCounter <= 0)
-			behaviourState = PricedJobBehaviourState.SENDING_JOB_DONE;
+			behaviourState = PricedWorkBehaviourState.SENDING_JOB_DONE;
 		debugJobCounter--;
 	}
 
 	public void sendingJobDone()
 	{
-		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.addReceiver(bossAgent);
 		if(true) {
-			msgToSend.setContent("JOB DONE-" + requestedJob.getName().toUpperCase());
-			myAgent.send(msgToSend);
+			worker.socializer.send(ACLMessage.CONFIRM, bossAgent, conversationID, "JOB DONE-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou Conclusao do trabalho a preco fixo em (" + requestedJob.getName() + ") avisando [" + bossAgent.getLocalName() + "]");
-			behaviourState = PricedJobBehaviourState.WAITING_FOR_REWARD;
+			behaviourState = PricedWorkBehaviourState.WAITING_FOR_REWARD;
 		}
 		else {
-			msgToSend.setPerformative(ACLMessage.REJECT_PROPOSAL);
-			msgToSend.setContent("JOB NOT DONE-" + requestedJob.getName().toUpperCase());
-			myAgent.send(msgToSend);
+			worker.socializer.send(ACLMessage.REJECT_PROPOSAL, bossAgent, conversationID, "JOB NOT DONE-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou nao conclusao do trabalho a preco fixo em (" + requestedJob.getName() + ") avisando [" + bossAgent.getLocalName() + "]");
-			behaviourState = PricedJobBehaviourState.DONE;
+			behaviourState = PricedWorkBehaviourState.DONE;
 		}
 
 	}
@@ -180,13 +171,15 @@ public class PricedJobBehaviour extends Behaviour {
 						if(msg.getPerformative() == ACLMessage.CONFIRM) {
 							msgItem.remove();
 							worker.debug("Recebeu reconpensa de [" + bossAgent.getLocalName() + "] do o trabalho a preco fixo em (" + requestedJob.getName() + ")");
-							behaviourState = PricedJobBehaviourState.GIVING_PRODUCTS;
+							behaviourState = PricedWorkBehaviourState.GIVING_PRODUCTS;
+							break;
 						}
 						else if(msg.getPerformative() == ACLMessage.CANCEL) {
 							msgItem.remove();
 							jobOnTime = false;
 							worker.debug("Recebeu cancelamento de [" + bossAgent.getLocalName() + "] para trabalhar a preco fixo em (" + requestedJob.getName() + ") porque ja foi concluido por outro");
-							behaviourState = PricedJobBehaviourState.DONE;
+							behaviourState = PricedWorkBehaviourState.DONE;
+							break;
 						}
 					}
 				}
@@ -196,13 +189,9 @@ public class PricedJobBehaviour extends Behaviour {
 
 	public void givingProducts()
 	{
-		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.addReceiver(bossAgent);
-		msgToSend.setContent("PRODUCT-" + requestedJob.getName().toUpperCase());
-		myAgent.send(msgToSend);
+		worker.socializer.sendObject(ACLMessage.CONFIRM, bossAgent, conversationID, "PRODUCT", products);
 		worker.debug("Enviou produto do trabalho a preco fixo em (" + requestedJob.getName() + ") a [" + bossAgent.getLocalName() + "]");
-		behaviourState = PricedJobBehaviourState.DONE;
+		behaviourState = PricedWorkBehaviourState.DONE;
 	}
 
 }

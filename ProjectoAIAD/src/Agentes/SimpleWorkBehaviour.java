@@ -6,11 +6,11 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import sajas.core.behaviours.Behaviour;
 
-public class SimpleJobBehaviour extends Behaviour
+public class SimpleWorkBehaviour extends Behaviour
 {
 	private static final long serialVersionUID = 1L;
 
-	public enum WorkingBehaviourState{
+	public enum WorkingBehaviourState {
 		SENDING_CONFIRMATION, WORKING, SENDING_JOB_DONE, WAITING_FOR_REWARD, DELIVERING_PRODUCTS, DONE
 	}
 
@@ -19,14 +19,13 @@ public class SimpleJobBehaviour extends Behaviour
 	private AID bossAgent;
 	private String conversationID;
 	private AgenteTrabalhador worker;
-	private ACLMessage msgToSend;
 	private int debugJobCounter;
 	private boolean makingProducts;
-	//private Object[] products;
+	private TransferedObjects products;
 	//private String workerName;
 
 
-	public SimpleJobBehaviour(AgenteTrabalhador worker, Service job, String conversationID, AID bossAgent)
+	public SimpleWorkBehaviour(AgenteTrabalhador worker, Service job, String conversationID, AID bossAgent)
 	{
 		super(worker);
 		this.makingProducts = job.isEnvolveProducts();
@@ -35,6 +34,7 @@ public class SimpleJobBehaviour extends Behaviour
 		this.conversationID = conversationID;
 		this.bossAgent = bossAgent;
 		this.debugJobCounter = 5;
+		this.products = new TransferedObjects();
 		this.behaviourState = WorkingBehaviourState.SENDING_CONFIRMATION;
 		//DeregistWork(job);
 		//this.workerName = worker.getLocalName();
@@ -78,20 +78,13 @@ public class SimpleJobBehaviour extends Behaviour
 
 	public void sendingConfirmation()
 	{
-		msgToSend = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.addReceiver(bossAgent);
-
 		if(true) {
-			msgToSend.setContent("OK I DO JOB-" + requestedJob.getName().toUpperCase());
-			myAgent.send(msgToSend);
+			worker.socializer.send(ACLMessage.ACCEPT_PROPOSAL, bossAgent, conversationID, "OK I DO JOB-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou aceitacao do trabalho em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
 			behaviourState = WorkingBehaviourState.WORKING;
 		}
 		else {
-			msgToSend.setPerformative(ACLMessage.REJECT_PROPOSAL);
-			msgToSend.setContent("I DONT DO JOB-" + requestedJob.getName().toUpperCase());
-			myAgent.send(msgToSend);
+			worker.socializer.send(ACLMessage.REJECT_PROPOSAL, bossAgent, conversationID, "I DONT DO JOB-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou recusacao do trabalho em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
 			behaviourState = WorkingBehaviourState.DONE;
 		}
@@ -112,6 +105,7 @@ public class SimpleJobBehaviour extends Behaviour
 							msgItem.remove();
 							worker.debug("Recebeu cancelamento de [" + bossAgent.getLocalName() + "] para trabalhar em (" + requestedJob.getName() + ")");
 							behaviourState = WorkingBehaviourState.DONE;
+							break;
 						}
 					}
 				}
@@ -125,19 +119,13 @@ public class SimpleJobBehaviour extends Behaviour
 
 	public void sendingJobDone()
 	{
-		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.addReceiver(bossAgent);
 		if(true) {
-			msgToSend.setContent("JOB DONE-" + requestedJob.getName().toUpperCase());
-			myAgent.send(msgToSend);
+			worker.socializer.send(ACLMessage.CONFIRM, bossAgent, conversationID, "JOB DONE-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou Conclusao do trabalho em (" + requestedJob.getName() + ") avisando [" + bossAgent.getLocalName() + "]");
 			behaviourState = WorkingBehaviourState.WAITING_FOR_REWARD;
 		}
 		else {
-			msgToSend.setPerformative(ACLMessage.REJECT_PROPOSAL);
-			msgToSend.setContent("JOB NOT DONE-" + requestedJob.getName().toUpperCase());
-			myAgent.send(msgToSend);
+			worker.socializer.send(ACLMessage.REJECT_PROPOSAL, bossAgent, conversationID, "JOB NOT DONE-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou nao conclusao do trabalho em (" + requestedJob.getName() + ") avisando [" + bossAgent.getLocalName() + "]");
 			behaviourState = WorkingBehaviourState.DONE;
 		}
@@ -159,12 +147,14 @@ public class SimpleJobBehaviour extends Behaviour
 								behaviourState = WorkingBehaviourState.DELIVERING_PRODUCTS;
 							else
 								behaviourState = WorkingBehaviourState.DONE;
+							break;
 						}
 					}
 					else if(msg.getPerformative() == ACLMessage.CANCEL) {
 						msgItem.remove();
 						worker.debug("Recebeu cancelamento de [" + bossAgent.getLocalName() + "] para trabalhar em (" + requestedJob.getName() + ")");
 						behaviourState = WorkingBehaviourState.DONE;
+						break;
 					}
 				}
 			}
@@ -173,11 +163,7 @@ public class SimpleJobBehaviour extends Behaviour
 
 	public void givingProducts()
 	{
-		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.addReceiver(bossAgent);
-		msgToSend.setContent("PRODUCT-" + requestedJob.getName().toUpperCase());
-		myAgent.send(msgToSend);
+		worker.socializer.sendObject(ACLMessage.CONFIRM, bossAgent, conversationID, "PRODUCT", products);
 		worker.debug("Enviou produto do trabalho em (" + requestedJob.getName() + ") a [" + bossAgent.getLocalName() + "]");
 		behaviourState = WorkingBehaviourState.DONE;
 	}

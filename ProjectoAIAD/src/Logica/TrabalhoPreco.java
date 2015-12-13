@@ -1,14 +1,14 @@
 package Logica;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Vector;
 
-public class TrabalhoPreco
+import jade.util.leap.Serializable;
+
+public class TrabalhoPreco implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+	
 	public int recompensa;
 	public String detalhes;
 	public boolean realizado;

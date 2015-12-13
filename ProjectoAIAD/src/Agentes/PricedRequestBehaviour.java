@@ -3,9 +3,11 @@ package Agentes;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import Logica.Producto;
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import sajas.core.behaviours.Behaviour;
 
 public class PricedRequestBehaviour extends Behaviour {
@@ -22,7 +24,6 @@ public class PricedRequestBehaviour extends Behaviour {
 
 	private AgenteTrabalhador worker;
 	private String workerName;
-	private ACLMessage msgToSend;
 	private ArrayList<AID> possibleWorkers;
 	private ArrayList<AID> confirmedWorkers;
 	private AID winnerWorker;
@@ -95,17 +96,12 @@ public class PricedRequestBehaviour extends Behaviour {
 
 	private void askingToWork() // SEND
 	{
-		msgToSend = new ACLMessage(ACLMessage.PROPOSE);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.setContent("WANT TO WORK ON FOR-" + requestedService.getName().toUpperCase());
-
+		worker.socializer.sendObject(ACLMessage.PROPOSE, possibleWorkers, conversationID, "WANT TO WORK ON FOR-" + requestedService.getName().toUpperCase(), requestedService);
 		System.out.print("[" + workerName + "]: -> Enviou proposta de trabalho a preco fixo em (" + requestedService.getName() + ") a: ");
 		for(AID worker: possibleWorkers) {
 			System.out.print("[" + (worker.getLocalName()) + "], ");
-			msgToSend.addReceiver(worker);
 		}
 		System.out.println();
-		myAgent.send(msgToSend);
 		behaviourState = RequestPricedJobBehaviourState.RECEIVING_CONFIRMATIONS;
 	}
 
@@ -142,17 +138,12 @@ public class PricedRequestBehaviour extends Behaviour {
 
 	private void confirmToWork() // SEND
 	{
-		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.setContent("SO DO JOB-" + requestedService.getName().toUpperCase());
-
+		worker.socializer.send(ACLMessage.CONFIRM, confirmedWorkers, conversationID, "SO DO JOB-" + requestedService.getName().toUpperCase());
 		System.out.print("[" + workerName + "]: -> Enviou confirmacao para trabalhar a preco fixo em (" + requestedService.getName() + ") a ");
 		for(AID worker: confirmedWorkers) {
 			System.out.print("[" + (worker.getLocalName() + "], "));
-			msgToSend.addReceiver(worker);
 		}
 		System.out.println();
-		myAgent.send(msgToSend);
 
 		behaviourState = RequestPricedJobBehaviourState.WAITING_FOR_WORKERS;
 	}
@@ -192,34 +183,18 @@ public class PricedRequestBehaviour extends Behaviour {
 	public void rewardingWorkers() // SEND
 	{
 		// ------------ Paga o 1º agente que concluido trabalho ----------------------
-		msgToSend = new ACLMessage(ACLMessage.CONFIRM);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.setContent("REWARD-" + 1000);
 
+		worker.socializer.send(ACLMessage.CONFIRM, winnerWorker, conversationID, "REWARD-" + 1000);
 		worker.debug("Enviou reconpensa a [" + winnerWorker.getLocalName() + "] do trabalho a preco fixo em (" + requestedService.getName() + ")");
-		msgToSend.addReceiver(winnerWorker);
-		myAgent.send(msgToSend);
 
 		// ------------ Avisa outro agentes que o trabalho foi concluido ----------------------
-		msgToSend = new ACLMessage(ACLMessage.CANCEL);
-		msgToSend.setConversationId(conversationID);
-		msgToSend.setContent("JOB ALLREADY DONE-" + 0);
 
-		boolean cancelOthersWorkers = false;
-
-		for(Iterator<AID> workerItem =  confirmedWorkers.iterator(); workerItem.hasNext();) {
-			AID confirmedWorker = workerItem.next();
-			msgToSend.addReceiver(confirmedWorker);
-			cancelOthersWorkers = true;
-		}
-
-		if(cancelOthersWorkers) {
-			myAgent.send(msgToSend);
+		if(!confirmedWorkers.isEmpty()) {
+			worker.socializer.send(ACLMessage.CANCEL, confirmedWorkers, conversationID, "JOB ALLREADY DONE-" + 0);
 			System.out.print("[" + workerName + "]: -> Enviou cancelamento para trabalhar a preco fixo em (" + requestedService.getName() + ") a ");
 			for(Iterator<AID> workerItem =  confirmedWorkers.iterator(); workerItem.hasNext();) {
 				AID workerToCancel = workerItem.next();
 				System.out.print("[" + (workerToCancel.getLocalName() + "], "));
-				msgToSend.addReceiver(workerToCancel);
 				workerItem.remove();
 			}
 			System.out.println(" porque já foi concluido");
@@ -234,7 +209,10 @@ public class PricedRequestBehaviour extends Behaviour {
 			}
 		}
 
-		behaviourState = RequestPricedJobBehaviourState.RECEIVING_PRODUCTS;
+		if(requestedService.isEnvolveProducts())
+			behaviourState = RequestPricedJobBehaviourState.RECEIVING_PRODUCTS;
+		else
+			behaviourState = RequestPricedJobBehaviourState.DONE;
 	}
 
 	private void receivingProducts()
@@ -245,9 +223,18 @@ public class PricedRequestBehaviour extends Behaviour {
 				if(msg.getConversationId().equals(conversationID)) {					
 					if(winnerWorker.getLocalName().equals(msg.getSender().getLocalName())) {
 						if(msg.getPerformative() == ACLMessage.CONFIRM) {
+							try {
+								TransferedObjects objects = (TransferedObjects) msg.getContentObject();
+								for(Producto produto: objects.getObjects()) {
+									worker.tr.adicionarContentor(produto, 1);
+								}
+							} catch (UnreadableException e) {
+								worker.debug("ERRO AO DESERIALIZAR O OBJETO A RECEBER DE [" + winnerWorker.getLocalName() + "]");
+							}
 							msgItem.remove();
 							worker.debug("Recebeu Produto de [" + winnerWorker.getLocalName() + "] do o trabalho a preco fixo em (" + requestedService.getName() + ")");
 							behaviourState = RequestPricedJobBehaviourState.DONE;
+							break;
 						}
 					}
 				}
