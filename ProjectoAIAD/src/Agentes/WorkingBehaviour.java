@@ -1,6 +1,6 @@
 package Agentes;
 
-import Agentes.AgenteTrabalhador.WorkingState;
+import Agentes.AgenteTrabalhador.WorkerState;
 import sajas.core.behaviours.SimpleBehaviour;
 
 public class WorkingBehaviour extends SimpleBehaviour {
@@ -39,7 +39,7 @@ public class WorkingBehaviour extends SimpleBehaviour {
 		{
 			worker.debug("Acabei a minha tarefa em " + actualService.getName());
 			qnt = 0;
-			worker.state = WorkingState.WAITING_FOR_JOB;
+			worker.state = WorkerState.WAITING_FOR_JOB;
 			//worker.serviceManager.offerService(new Service("pedras", "", 1000, null, null, ""));
 			actualService = null;
 			return true;

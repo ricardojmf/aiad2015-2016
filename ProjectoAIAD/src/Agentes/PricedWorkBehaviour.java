@@ -168,9 +168,14 @@ public class PricedWorkBehaviour extends Behaviour {
 				ACLMessage msg = msgItem.next();
 				if(msg.getConversationId().equals(conversationID)) {
 					if(bossAgent.getLocalName().equals(msg.getSender().getLocalName())) {
-						if(msg.getPerformative() == ACLMessage.CONFIRM) {
+						if(msg.getPerformative() == ACLMessage.CONFIRM)
+						{
+							String[] args = msg.getContent().split("-");
+							int reward = Integer.parseInt(args[1]);
+							worker.tr.riqueza = worker.tr.riqueza + reward;
 							msgItem.remove();
-							worker.debug("Recebeu reconpensa de [" + bossAgent.getLocalName() + "] do o trabalho a preco fixo em (" + requestedJob.getName() + ")");
+							worker.debug("Recebeu reconpensa " + reward + " de [" + bossAgent.getLocalName() + "] do o trabalho em (" + requestedJob.getName() + ")");
+
 							behaviourState = PricedWorkBehaviourState.GIVING_PRODUCTS;
 							break;
 						}

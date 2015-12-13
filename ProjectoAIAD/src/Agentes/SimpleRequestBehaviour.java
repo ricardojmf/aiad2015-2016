@@ -2,6 +2,8 @@ package Agentes;
 
 import java.util.Iterator;
 
+import Agentes.AgenteTrabalhador.WorkerState;
+import Logica.Ponto;
 import Logica.Producto;
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -14,8 +16,8 @@ public class SimpleRequestBehaviour extends Behaviour
 	private static final long serialVersionUID = 1L;
 
 	public enum RequestJobBehaviourState {
-		FINDING_AVAILABLE_WORKERS, ASKING_TO_WORK, RECEIVING_CONFIRMATION, 
-		WAITING_FOR_WORKER, REWARDING_WORKER, RECEIVING_PRODUCTS, DONE, NO_WORKERS_FOUND
+		FINDING_AVAILABLE_WORKERS, ASKING_TO_WORK, RECEIVING_CONFIRMATION, WAITING_FOR_WORKER,
+		GO_TO_DELIVERY_POINT, MOVING_TO_DELIVERY_POINT, REWARDING_WORKER, RECEIVING_PRODUCTS, DONE, NO_WORKERS_FOUND
 	}
 
 	private RequestJobBehaviourState behaviourState;
@@ -25,6 +27,7 @@ public class SimpleRequestBehaviour extends Behaviour
 	private DFAgentDescription[] possibleWorkers;
 	private Service requestedService;
 	private AID assignedWorker;
+	private Ponto deliveryPoint;
 	//private String workerName;
 	//private boolean requestedServiceDone;
 	//private Object[] productsReceived;
@@ -36,6 +39,7 @@ public class SimpleRequestBehaviour extends Behaviour
 		this.conversationID = System.currentTimeMillis()+"";
 		this.requestedService = requestedService;
 		this.behaviourState = RequestJobBehaviourState.FINDING_AVAILABLE_WORKERS;
+		this.deliveryPoint = null;
 		//this.workerName = worker.getLocalName();
 		//this.requestedServiceDone = false;
 	}
@@ -58,6 +62,12 @@ public class SimpleRequestBehaviour extends Behaviour
 			break;
 		case WAITING_FOR_WORKER:
 			waitingForWorker();
+			break;
+		case GO_TO_DELIVERY_POINT:
+			goToDeleveryPoint();;
+			break;
+		case MOVING_TO_DELIVERY_POINT:
+			movingToDeleveryPoint();
 			break;
 		case REWARDING_WORKER:
 			rewardingWorkers();
@@ -135,9 +145,18 @@ public class SimpleRequestBehaviour extends Behaviour
 				if(msg.getConversationId().equals(conversationID)) {
 					if(assignedWorker.getLocalName().equals(msg.getSender().getLocalName())) {
 						if(msg.getPerformative() == ACLMessage.CONFIRM) {
-							msgItem.remove();
 							worker.debug("Recebeu de [" + assignedWorker.getLocalName() + "] trabalho em (" + requestedService.getName() + ") concluido ");
-							behaviourState = RequestJobBehaviourState.REWARDING_WORKER;
+							if(msg.getContent().contains("LOCAL")) {
+								String[] local = msg.getContent().split("-")[2].split(" ");
+								deliveryPoint = new Ponto(Integer.parseInt(local[0]), Integer.parseInt(local[1]));
+								worker.debug(msg.getContent().split("-")[2]);
+								worker.debug(local[0]+local[1]);
+								worker.debug(deliveryPoint.pontoToString());
+								behaviourState = RequestJobBehaviourState.GO_TO_DELIVERY_POINT;
+							}
+							else
+								behaviourState = RequestJobBehaviourState.REWARDING_WORKER;
+							msgItem.remove();
 							break;
 						}
 						else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
@@ -152,12 +171,40 @@ public class SimpleRequestBehaviour extends Behaviour
 		}
 	}
 
+	public void goToDeleveryPoint() {
+		if(deliveryPoint != null) {
+			if(worker.state != WorkerState.MOVING) {
+				worker.movimentar(deliveryPoint);
+				behaviourState = RequestJobBehaviourState.MOVING_TO_DELIVERY_POINT;
+			}
+		}
+		else
+			behaviourState = RequestJobBehaviourState.REWARDING_WORKER;
+	}
+
+	public void movingToDeleveryPoint() {
+		if(deliveryPoint != null) {
+			if(worker.state == WorkerState.NOT_MOVING)
+				if(worker.tr.pontoToString().equals(deliveryPoint.pontoToString())) {
+					worker.debug("Chegou ao destino");
+					behaviourState = RequestJobBehaviourState.REWARDING_WORKER;
+				}
+		}
+		else
+			behaviourState = RequestJobBehaviourState.REWARDING_WORKER;
+	}	
+
 	public void rewardingWorkers() // SEND
 	{
 		// ------------ Paga o agente que concluido trabalho ----------------------
 
-		worker.socializer.send(ACLMessage.CONFIRM, assignedWorker, conversationID, "REWARD-" + requestedService.getValue());
-		worker.debug("Enviou reconpensa a [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
+		int reward = requestedService.getValue();
+		if(requestedService.getValue() > worker.tr.riqueza)
+			reward = worker.tr.riqueza;
+		worker.tr.riqueza = worker.tr.riqueza - reward;
+
+		worker.socializer.send(ACLMessage.CONFIRM, assignedWorker, conversationID, "REWARD-" + reward);
+		worker.debug("Enviou reconpensa " + reward + " a [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
 
 		if(worker.socializer.haveReplyPendingMsgs()) {
 			for(Iterator<ACLMessage> msgItem =  worker.socializer.getReplyPendingMsgs().iterator(); msgItem.hasNext();) {

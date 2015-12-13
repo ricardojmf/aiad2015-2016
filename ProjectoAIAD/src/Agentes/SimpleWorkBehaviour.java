@@ -119,8 +119,12 @@ public class SimpleWorkBehaviour extends Behaviour
 
 	public void sendingJobDone()
 	{
+		String msgcontent = "";
+		if(requestedJob.isEnvolveProducts())
+			msgcontent = "JOB DONE-LOCAL-" + worker.tr.pontoToString() + "-";
+		
 		if(true) {
-			worker.socializer.send(ACLMessage.CONFIRM, bossAgent, conversationID, "JOB DONE-" + requestedJob.getName().toUpperCase());
+			worker.socializer.send(ACLMessage.CONFIRM, bossAgent, conversationID, msgcontent + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou Conclusao do trabalho em (" + requestedJob.getName() + ") avisando [" + bossAgent.getLocalName() + "]");
 			behaviourState = WorkingBehaviourState.WAITING_FOR_REWARD;
 		}
@@ -139,9 +143,13 @@ public class SimpleWorkBehaviour extends Behaviour
 				ACLMessage msg = msgItem.next();
 				if(msg.getConversationId().equals(conversationID)) {
 					if(bossAgent.getLocalName().equals(msg.getSender().getLocalName())) {
-						if(msg.getPerformative() == ACLMessage.CONFIRM) {
+						if(msg.getPerformative() == ACLMessage.CONFIRM)
+						{	
+							String[] args = msg.getContent().split("-");
+							int reward = Integer.parseInt(args[1]);
+							worker.tr.riqueza = worker.tr.riqueza + reward;
 							msgItem.remove();
-							worker.debug("Recebeu reconpensa de [" + bossAgent.getLocalName() + "] do o trabalho em (" + requestedJob.getName() + ")");
+							worker.debug("Recebeu reconpensa " + reward + " de [" + bossAgent.getLocalName() + "] do o trabalho em (" + requestedJob.getName() + ")");
 
 							if(makingProducts)
 								behaviourState = WorkingBehaviourState.DELIVERING_PRODUCTS;

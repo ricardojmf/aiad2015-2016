@@ -1,6 +1,6 @@
 package Agentes;
 
-import Agentes.AgenteTrabalhador.WorkingState;
+import Agentes.AgenteTrabalhador.WorkerState;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.core.AID;
@@ -77,7 +77,7 @@ public class ProcessManager extends CyclicBehaviour {
 		if(worker.serviceManager.haveJobsToDo())
 		{
 			worker.debug("A preparar para trabalhar em " + worker.serviceManager.get1stJobToDo().getName());
-			worker.state = WorkingState.PREPARE_TO_WORK;
+			//worker.state = WorkerState.PREPARE_TO_WORK;
 		}
 	}
 
@@ -85,20 +85,22 @@ public class ProcessManager extends CyclicBehaviour {
 	{
 		Service jobService = worker.serviceManager.get1stJobToDo();
 		worker.serviceManager.remove1stJobToDo();
-		worker.state = WorkingState.WORKING;
+		//worker.state = WorkerState.WORKING;
 		myAgent.addBehaviour(new WorkingBehaviour(worker, jobService));
 	}
 
 	public void parseReceivedMsg(ACLMessage aclMessage)
 	{
-		worker.debug("Parsing mensagem de [" + aclMessage.getSender().getLocalName() + "]");
+		AID sender = aclMessage.getSender();
+		String conversationID = aclMessage.getConversationId();
+		worker.debug("Parsing mensagem de [" + sender.getLocalName() + "]");
 
 		Service job = null;
 		try {
 			job = (Service) aclMessage.getContentObject();
-			worker.debug("Servico de [" + aclMessage.getSender().getLocalName() + "] pedindo: " + job.getName());
+			worker.debug("Servico de [" + sender.getLocalName() + "] pedindo: " + job.getName());
 		} catch (UnreadableException e) {
-			worker.debug("ERRO AO DESERIALIZAR O SERVICO A RECEBER DE [" + aclMessage.getSender().getLocalName() + "]");
+			worker.debug("ERRO AO DESERIALIZAR O SERVICO A RECEBER DE [" + sender.getLocalName() + "]");
 		}
 
 		if(job != null) {
@@ -106,37 +108,39 @@ public class ProcessManager extends CyclicBehaviour {
 			{
 				if(worker.serviceManager.canDoService(job))
 				{
-					worker.debug("Recebeu ordem de encomenda de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
-					worker.addBehaviour(new SimpleWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
+					worker.debug("Recebeu ordem de encomenda de [" + sender.getLocalName() + "] para servico (" + job.getName() + ")");
+					worker.addBehaviour(new SimpleWorkBehaviour(worker, job, conversationID, sender));
 					//worker.serviceManager.addJobToDo(job);
 				}
 				else
-					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");			
+					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, sender, conversationID, "CANT DO SERVICE");			
 			}
 			else if(job.getMsg().contains("WANT TO WORK ON FOR"))		// proposta a preço fixo
 			{
 				if(worker.serviceManager.canDoService(job))
 				{
-					worker.debug("Recebeu proposta de trabalho a preco fixo de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
-					worker.addBehaviour(new PricedWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
+					worker.debug("Recebeu proposta de trabalho a preco fixo de [" + sender.getLocalName() + "] para servico (" + job.getName() + ")");
+					worker.addBehaviour(new PricedWorkBehaviour(worker, job, conversationID, sender));
 					//worker.serviceManager.addJobToDo(job);
 				}
 				else
-					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");
+					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, sender, conversationID, "CANT DO SERVICE");
 			}
 			else if(job.getMsg().contains("WANT TO WORK ON BID"))		// proposta a leilao
 			{
 				if(worker.serviceManager.canDoService(job))
 				{
-					worker.debug("Recebeu proposta de trabalho a leilao de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
+					worker.debug("Recebeu proposta de trabalho a leilao de [" + sender.getLocalName() + "] para servico (" + job.getName() + ")");
 					//worker.addBehaviour(new BidedWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
 					//worker.serviceManager.addJobToDo(job);
 				}
 				else
-					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");
+					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, sender, conversationID, "CANT DO SERVICE");
 			}
 			else
-				worker.debug("Mensagen de [" + aclMessage.getSender().getLocalName() + "] nao entendida");
+				worker.debug("Mensagen de [" + sender.getLocalName() + "] nao entendida");
 		}
+		else
+			worker.socializer.send(ACLMessage.REJECT_PROPOSAL, sender, conversationID, "NOT UNDERSTOOD");
 	}
 }

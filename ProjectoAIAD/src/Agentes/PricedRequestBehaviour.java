@@ -184,8 +184,13 @@ public class PricedRequestBehaviour extends Behaviour {
 	{
 		// ------------ Paga o 1º agente que concluido trabalho ----------------------
 
-		worker.socializer.send(ACLMessage.CONFIRM, winnerWorker, conversationID, "REWARD-" + 1000);
-		worker.debug("Enviou reconpensa a [" + winnerWorker.getLocalName() + "] do trabalho a preco fixo em (" + requestedService.getName() + ")");
+		int reward = requestedService.getValue();
+		if(requestedService.getValue() > worker.tr.riqueza)
+			reward = worker.tr.riqueza;
+		worker.tr.riqueza = worker.tr.riqueza - reward;
+
+		worker.socializer.send(ACLMessage.CONFIRM, winnerWorker, conversationID, "REWARD-" + reward);
+		worker.debug("Enviou reconpensa " + reward + " a [" + winnerWorker.getLocalName() + "] do trabalho a preco fixo em (" + requestedService.getName() + ")");
 
 		// ------------ Avisa outro agentes que o trabalho foi concluido ----------------------
 

@@ -88,23 +88,26 @@ public class Janela extends Repast3Launcher
 			ag3 = new AgenteTrabalhador("Agente3", 3, espaco, mundo);
 			ag4 = new AgenteTrabalhador("Agente4", 2, espaco, mundo);
 			
-			ag1.setArguments(new String[] { "madeira", "E" });
-			ag2.setArguments(new String[] { "madeira", "P" });
-			ag3.setArguments(new String[] { "madeira", "E" });
-			ag4.setArguments(new String[] { "ferro", "E" });
+			ag1.setArguments(new String[] { "madeira", "P" });
+			ag2.setArguments(new String[] { "ferro", "E" });
+			ag3.setArguments(new String[] { "ferro", "E" });
+			ag4.setArguments(new String[] { "madeira", "E" });
 			
 			Vector<Logica.Ponto> pontos = new Vector<Logica.Ponto>();
 			pontos.addElement(new Logica.Ponto(2, 4));
 			pontos.addElement(new Logica.Ponto(17, 24));
 						
-			ag1.movimentar(35, 11, 22, 27); // carro
-			ag2.movimentar(1, 1, 22, 12); // camiao
-			ag3.movimentar(1, 9, 22, 24); // mota
+			//ag1.movimentar(35, 11, 22, 27); // carro
+			//ag2.movimentar(1, 1, 22, 12); // camiao
+			//ag3.movimentar(1, 9, 22, 24); // mota
 			//ag4.movimentar(mundo, 2, 53, 2, 4); // drone
 			
 			//ag4.movimentar(mundo, 2, 53, pontos); // drone
-			ag4.tr.set(2, 53);
-			ag4.comprar(mundo.productos.elementAt(0), 2);
+			ag1.tr.set(36, 11);
+			ag2.tr.set(1, 1);
+			ag3.tr.set(1, 9);
+			ag4.tr.set(1, 53);
+			//ag4.comprar(mundo.productos.elementAt(0), 2);
 			
 			agentes.addElement(ag1);
 			agentes.addElement(ag2);

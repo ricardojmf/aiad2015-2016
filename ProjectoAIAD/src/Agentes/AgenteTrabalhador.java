@@ -22,14 +22,14 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	static final Sprite camiao = new Sprite(Auxiliar.folder + "camiao.png");
 	
 	Object2DGrid espaco;
-	public enum WorkingState {
-		WAITING_FOR_JOB, PREPARE_TO_WORK, WORKING, CHARGING_BATTERY, MOVING
+	public enum WorkerState {
+		WAITING_FOR_JOB, PREPARE_TO_WORK, WORKING, CHARGING_BATTERY, MOVING, NOT_MOVING
 	}
 	
 	MySequentialBehaviour listaComportamentos;
 	
 	public Mundo mundo;
-	protected WorkingState state;
+	protected WorkerState state;
 	protected String nome;
 	protected String workerType;
 	protected ServiceManager serviceManager;
@@ -41,7 +41,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		super();
 		espaco = space;
 		this.nome = nome;
-		state = WorkingState.WAITING_FOR_JOB;
+		state = WorkerState.WAITING_FOR_JOB;
 		this.mundo = mundo;
 		
 		tr = new Trabalhador(nome, tipoTransporte);
@@ -66,7 +66,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		this.serviceManager = new ServiceManager(this);
 		
 		//Service service = new Service(nomeServico, "", 1000, null, null, "DO WORK ON FOR");
-		Service service = new Service(nomeServico, "", 1000, null, null, "WANT TO WORK ON FOR");
+		Service service = new Service(nomeServico, "", 1000, null, null, "DO WORK ON FOR");
 		
 		if(empregador.equals("P"))
 		{
