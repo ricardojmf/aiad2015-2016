@@ -24,6 +24,7 @@ public class PickupSimpleBehaviour extends Behaviour
 	
 	public PickupSimpleBehaviour(AgenteTrabalhador at, Armazem ar, Ranhura ra)
 	{
+		
 		agente = at;
 		armazem = ar;
 		
@@ -36,7 +37,7 @@ public class PickupSimpleBehaviour extends Behaviour
 	{
 		if(agente.tr.mesmaPosicao(armazem))
 		{
-			agente.tr.removerArmazem(armazem, productos.producto, productos.quantidade);
+			boolean estado = agente.tr.removerArmazem(armazem, productos);
 			
 			terminado = true;
 		}
@@ -45,6 +46,8 @@ public class PickupSimpleBehaviour extends Behaviour
 	@Override
 	public boolean done()
 	{
+		armazem.verDetalhes();
+		agente.tr.verContentor();
 		return terminado;
 	}
 	

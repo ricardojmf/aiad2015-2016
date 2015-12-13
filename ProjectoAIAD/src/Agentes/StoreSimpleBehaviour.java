@@ -45,6 +45,8 @@ public class StoreSimpleBehaviour extends Behaviour
 	@Override
 	public boolean done()
 	{
+		armazem.verDetalhes();
+		agente.tr.verContentor();
 		return terminado;
 	}
 	

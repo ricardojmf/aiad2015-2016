@@ -41,7 +41,7 @@ public class StoreRandomSimpleBehaviour extends Behaviour
 			Vector<Ranhura> todosProductosNaoGuardar = new Vector<Ranhura>();
 			todosProductosNaoGuardar.addElement(productos);
 			
-			agente.tr.armazenarAleatoriamente(armazem, todosProductosNaoGuardar);
+			boolean estado = agente.tr.armazenarAleatoriamente(armazem, todosProductosNaoGuardar);
 			
 			terminado = true;
 		}
@@ -50,6 +50,7 @@ public class StoreRandomSimpleBehaviour extends Behaviour
 	@Override
 	public boolean done()
 	{
+		agente.tr.verContentor();
 		return terminado;
 	}
 	

@@ -66,7 +66,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		this.serviceManager = new ServiceManager(this);
 		
 		//Service service = new Service(nomeServico, "", 1000, null, null, "DO WORK ON FOR");
-		Service service = new Service(nomeServico, "", 1000, null, null, "WANT TO WORK ON FOR");
+		Service service = new Service(nomeServico, "", 1000, null, null, "DO WORK ON FOR");
 		
 		if(empregador.equals("P"))
 		{
@@ -180,22 +180,12 @@ public class AgenteTrabalhador extends Agent implements Drawable
 				Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
 					tr.obterLocalizacao(), armazensComProducto);
 			
-			Armazem ar = mundo.obterArmazem(percursoPerto.elementAt(percursoPerto.size() - 1));
+			Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
+			Armazem ar = mundo.obterArmazem(destino);
 			
 			ContentorArmazem ca = ar.obterContentor(tr);
-			if(ca == null)
-			{
-				comprar(productos);
-				return;
-			}
 			
 			ProductoArmazenado pa = ca.existeProducto(productos.producto);
-			
-			if(pa == null)
-			{
-				comprar(productos);
-				return;
-			}
 			
 			if(pa.quantidade < productos.quantidade)
 			{
@@ -203,15 +193,15 @@ public class AgenteTrabalhador extends Agent implements Drawable
 				return;
 			}
 			
+			
+			
 			Vector<Behaviour> vec = new Vector<Behaviour>();
 			Ponto actual = tr.obterLocalizacao();
 			
-			Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
-			
 			MovingBehaviour mb1 = new MovingBehaviour(this, actual, destino);
 			
-			// armazenar
-			PickupSimpleBehaviour mb2 = new PickupSimpleBehaviour(this, mundo.obterArmazem(destino), productos);
+			// buscar ao armazem
+			PickupSimpleBehaviour mb2 = new PickupSimpleBehaviour(this, ar, productos);
 			
 			vec.addElement(mb1);
 			vec.addElement(mb2);

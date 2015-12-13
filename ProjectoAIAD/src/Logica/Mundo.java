@@ -60,8 +60,8 @@ public class Mundo
 				}
 			}
 			
-			int peso = Integer.parseInt(varios[varios.length - 1]);
-			int preco = Integer.parseInt(varios[varios.length - 2]);
+			int peso = Integer.parseInt(varios[varios.length - 2]);
+			int preco = Integer.parseInt(varios[varios.length - 1]);
 			
 			productos.addElement(new Producto(nome, preco, peso));
 			i++;

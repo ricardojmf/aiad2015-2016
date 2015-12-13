@@ -57,6 +57,27 @@ public class Janela extends Repast3Launcher
 		return "Transportes";
 	}
 	
+	public void testeAdquirirPickup()
+	{
+		ag4.tr.adicionarContentor(mundo.productos.elementAt(0), 16);
+		
+		ag4.tr.armazenar(mundo.armazens.elementAt(0), 0, 16);
+		
+		ag4.adquirir(mundo.productos.elementAt(0), 3);
+	}
+	
+	public void testeAdquirirStoreComprar()
+	{
+		ag4.tr.adicionarContentor(mundo.productos.elementAt(24), 16);
+		
+		ag4.adquirir(mundo.productos.elementAt(0), 3);
+	}
+	
+	public void testeAdquirirComprar()
+	{
+		ag4.adquirir(mundo.productos.elementAt(0), 3);
+	}
+	
 	@Override
 	protected void launchJADE()
 	{
@@ -74,6 +95,7 @@ public class Janela extends Repast3Launcher
 		
 		mundo = new Mundo();
 		agentes = new Vector<AgenteTrabalhador>();
+		
 		// CORRER OS AGENTES
 		try
 		{
@@ -100,14 +122,16 @@ public class Janela extends Repast3Launcher
 			//ag1.movimentar(35, 11, 22, 27); // carro
 			//ag2.movimentar(1, 1, 22, 12); // camiao
 			//ag3.movimentar(1, 9, 22, 24); // mota
-			//ag4.movimentar(mundo, 2, 53, 2, 4); // drone
+			//ag4.movimentar(2, 53, 2, 4); // drone
 			
-			//ag4.movimentar(mundo, 2, 53, pontos); // drone
 			ag1.tr.set(36, 11);
 			ag2.tr.set(1, 1);
 			ag3.tr.set(1, 9);
 			ag4.tr.set(1, 53);
-			//ag4.comprar(mundo.productos.elementAt(0), 2);
+			
+			//testeAdquirirPickup();
+			//testeAdquirirStoreComprar();
+			testeAdquirirComprar();
 			
 			agentes.addElement(ag1);
 			agentes.addElement(ag2);

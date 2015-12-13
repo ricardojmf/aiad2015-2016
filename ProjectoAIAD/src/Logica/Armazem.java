@@ -53,6 +53,22 @@ public class Armazem extends Local
 		}
 	}
 	
+	public void verDetalhes()
+	{
+		System.out.println("------------------------------");
+		System.out.println(nome + " (" + linha + ", " + coluna + ")");
+		System.out.println("------------------------------");
+		for(ContentorArmazem ca: clientes)
+		{
+			System.out.print("+ ");
+			Auxiliar.writeln(ca.trabalhador.nome);
+			for(ProductoArmazenado pa: ca.contentor)
+			{
+				Auxiliar.writeln(pa.productoArmazeadoToString());
+			}
+		}
+	}
+	
 	public String stringEnviarArmazem()
 	{
 		String r = "[";

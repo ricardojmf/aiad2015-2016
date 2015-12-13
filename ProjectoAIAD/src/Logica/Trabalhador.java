@@ -197,7 +197,7 @@ public class Trabalhador extends Identidade
 	}
 	
 	public boolean adicionarContentor(Ranhura productos)
-	{
+	{		
 		// se existir no contentor, acrescentar mais unidades
 		int index = 0;
 		while(index < contentor.size())
@@ -207,6 +207,8 @@ public class Trabalhador extends Identidade
 			if (ra.producto.compareTo(productos.producto) == 0)
 			{
 				ra.quantidade += productos.quantidade;
+				carga += productos.obterTamanhoTotal();
+				
 				return true;
 			}
 			index++;
@@ -214,6 +216,7 @@ public class Trabalhador extends Identidade
 		
 		// senao criar uma nova ranhura
 		contentor.addElement(productos);
+		carga += productos.obterTamanhoTotal();
 		
 		return true;
 	}
@@ -231,10 +234,12 @@ public class Trabalhador extends Identidade
 				if (ra.quantidade <= productos.quantidade)
 				{
 					contentor.remove(index);
+					carga -= productos.obterTamanhoTotal();
 				}
 				else
 				{
 					ra.quantidade -= productos.quantidade;
+					carga -= productos.obterTamanhoTotal();
 				}
 				
 				return true;
@@ -314,13 +319,12 @@ public class Trabalhador extends Identidade
 		if (riqueza >= (pl.preco*quantidade))
 		{
 			if ( (carga + (pl.peso*quantidade)) <= cargaMax)
-			{
+			{				
 				boolean estado = adicionarContentor(pl, quantidade);
 				
 				if (estado)
 				{
 					riqueza = riqueza - (pl.preco*quantidade);
-					carga = carga + (pl.peso*quantidade);
 				}
 				
 				return estado;
@@ -339,7 +343,7 @@ public class Trabalhador extends Identidade
 			return false;
 		}
 		
-		removerContentor(ra.producto, quantidade);
+		boolean estado1 = removerContentor(ra.producto, quantidade);
 		
 		int i = 0;
 		while (i < ar.clientes.size())
@@ -356,6 +360,7 @@ public class Trabalhador extends Identidade
 					if (pr.producto.nome.equals(ra.producto.nome))
 					{
 						pr.quantidade += quantidade;
+						
 						return true;
 					}
 					
@@ -432,7 +437,7 @@ public class Trabalhador extends Identidade
 			return false;
 		}
 		
-		return( armazenar(ar, indexRanhura, quantidade) );
+		return( removerArmazem(ar, indexRanhura, quantidade) );
 	}
 	
 	public boolean removerArmazem(Armazem ar, int indexRanhura, int quantidade)
@@ -443,7 +448,7 @@ public class Trabalhador extends Identidade
 	}
 	
 	public boolean removerArmazem(Armazem ar, Ranhura productos)
-	{		
+	{	
 		if(!podeAdicionarContentor(productos))
 		{
 			return false;
@@ -467,7 +472,7 @@ public class Trabalhador extends Identidade
 		}
 		else
 		{
-			boolean estado = adicionarContentor( pa.producto, pa.quantidade );
+			boolean estado = adicionarContentor( productos );
 			
 			if(productos.quantidade == pa.quantidade)
 			{
@@ -482,7 +487,7 @@ public class Trabalhador extends Identidade
 		}
 	}
 	
-	public boolean produzir(Produzir pd)
+	public boolean possivelProduzir(Produzir pd)
 	{
 		// verificar se trabalhador tem as ferramentas necessarias
 		for(String fe: pd.ferramentas)
@@ -515,6 +520,16 @@ public class Trabalhador extends Identidade
 				}
 				index++;
 			}
+		}
+		
+		return true;
+	}
+	
+	public boolean produzir(Produzir pd)
+	{
+		if(!possivelProduzir(pd))
+		{
+			return false;
 		}
 		
 		// remover do contentor do trabalhador todos os productos
@@ -559,12 +574,18 @@ public class Trabalhador extends Identidade
 	{
 		Vector<Ranhura> productosArmazenar = naoInterseccao( productosNaoArmazenar );
 		
-		for(int index = 0; index < productosArmazenar.size() && carga > cargaMax; index++)
+		int total = 0;
+		for(Ranhura ra: productosArmazenar)
+		{
+			total += ra.obterTamanhoTotal();
+		}
+		
+		for(int index = 0; index < productosArmazenar.size(); index++)
 		{
 			Ranhura productos = productosArmazenar.elementAt(index);
 			
 			// calcular minimo de tamanho a remover
-			int qMax = 0;
+			int qMax;
 			for(qMax = 1; qMax <= productos.quantidade; qMax++)
 			{
 				if( (carga - qMax*productos.producto.peso) <= cargaMax)
@@ -580,6 +601,11 @@ public class Trabalhador extends Identidade
 			else
 			{
 				armazenar(ar, productos);
+			}
+			
+			if(carga < cargaMax)
+			{
+				break;
 			}
 		}
 		
