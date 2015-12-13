@@ -21,4 +21,4 @@ public class TransferedObjects implements Serializable
 	public ArrayList<Producto> getObjects() {
 		return objects;
 	}
-}
+} 
