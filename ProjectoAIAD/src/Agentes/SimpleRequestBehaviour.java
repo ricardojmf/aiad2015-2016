@@ -149,9 +149,6 @@ public class SimpleRequestBehaviour extends Behaviour
 							if(msg.getContent().contains("LOCAL")) {
 								String[] local = msg.getContent().split("-")[2].split(" ");
 								deliveryPoint = new Ponto(Integer.parseInt(local[0]), Integer.parseInt(local[1]));
-								worker.debug(msg.getContent().split("-")[2]);
-								worker.debug(local[0]+local[1]);
-								worker.debug(deliveryPoint.pontoToString());
 								behaviourState = RequestJobBehaviourState.GO_TO_DELIVERY_POINT;
 							}
 							else

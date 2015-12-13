@@ -3,6 +3,8 @@ package Agentes;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import Agentes.AgenteTrabalhador.WorkerState;
+import Logica.Ponto;
 import Logica.Producto;
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -15,8 +17,8 @@ public class PricedRequestBehaviour extends Behaviour {
 	private static final long serialVersionUID = 1L;
 
 	public enum RequestPricedJobBehaviourState {
-		FINDING_AVAILABLE_WORKERS, ASKING_TO_WORK, CONFIRM_TO_WORK, RECEIVING_CONFIRMATIONS, 
-		WAITING_FOR_WORKERS, REWARDING_WORKER, RECEIVING_PRODUCTS, DONE, NO_WORKERS_FOUND
+		FINDING_AVAILABLE_WORKERS, ASKING_TO_WORK, CONFIRM_TO_WORK, RECEIVING_CONFIRMATIONS, WAITING_FOR_WORKERS,
+		GO_TO_DELIVERY_POINT, MOVING_TO_DELIVERY_POINT, REWARDING_WORKER, RECEIVING_PRODUCTS, DONE, NO_WORKERS_FOUND
 	}
 	private RequestPricedJobBehaviourState behaviourState;
 
@@ -28,6 +30,7 @@ public class PricedRequestBehaviour extends Behaviour {
 	private ArrayList<AID> confirmedWorkers;
 	private AID winnerWorker;
 	private Service requestedService;
+	private Ponto deliveryPoint;
 
 
 	public PricedRequestBehaviour(AgenteTrabalhador worker, Service requestedService)
@@ -40,6 +43,7 @@ public class PricedRequestBehaviour extends Behaviour {
 		this.possibleWorkers = new ArrayList<AID>();
 		this.confirmedWorkers = new ArrayList<AID>();
 		this.winnerWorker = null;
+		this.deliveryPoint = null;
 		this.behaviourState = RequestPricedJobBehaviourState.FINDING_AVAILABLE_WORKERS;
 	}
 
@@ -61,6 +65,12 @@ public class PricedRequestBehaviour extends Behaviour {
 			break;
 		case WAITING_FOR_WORKERS:
 			waitingForWorkers(); 		// RECEIVE
+			break;
+		case GO_TO_DELIVERY_POINT:
+			goToDeleveryPoint();;
+			break;
+		case MOVING_TO_DELIVERY_POINT:
+			movingToDeleveryPoint();
 			break;
 		case REWARDING_WORKER:
 			rewardingWorkers(); 		// SEND
@@ -160,9 +170,17 @@ public class PricedRequestBehaviour extends Behaviour {
 							if(confirmedWorker.getLocalName().equals(msg.getSender().getLocalName())) {
 								if(msg.getPerformative() == ACLMessage.CONFIRM) {
 									winnerWorker = msg.getSender();
-									msgItem.remove();
-									workerItem.remove();
 									worker.debug("Recebeu de [" + confirmedWorker.getLocalName() + "] trabalho a preco fixo em (" + requestedService.getName() + ") concluido ");
+
+									if(msg.getContent().contains("LOCAL")) {
+										String[] local = msg.getContent().split("-")[2].split(" ");
+										deliveryPoint = new Ponto(Integer.parseInt(local[0]), Integer.parseInt(local[1]));
+										behaviourState = RequestPricedJobBehaviourState.GO_TO_DELIVERY_POINT;
+									}
+									else
+										behaviourState = RequestPricedJobBehaviourState.GO_TO_DELIVERY_POINT; //REWARDING_WORKER;
+									workerItem.remove();
+									msgItem.remove();
 									break;
 								}
 								else if(msg.getPerformative() == ACLMessage.REJECT_PROPOSAL) {
@@ -177,20 +195,18 @@ public class PricedRequestBehaviour extends Behaviour {
 			}
 		}
 		else
-			behaviourState = RequestPricedJobBehaviourState.REWARDING_WORKER;
+			behaviourState = RequestPricedJobBehaviourState.GO_TO_DELIVERY_POINT; //REWARDING_WORKER;
 	}
 
-	public void rewardingWorkers() // SEND
-	{
-		// ------------ Paga o 1º agente que concluido trabalho ----------------------
-
-		int reward = requestedService.getValue();
-		if(requestedService.getValue() > worker.tr.riqueza)
-			reward = worker.tr.riqueza;
-		worker.tr.riqueza = worker.tr.riqueza - reward;
-
-		worker.socializer.send(ACLMessage.CONFIRM, winnerWorker, conversationID, "REWARD-" + reward);
-		worker.debug("Enviou reconpensa " + reward + " a [" + winnerWorker.getLocalName() + "] do trabalho a preco fixo em (" + requestedService.getName() + ")");
+	public void goToDeleveryPoint() {
+		if(deliveryPoint != null) {
+			if(worker.state != WorkerState.MOVING) {
+				worker.movimentar(deliveryPoint);
+				behaviourState = RequestPricedJobBehaviourState.MOVING_TO_DELIVERY_POINT;
+			}
+		}
+		else
+			behaviourState = RequestPricedJobBehaviourState.REWARDING_WORKER;
 
 		// ------------ Avisa outro agentes que o trabalho foi concluido ----------------------
 
@@ -213,6 +229,33 @@ public class PricedRequestBehaviour extends Behaviour {
 				}
 			}
 		}
+	}
+
+	public void movingToDeleveryPoint() {
+		if(deliveryPoint != null) {
+			if(worker.state == WorkerState.NOT_MOVING)
+				if(worker.tr.pontoToString().equals(deliveryPoint.pontoToString())) {
+					worker.debug("Chegou ao destino");
+					behaviourState = RequestPricedJobBehaviourState.REWARDING_WORKER;
+				}
+		}
+		else
+			behaviourState = RequestPricedJobBehaviourState.REWARDING_WORKER;
+	}	
+
+	public void rewardingWorkers() // SEND
+	{
+		// ------------ Paga o 1º agente que concluido trabalho ----------------------
+
+		int reward = requestedService.getValue();
+		if(requestedService.getValue() > worker.tr.riqueza)
+			reward = worker.tr.riqueza;
+		worker.tr.riqueza = worker.tr.riqueza - reward;
+
+		worker.socializer.send(ACLMessage.CONFIRM, winnerWorker, conversationID, "REWARD-" + reward);
+		worker.debug("Enviou reconpensa " + reward + " a [" + winnerWorker.getLocalName() + "] do trabalho a preco fixo em (" + requestedService.getName() + ")");
+
+
 
 		if(requestedService.isEnvolveProducts())
 			behaviourState = RequestPricedJobBehaviourState.RECEIVING_PRODUCTS;

@@ -90,7 +90,7 @@ public class Janela extends Repast3Launcher
 			
 			ag1.setArguments(new String[] { "madeira", "P" });
 			ag2.setArguments(new String[] { "ferro", "E" });
-			ag3.setArguments(new String[] { "ferro", "E" });
+			ag3.setArguments(new String[] { "madeira", "E" });
 			ag4.setArguments(new String[] { "madeira", "E" });
 			
 			Vector<Logica.Ponto> pontos = new Vector<Logica.Ponto>();

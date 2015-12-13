@@ -81,7 +81,9 @@ public class PricedWorkBehaviour extends Behaviour {
 
 	public void sendingConfirmation()
 	{
-		if(true) {
+		boolean canDoTheJob = worker.processManager.canDoTheJob(requestedJob);
+		
+		if(canDoTheJob) {
 			worker.socializer.send(ACLMessage.ACCEPT_PROPOSAL, bossAgent, conversationID, "OK I DO JOB-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou aceitacao do trabalho a preco fixo em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
 			behaviourState = PricedWorkBehaviourState.RECEIVING_CONFIRMATION;
@@ -148,8 +150,14 @@ public class PricedWorkBehaviour extends Behaviour {
 
 	public void sendingJobDone()
 	{
-		if(true) {
-			worker.socializer.send(ACLMessage.CONFIRM, bossAgent, conversationID, "JOB DONE-" + requestedJob.getName().toUpperCase());
+		boolean jobDone = true;
+		
+		if(jobDone) {
+			String msgcontent = "JOB DONE-";
+			if(requestedJob.isEnvolveProducts())
+				msgcontent = "JOB DONE-LOCAL-" + worker.tr.pontoToString() + "-";
+			
+			worker.socializer.send(ACLMessage.CONFIRM, bossAgent, conversationID, msgcontent + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou Conclusao do trabalho a preco fixo em (" + requestedJob.getName() + ") avisando [" + bossAgent.getLocalName() + "]");
 			behaviourState = PricedWorkBehaviourState.WAITING_FOR_REWARD;
 		}

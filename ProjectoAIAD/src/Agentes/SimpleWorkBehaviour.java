@@ -78,7 +78,9 @@ public class SimpleWorkBehaviour extends Behaviour
 
 	public void sendingConfirmation()
 	{
-		if(true) {
+		boolean canDoTheJob = worker.processManager.canDoTheJob(requestedJob);
+		
+		if(canDoTheJob) {
 			worker.socializer.send(ACLMessage.ACCEPT_PROPOSAL, bossAgent, conversationID, "OK I DO JOB-" + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou aceitacao do trabalho em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
 			behaviourState = WorkingBehaviourState.WORKING;
@@ -119,11 +121,13 @@ public class SimpleWorkBehaviour extends Behaviour
 
 	public void sendingJobDone()
 	{
-		String msgcontent = "";
-		if(requestedJob.isEnvolveProducts())
-			msgcontent = "JOB DONE-LOCAL-" + worker.tr.pontoToString() + "-";
+		boolean jobDone = true;
 		
-		if(true) {
+		if(jobDone) {
+			String msgcontent = "JOB DONE-";
+			if(requestedJob.isEnvolveProducts())
+				msgcontent = "JOB DONE-LOCAL-" + worker.tr.pontoToString() + "-";
+			
 			worker.socializer.send(ACLMessage.CONFIRM, bossAgent, conversationID, msgcontent + requestedJob.getName().toUpperCase());
 			worker.debug("Enviou Conclusao do trabalho em (" + requestedJob.getName() + ") avisando [" + bossAgent.getLocalName() + "]");
 			behaviourState = WorkingBehaviourState.WAITING_FOR_REWARD;
