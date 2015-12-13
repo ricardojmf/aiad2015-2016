@@ -101,38 +101,42 @@ public class ProcessManager extends CyclicBehaviour {
 			worker.debug("ERRO AO DESERIALIZAR O SERVICO A RECEBER DE [" + aclMessage.getSender().getLocalName() + "]");
 		}
 
-		if(job.getMsg().contains("DO WORK ON FOR"))		// proposta de encomenda
-		{
-			if(worker.serviceManager.canDoService(job))
+		if(job != null) {
+			if(job.getMsg().contains("DO WORK ON FOR"))		// proposta de encomenda
 			{
-				worker.debug("Recebeu ordem de encomenda de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
-				worker.addBehaviour(new SimpleWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
-				//worker.serviceManager.addJobToDo(job);
+				if(worker.serviceManager.canDoService(job))
+				{
+					worker.debug("Recebeu ordem de encomenda de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
+					worker.addBehaviour(new SimpleWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
+					//worker.serviceManager.addJobToDo(job);
+				}
+				else
+					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");			
+			}
+			else if(job.getMsg().contains("WANT TO WORK ON FOR"))		// proposta a preço fixo
+			{
+				if(worker.serviceManager.canDoService(job))
+				{
+					worker.debug("Recebeu proposta de trabalho a preco fixo de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
+					worker.addBehaviour(new PricedWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
+					//worker.serviceManager.addJobToDo(job);
+				}
+				else
+					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");
+			}
+			else if(job.getMsg().contains("WANT TO WORK ON BID"))		// proposta a leilao
+			{
+				if(worker.serviceManager.canDoService(job))
+				{
+					worker.debug("Recebeu proposta de trabalho a leilao de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
+					//worker.addBehaviour(new BidedWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
+					//worker.serviceManager.addJobToDo(job);
+				}
+				else
+					worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");
 			}
 			else
-				worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");			
-		}
-		else if(job.getMsg().contains("WANT TO WORK ON FOR"))		// proposta a preço fixo
-		{
-			if(worker.serviceManager.canDoService(job))
-			{
-				worker.debug("Recebeu proposta de trabalho a preco fixo de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
-				worker.addBehaviour(new PricedWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
-				//worker.serviceManager.addJobToDo(job);
-			}
-			else
-				worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");
-		}
-		else if(job.getMsg().contains("WANT TO WORK ON BID"))		// proposta a leilao
-		{
-			if(worker.serviceManager.canDoService(job))
-			{
-				worker.debug("Recebeu proposta de trabalho a leilao de [" + aclMessage.getSender().getLocalName() + "] para servico (" + job.getName() + ")");
-				//worker.addBehaviour(new BidedWorkBehaviour(worker, job, aclMessage.getConversationId(), aclMessage.getSender()));
-				//worker.serviceManager.addJobToDo(job);
-			}
-			else
-				worker.socializer.send(ACLMessage.REJECT_PROPOSAL, aclMessage.getSender(), aclMessage.getConversationId(), "CANT DO SERVICE");
+				worker.debug("Mensagen de [" + aclMessage.getSender().getLocalName() + "] nao entendida");
 		}
 	}
 }

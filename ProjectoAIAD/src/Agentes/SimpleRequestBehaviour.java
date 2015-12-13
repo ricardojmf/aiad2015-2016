@@ -156,7 +156,7 @@ public class SimpleRequestBehaviour extends Behaviour
 	{
 		// ------------ Paga o agente que concluido trabalho ----------------------
 
-		worker.socializer.send(ACLMessage.CONFIRM, assignedWorker, conversationID, "REWARD-" + 1000);
+		worker.socializer.send(ACLMessage.CONFIRM, assignedWorker, conversationID, "REWARD-" + requestedService.getValue());
 		worker.debug("Enviou reconpensa a [" + assignedWorker.getLocalName() + "] do trabalho em (" + requestedService.getName() + ")");
 
 		if(worker.socializer.haveReplyPendingMsgs()) {
