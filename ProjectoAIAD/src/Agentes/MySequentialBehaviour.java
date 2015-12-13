@@ -14,7 +14,6 @@ public class MySequentialBehaviour extends SequentialBehaviour
 	public int onEnd()
 	{
 		return 0;
-		
 	}
 	
 	public MySequentialBehaviour(AgenteTrabalhador ag, Vector<Behaviour> tarefas)
@@ -22,8 +21,12 @@ public class MySequentialBehaviour extends SequentialBehaviour
 		lista = tarefas;
 		agente = ag;
 		
-		for(Behaviour b: lista){
+		for(int index = 0; index < lista.size(); index++)
+		{
+			Behaviour b = lista.elementAt(index);
 			addSubBehaviour(b);
 		}
+		
+		
 	}	
 }

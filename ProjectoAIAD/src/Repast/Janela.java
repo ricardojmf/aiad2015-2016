@@ -75,6 +75,7 @@ public class Janela extends Repast3Launcher
 	
 	public void testeAdquirirComprar()
 	{
+		// 3 MADEIRA
 		ag4.adquirir(mundo.productos.elementAt(0), 3);
 	}
 	
@@ -105,24 +106,24 @@ public class Janela extends Repast3Launcher
 			
 			espaco = new Object2DGrid(mundo.cidade.colunas, mundo.cidade.linhas);
 			
-			ag1 = new AgenteTrabalhador("Agente1", 1, espaco, mundo);
-			ag2 = new AgenteTrabalhador("Agente2", 4, espaco, mundo);
-			ag3 = new AgenteTrabalhador("Agente3", 3, espaco, mundo);
-			ag4 = new AgenteTrabalhador("Agente4", 2, espaco, mundo);
+			ag1 = new AgenteTrabalhador("Agente1", 1, espaco, mundo); // carro
+			ag2 = new AgenteTrabalhador("Agente2", 4, espaco, mundo); // camiao
+			ag3 = new AgenteTrabalhador("Agente3", 3, espaco, mundo); // mota
+			ag4 = new AgenteTrabalhador("Agente4", 2, espaco, mundo); // drone
 			
-			ag1.setArguments(new String[] { "madeira", "P" });
-			ag2.setArguments(new String[] { "ferro", "E" });
-			ag3.setArguments(new String[] { "madeira", "E" });
-			ag4.setArguments(new String[] { "madeira", "E" });
+			ag1.setArguments(new String[] { "Madeira 3", "P" });
+			ag2.setArguments(new String[] { "Ferro", "E" });
+			ag3.setArguments(new String[] { "Madeira", "E" });
+			ag4.setArguments(new String[] { "Madeira", "E" });
 			
 			Vector<Logica.Ponto> pontos = new Vector<Logica.Ponto>();
 			pontos.addElement(new Logica.Ponto(2, 4));
 			pontos.addElement(new Logica.Ponto(17, 24));
 						
-			//ag1.movimentar(35, 11, 22, 27); // carro
-			//ag2.movimentar(1, 1, 22, 12); // camiao
-			//ag3.movimentar(1, 9, 22, 24); // mota
-			//ag4.movimentar(2, 53, 2, 4); // drone
+			//ag1.movimentar(35, 11, 22, 27); 
+			//ag2.movimentar(1, 1, 22, 12); 
+			//ag3.movimentar(1, 9, 22, 24); 
+			//ag4.movimentar(2, 53, 2, 4); 
 			
 			ag1.tr.set(36, 11);
 			ag2.tr.set(1, 1);
@@ -131,7 +132,7 @@ public class Janela extends Repast3Launcher
 			
 			//testeAdquirirPickup();
 			//testeAdquirirStoreComprar();
-			testeAdquirirComprar();
+			//testeAdquirirComprar();
 			
 			agentes.addElement(ag1);
 			agentes.addElement(ag2);

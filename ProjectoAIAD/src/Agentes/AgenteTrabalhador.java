@@ -171,47 +171,54 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	
 	public void adquirir(Ranhura productos)
 	{
-		Vector<Armazem> armazensComProducto = mundo.obterArmazensProducto(tr, productos.producto);
-		
-		if(armazensComProducto.size() != 0) //se houver armazens com o producto, ir ate la
+		if( tr.trabalhadorTemProductoQuantidade(productos) )
 		{
-			// trajectoria ate armazem
-			Vector<Ponto> percursoPerto =
-				Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
-					tr.obterLocalizacao(), armazensComProducto);
-			
-			Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
-			Armazem ar = mundo.obterArmazem(destino);
-			
-			ContentorArmazem ca = ar.obterContentor(tr);
-			
-			ProductoArmazenado pa = ca.existeProducto(productos.producto);
-			
-			if(pa.quantidade < productos.quantidade)
-			{
-				comprar(productos);
-				return;
-			}
-			
-			
-			
 			Vector<Behaviour> vec = new Vector<Behaviour>();
-			Ponto actual = tr.obterLocalizacao();
-			
-			MovingBehaviour mb1 = new MovingBehaviour(this, actual, destino);
-			
-			// buscar ao armazem
-			PickupSimpleBehaviour mb2 = new PickupSimpleBehaviour(this, ar, productos);
-			
-			vec.addElement(mb1);
-			vec.addElement(mb2);
-			
 			listaComportamentos = new MySequentialBehaviour(this, vec);
 			this.addBehaviour(listaComportamentos);
 		}
-		else //senao houver, vai comprar
+		else
 		{
-			comprar(productos);
+			Vector<Armazem> armazensComProducto = mundo.obterArmazensProducto(tr, productos.producto);
+			
+			if(armazensComProducto.size() != 0) //se houver armazens com o producto, ir ate la
+			{
+				// trajectoria ate armazem
+				Vector<Ponto> percursoPerto =
+					Ponto.percursoCurtoArmazens(mundo.cidade.matriz, tr.meioTransporte,
+						tr.obterLocalizacao(), armazensComProducto);
+				
+				Ponto destino = percursoPerto.elementAt(percursoPerto.size() - 1);
+				Armazem ar = mundo.obterArmazem(destino);
+				
+				ContentorArmazem ca = ar.obterContentor(tr);
+				
+				ProductoArmazenado pa = ca.existeProducto(productos.producto);
+				
+				if(pa.quantidade < productos.quantidade)
+				{
+					comprar(productos);
+					return;
+				}
+				
+				Vector<Behaviour> vec = new Vector<Behaviour>();
+				Ponto actual = tr.obterLocalizacao();
+				
+				MovingBehaviour mb1 = new MovingBehaviour(this, actual, destino);
+				
+				// buscar ao armazem
+				PickupSimpleBehaviour mb2 = new PickupSimpleBehaviour(this, ar, productos);
+				
+				vec.addElement(mb1);
+				vec.addElement(mb2);
+				
+				listaComportamentos = new MySequentialBehaviour(this, vec);
+				this.addBehaviour(listaComportamentos);
+			}
+			else //senao houver, vai comprar
+			{
+				comprar(productos);
+			}
 		}
 	}
 	

@@ -231,6 +231,7 @@ public class SimpleRequestBehaviour extends Behaviour
 								for(Producto produto: objects.getObjects()) {
 									worker.tr.adicionarContentor(produto, 1);
 								}
+								worker.tr.verContentor();
 							} catch (UnreadableException e) {
 								worker.debug("ERRO AO DESERIALIZAR O OBJETO A RECEBER DE [" + assignedWorker.getLocalName() + "]");
 							}

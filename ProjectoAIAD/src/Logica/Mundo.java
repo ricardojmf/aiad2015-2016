@@ -60,10 +60,12 @@ public class Mundo
 				}
 			}
 			
+			String novo = nome.substring(0, nome.length() - 1);
+			
 			int peso = Integer.parseInt(varios[varios.length - 2]);
 			int preco = Integer.parseInt(varios[varios.length - 1]);
 			
-			productos.addElement(new Producto(nome, preco, peso));
+			productos.addElement(new Producto(novo, preco, peso));
 			i++;
 		}
 		i++;
@@ -601,5 +603,17 @@ public class Mundo
 		}
 		
 		return r;
+	}
+
+	public Producto obterLista(String src)
+	{
+		for(Producto p: productos)
+		{
+			if(p.nome.equals(src))
+			{
+				return p;
+			}
+		}
+		return null;
 	}
 }

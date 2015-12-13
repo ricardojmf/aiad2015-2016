@@ -45,7 +45,7 @@ public class BuyingSimpleBehaviour extends Behaviour
 
 	public boolean done()
 	{
-		agente.tr.verContentor();
+		//agente.tr.verContentor();
 		return terminado;
 	}
 

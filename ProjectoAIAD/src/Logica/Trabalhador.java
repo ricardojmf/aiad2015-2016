@@ -191,6 +191,29 @@ public class Trabalhador extends Identidade
 		return false;
 	}
 	
+	public boolean trabalhadorTemProductoQuantidade(Ranhura productos)
+	{
+		int index = 0;
+		while(index < contentor.size())
+		{
+			Ranhura ra = contentor.elementAt(index);
+			
+			if (ra.producto.compareTo(productos.producto) == 0)
+			{
+				if (ra.quantidade >= productos.quantidade)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			index++;
+		}
+		return false;
+	}
+	
 	public boolean adicionarContentor(Producto p, int quantidade)
 	{
 		return adicionarContentor(new Ranhura(p, quantidade));

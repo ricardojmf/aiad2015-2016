@@ -2,6 +2,7 @@ package Agentes;
 
 import java.util.Iterator;
 
+import Logica.Producto;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import sajas.core.behaviours.Behaviour;
@@ -23,7 +24,8 @@ public class SimpleWorkBehaviour extends Behaviour
 	private boolean makingProducts;
 	private TransferedObjects products;
 	//private String workerName;
-
+	
+	boolean firstTime = true;
 
 	public SimpleWorkBehaviour(AgenteTrabalhador worker, Service job, String conversationID, AID bossAgent)
 	{
@@ -113,9 +115,23 @@ public class SimpleWorkBehaviour extends Behaviour
 				}
 			}
 		}
-
-		if(debugJobCounter <= 0)
+		
+		if(firstTime)
+		{
+			Producto p = worker.mundo.obterLista(requestedJob.getName());
+			
+			worker.adquirir(p, 3);
+			firstTime = false;
+		}
+		
+		if(worker.listaComportamentos.done())
+		{
+			//System.out.println(worker.tr.pontoToString());
 			behaviourState = WorkingBehaviourState.SENDING_JOB_DONE;
+			
+			//worker.tr.verContentor();
+		}
+			
 		debugJobCounter--;
 	}
 
@@ -175,8 +191,16 @@ public class SimpleWorkBehaviour extends Behaviour
 
 	public void givingProducts()
 	{
+		worker.tr.verContentor();
+		Producto p = worker.mundo.obterLista(requestedJob.getName());
+		
+		products.addObject(p);
+		worker.tr.removerContentor(p, 1);
+		
 		worker.socializer.sendObject(ACLMessage.CONFIRM, bossAgent, conversationID, "PRODUCT", products);
 		worker.debug("Enviou produto do trabalho em (" + requestedJob.getName() + ") a [" + bossAgent.getLocalName() + "]");
 		behaviourState = WorkingBehaviourState.DONE;
+		
+		worker.tr.verContentor();
 	}
 }
