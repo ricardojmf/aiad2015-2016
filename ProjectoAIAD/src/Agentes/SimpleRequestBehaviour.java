@@ -2,7 +2,7 @@ package Agentes;
 
 import java.util.Iterator;
 
-import Agentes.AgenteTrabalhador.WorkerState;
+import Agentes.AgenteTrabalhador.MovingState;
 import Logica.Ponto;
 import Logica.Producto;
 import jade.core.AID;
@@ -170,7 +170,7 @@ public class SimpleRequestBehaviour extends Behaviour
 
 	public void goToDeleveryPoint() {
 		if(deliveryPoint != null) {
-			if(worker.state != WorkerState.MOVING) {
+			if(worker.movingState != MovingState.MOVING) {
 				worker.movimentar(deliveryPoint);
 				behaviourState = RequestJobBehaviourState.MOVING_TO_DELIVERY_POINT;
 			}
@@ -181,7 +181,7 @@ public class SimpleRequestBehaviour extends Behaviour
 
 	public void movingToDeleveryPoint() {
 		if(deliveryPoint != null) {
-			if(worker.state == WorkerState.NOT_MOVING)
+			if(worker.movingState == MovingState.NOT_MOVING)
 				if(worker.tr.pontoToString().equals(deliveryPoint.pontoToString())) {
 					worker.debug("Chegou ao destino");
 					behaviourState = RequestJobBehaviourState.REWARDING_WORKER;

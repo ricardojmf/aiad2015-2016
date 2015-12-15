@@ -36,6 +36,10 @@ public class Janela extends Repast3Launcher
 	private AgenteTrabalhador ag2;
 	private AgenteTrabalhador ag3;
 	private AgenteTrabalhador ag4;
+	private AgenteTrabalhador ag5;
+	private AgenteTrabalhador ag6;
+	private AgenteTrabalhador ag7;
+	private AgenteTrabalhador ag8;
 	
 	Vector<AgenteTrabalhador> agentes;
 	
@@ -110,11 +114,19 @@ public class Janela extends Repast3Launcher
 			ag2 = new AgenteTrabalhador("Agente2", 4, espaco, mundo); // camiao
 			ag3 = new AgenteTrabalhador("Agente3", 3, espaco, mundo); // mota
 			ag4 = new AgenteTrabalhador("Agente4", 2, espaco, mundo); // drone
+			ag5 = new AgenteTrabalhador("Agente5", 1, espaco, mundo); // carro
+			ag6 = new AgenteTrabalhador("Agente6", 4, espaco, mundo); // camiao
+			ag7 = new AgenteTrabalhador("Agente7", 3, espaco, mundo); // mota
+			ag8 = new AgenteTrabalhador("Agente8", 2, espaco, mundo); // drone
 			
 			ag1.setArguments(new String[] { "Madeira", "P" });
-			ag2.setArguments(new String[] { "Ferro", "E" });
-			ag3.setArguments(new String[] { "Madeira", "E" });
+			ag2.setArguments(new String[] { "Ferro", "P" });
+			ag3.setArguments(new String[] { "Ferro", "E" });
 			ag4.setArguments(new String[] { "Madeira", "E" });
+			ag5.setArguments(new String[] { "Madeira", "E" });
+			ag6.setArguments(new String[] { "Ferro", "E" });
+			ag7.setArguments(new String[] { "Ferro", "E" });
+			ag8.setArguments(new String[] { "Madeira", "E" });
 			
 			Vector<Logica.Ponto> pontos = new Vector<Logica.Ponto>();
 			pontos.addElement(new Logica.Ponto(2, 4));
@@ -129,6 +141,10 @@ public class Janela extends Repast3Launcher
 			ag2.tr.set(1, 1);
 			ag3.tr.set(1, 9);
 			ag4.tr.set(1, 53);
+			ag5.tr.set(36, 12);
+			ag6.tr.set(1, 2);
+			ag7.tr.set(1, 11);
+			ag8.tr.set(1, 50);
 			
 			//testeAdquirirPickup();
 			//testeAdquirirStoreComprar();
@@ -138,6 +154,10 @@ public class Janela extends Repast3Launcher
 			agentes.addElement(ag2);
 			agentes.addElement(ag3);
 			agentes.addElement(ag4);
+			agentes.addElement(ag5);
+			agentes.addElement(ag6);
+			agentes.addElement(ag7);
+			agentes.addElement(ag8);
 			
 			for(AgenteTrabalhador at: agentes)
 			{

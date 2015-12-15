@@ -3,7 +3,8 @@ package Agentes;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import Agentes.AgenteTrabalhador.WorkerState;
+import Agentes.AgenteTrabalhador.MovingState;
+import Agentes.AgenteTrabalhador.RequestState;
 import Logica.Ponto;
 import Logica.Producto;
 import jade.core.AID;
@@ -38,6 +39,7 @@ public class PricedRequestBehaviour extends Behaviour {
 		//super(worker);
 		this.worker = worker;
 		this.workerName = worker.getLocalName();
+		this.worker.requestState = RequestState.REQUESTING;		
 		this.requestedService = requestedService;
 		this.conversationID = System.currentTimeMillis()+"";
 		this.possibleWorkers = new ArrayList<AID>();
@@ -89,6 +91,7 @@ public class PricedRequestBehaviour extends Behaviour {
 		if(behaviourState == RequestPricedJobBehaviourState.DONE)
 		{
 			worker.debug("Proposta de trabalho a preco fixo em (" + requestedService.getName() + ") concluida.");
+			this.worker.requestState = RequestState.NOT_REQUESTING;	
 			return true;
 		} else return false;
 	}
@@ -200,7 +203,7 @@ public class PricedRequestBehaviour extends Behaviour {
 
 	public void goToDeleveryPoint() {
 		if(deliveryPoint != null) {
-			if(worker.state != WorkerState.MOVING) {
+			if(worker.movingState != MovingState.MOVING) {
 				worker.movimentar(deliveryPoint);
 				behaviourState = RequestPricedJobBehaviourState.MOVING_TO_DELIVERY_POINT;
 			}
@@ -233,7 +236,7 @@ public class PricedRequestBehaviour extends Behaviour {
 
 	public void movingToDeleveryPoint() {
 		if(deliveryPoint != null) {
-			if(worker.state == WorkerState.NOT_MOVING)
+			if(worker.movingState == MovingState.NOT_MOVING)
 				if(worker.tr.pontoToString().equals(deliveryPoint.pontoToString())) {
 					worker.debug("Chegou ao destino");
 					behaviourState = RequestPricedJobBehaviourState.REWARDING_WORKER;

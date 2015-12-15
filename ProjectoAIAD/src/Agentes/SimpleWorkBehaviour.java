@@ -20,7 +20,7 @@ public class SimpleWorkBehaviour extends Behaviour
 	private AID bossAgent;
 	private String conversationID;
 	private AgenteTrabalhador worker;
-	private int debugJobCounter;
+	//private int debugJobCounter;
 	private boolean makingProducts;
 	private TransferedObjects products;
 	//private String workerName;
@@ -35,7 +35,7 @@ public class SimpleWorkBehaviour extends Behaviour
 		this.requestedJob = job;
 		this.conversationID = conversationID;
 		this.bossAgent = bossAgent;
-		this.debugJobCounter = 5;
+		//this.debugJobCounter = 5;
 		this.products = new TransferedObjects();
 		this.behaviourState = WorkingBehaviourState.SENDING_CONFIRMATION;
 		//DeregistWork(job);
@@ -98,7 +98,7 @@ public class SimpleWorkBehaviour extends Behaviour
 	{
 		// worker.addBehaviour(TASKS_OF_THE_JOB_TODO)
 
-		worker.debug("Trabalhando em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
+		//worker.debug("Trabalhando em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
 
 		if(worker.socializer.haveReplyPendingMsgs()) {
 			for(Iterator<ACLMessage> msgItem =  worker.socializer.getReplyPendingMsgs().iterator(); msgItem.hasNext();) {
@@ -132,7 +132,7 @@ public class SimpleWorkBehaviour extends Behaviour
 			//worker.tr.verContentor();
 		}
 			
-		debugJobCounter--;
+		//debugJobCounter--;
 	}
 
 	public void sendingJobDone()

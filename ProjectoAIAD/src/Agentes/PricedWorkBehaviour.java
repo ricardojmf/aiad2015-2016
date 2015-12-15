@@ -28,7 +28,7 @@ public class PricedWorkBehaviour extends Behaviour {
 	private Service requestedJob;
 	private boolean jobOnTime;
 	private TransferedObjects products;
-	private int debugJobCounter;
+	//private int debugJobCounter;
 
 	public PricedWorkBehaviour(AgenteTrabalhador worker, Service job, String conversationID, AID bossAgent)
 	{
@@ -40,7 +40,7 @@ public class PricedWorkBehaviour extends Behaviour {
 		this.bossAgent = bossAgent;
 		this.jobOnTime = true;
 		this.products = new TransferedObjects();
-		this.debugJobCounter = 5;
+		//this.debugJobCounter = 5;
 		this.behaviourState = PricedWorkBehaviourState.SENDING_CONFIRMATION;
 	}
 
@@ -127,7 +127,7 @@ public class PricedWorkBehaviour extends Behaviour {
 	{
 		// worker.addBehaviour(TASKS_OF_THE_JOB_TODO)
 		
-		worker.debug("Trabalhando a preco fixo em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
+		//worker.debug("Trabalhando a preco fixo em (" + requestedJob.getName() + ") para [" + bossAgent.getLocalName() + "]");
 		
 		if(worker.socializer.haveReplyPendingMsgs()) {
 			for(Iterator<ACLMessage> msgItem =  worker.socializer.getReplyPendingMsgs().iterator(); msgItem.hasNext();) {

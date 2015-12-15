@@ -1,5 +1,6 @@
 package Agentes;
 
+import Agentes.AgenteTrabalhador.RequestState;
 import Logica.Produzir;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
@@ -26,15 +27,17 @@ public class ProcessManager extends CyclicBehaviour {
 	}
 	
 	public boolean canDoTheJob(Service job) {
-		//Produzir prod = new Produzir(request, fer, rec, q);
-		//if(worker.tr.produzir(prod))
+		
+		//job.getTarefaPreco().
+		//worker.mundo.producoes.elementAt(0)
+		//if(worker.tr.possivelProduzir(prod))
 		
 		return true;
 	}
 
 	protected void checkForRequestingServices()
 	{
-		if (worker.serviceManager.wantToRequestService())
+		if (worker.serviceManager.wantToRequestService() && worker.requestState == RequestState.NOT_REQUESTING)
 		{
 			Service requestedService = worker.serviceManager.get1stRequestedService();
 			worker.serviceManager.remove1stRequestedService();

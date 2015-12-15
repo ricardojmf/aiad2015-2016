@@ -22,14 +22,18 @@ public class AgenteTrabalhador extends Agent implements Drawable
 	static final Sprite camiao = new Sprite(Auxiliar.folder + "camiao.png");
 	
 	Object2DGrid espaco;
-	public enum WorkerState {
-		WAITING_FOR_JOB, PREPARE_TO_WORK, WORKING, CHARGING_BATTERY, MOVING, NOT_MOVING
+	public enum MovingState {
+		MOVING, NOT_MOVING
+	}
+	public enum RequestState {
+		REQUESTING, NOT_REQUESTING
 	}
 	
 	MySequentialBehaviour listaComportamentos;
 	
 	public Mundo mundo;
-	protected WorkerState state;
+	protected MovingState movingState;
+	protected RequestState requestState;
 	protected String nome;
 	protected String workerType;
 	protected ServiceManager serviceManager;
@@ -41,7 +45,8 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		super();
 		espaco = space;
 		this.nome = nome;
-		state = WorkerState.WAITING_FOR_JOB;
+		movingState = MovingState.NOT_MOVING;
+		requestState = RequestState.NOT_REQUESTING;
 		this.mundo = mundo;
 		
 		tr = new Trabalhador(nome, tipoTransporte);
@@ -55,6 +60,7 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		String nomeServico = "";
 		String empregador = "";
 		
+		
 		Object[] args = getArguments();
 		if (args != null && args.length > 0) {
 			nomeServico = (String) args[0];
@@ -66,15 +72,30 @@ public class AgenteTrabalhador extends Agent implements Drawable
 		this.serviceManager = new ServiceManager(this);
 		
 		//Service service = new Service(nomeServico, "", 1000, null, null, "DO WORK ON FOR");
-		Service service = new Service(nomeServico, "3", 1000, null, null, "WANT TO WORK ON FOR");
+		Service service1 = new Service(nomeServico, "3", 100, null, null, "WANT TO WORK ON FOR");
+		Service service2 = new Service("Carvao", "2", 500, null, null, "WANT TO WORK ON FOR");
+		Service service3 = new Service("Cobre", "3", 200, null, null, "WANT TO WORK ON FOR");
+		Service service4 = new Service("Vidro", "2", 150, null, null, "WANT TO WORK ON FOR");
 		
 		if(empregador.equals("P"))
 		{
-			serviceManager.requestService(service);
+			serviceManager.requestService(service1);
+			serviceManager.requestService(service2);
+			serviceManager.requestService(service3);
+			serviceManager.requestService(service4);
+			serviceManager.requestService(service1);
+			serviceManager.requestService(service2);
+			serviceManager.requestService(service3);
+			serviceManager.requestService(service4);
+			serviceManager.requestService(service2);
+			serviceManager.requestService(service3);
 		}
 		else
 		{
-			serviceManager.offerService(service);
+			serviceManager.offerService(service1);
+			serviceManager.offerService(service2);
+			serviceManager.offerService(service3);
+			serviceManager.offerService(service4);
 		}
 		
 		processManager = new ProcessManager(this);

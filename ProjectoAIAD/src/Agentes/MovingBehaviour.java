@@ -2,7 +2,7 @@ package Agentes;
 
 import java.util.Vector;
 
-import Agentes.AgenteTrabalhador.WorkerState;
+import Agentes.AgenteTrabalhador.MovingState;
 import Logica.Mundo;
 import Logica.Ponto;
 import sajas.core.behaviours.SimpleBehaviour;
@@ -35,7 +35,7 @@ public class MovingBehaviour extends SimpleBehaviour {
 	
 	public MovingBehaviour(AgenteTrabalhador worker, Ponto origem, Ponto destino)
 	{
-		worker.state = WorkerState.MOVING;
+		worker.movingState = MovingState.MOVING;
 		this.worker = worker;	
 		this.destino = destino;
 		this.origem = origem;
@@ -47,7 +47,7 @@ public class MovingBehaviour extends SimpleBehaviour {
 	
 	public MovingBehaviour(AgenteTrabalhador worker, Ponto origem, int tipoPesquisa)
 	{
-		worker.state = WorkerState.MOVING;
+		worker.movingState = MovingState.MOVING;
 		this.worker = worker;
 		this.destino = null;
 		this.origem = origem;
@@ -309,7 +309,7 @@ public class MovingBehaviour extends SimpleBehaviour {
 	public boolean done()
 	{
 		if ( (percurso.size() == 0 && percursos.size() == 0) || worker.tr.bateria == 0) {
-			worker.state = WorkerState.NOT_MOVING;
+			worker.movingState = MovingState.NOT_MOVING;
 			return true;
 		}
 		else
